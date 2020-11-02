@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseAndroidX.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseAndroidX.iml" group="BaseAndroidX" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseDemo/BaseDemo.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseDemo/BaseDemo.iml" group="BaseAndroidX/BaseDemo" />
+      <module fileurl="file://$PROJECT_DIR$/baseandroidx/baseandroidx.iml" filepath="$PROJECT_DIR$/baseandroidx/baseandroidx.iml" group="BaseAndroidX/baseandroidx" />
+    </modules>
+  </component>
+</project>
