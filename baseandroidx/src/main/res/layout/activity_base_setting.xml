@@ -7,11 +7,232 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/header" />
-
     <RelativeLayout
+        android:id="@+id/rlTopBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="16dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="14dp"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:id="@+id/tvBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/imgBack"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:text="@string/back"
+            android:textColor="#212121"
+            android:textSize="12sp" />
+
+        <TextView
+
+            android:id="@+id/tvTitleLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="25sp"
+            android:layout_toRightOf="@id/tvBack"
+            android:gravity="center"
+            android:textColor="#212121"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvTitleMiddle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="25dp"
+            android:gravity="center"
+            android:textColor="#212121"
+            android:textSize="12sp" />
 
     </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbarAlwaysDrawHorizontalTrack="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="系统当前时间："
+                    android:textColor="@color/red2"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tvSystemTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/red2"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="测试开关机："
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="输入时间（分钟）："
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnTestAlarm"
+                    style="@style/baseBtn"
+                    android:background="@drawable/bg_base_btn"
+                    android:text="测试" />
+
+                <Button
+                    android:id="@+id/btnEnableAlarm"
+                    style="@style/baseBtn"
+                    android:background="@drawable/bg_base_btn"
+                    android:text="启用" />
+            </LinearLayout>
+
+
+            <com.jdxy.wyl.baseandroidx.view.WrapLinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:grivate="left"
+                app:horizontal_Space="10dp"
+                app:vertical_Space="5dp">
+
+                <Button
+
+                    android:id="@+id/btnVoiceSystemAdd"
+                    style="@style/baseBtn"
+                    android:text="(system)+" />
+
+                <Button
+                    android:id="@+id/btnVoiceSystemMinus"
+                    style="@style/baseBtn"
+                    android:text="(system)-" />
+
+                <Button
+                    android:id="@+id/btnVoiceMusicAdd"
+                    style="@style/baseBtn"
+                    android:text="(music)+" />
+
+                <Button
+                    android:id="@+id/btnVoiceMusicMinus"
+                    style="@style/baseBtn"
+                    android:text="(music)-" />
+
+                <Button
+                    android:id="@+id/btnVoiceRingAdd"
+                    style="@style/baseBtn"
+                    android:text="(ring)+" />
+
+                <Button
+                    android:id="@+id/btnVoiceRingmMinus"
+                    style="@style/baseBtn"
+                    android:text="(ring)-" />
+
+
+                <Button
+                    android:id="@+id/btnVoiceAlarmAdd"
+                    style="@style/baseBtn"
+                    android:text="(alarm)+" />
+
+                <Button
+                    android:id="@+id/btnVoiceAlarmMinus"
+                    style="@style/baseBtn"
+                    android:text="(alarm)-" />
+            </com.jdxy.wyl.baseandroidx.view.WrapLinearLayout>
+
+            <com.jdxy.wyl.baseandroidx.view.WrapLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:grivate="left"
+                app:horizontal_Space="10dp"
+                app:vertical_Space="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:text="测试语音："
+                    android:textSize="13sp" />
+
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="请A002号张三到301诊室黄李医生处就诊"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:hint="语速(1-100)"
+                    android:inputType="number"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnTestTts"
+                    style="@style/baseBtn"
+                    android:background="@drawable/bg_base_btn"
+                    android:text="播放" />
+
+                <Button
+                    android:id="@+id/btnEnableTts"
+                    style="@style/baseBtn"
+                    android:background="@drawable/bg_base_btn"
+                    android:text="启用语速" />
+            </com.jdxy.wyl.baseandroidx.view.WrapLinearLayout>
+
+            <Button
+
+                android:id="@+id/btnGetSetting"
+                style="@style/baseBtn"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_base_btn"
+                android:text="获取配置" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rlvSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp" />
+
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

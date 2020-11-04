@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BPulse;
@@ -37,6 +38,7 @@ import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
+import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
 import com.unisound.client.SpeechSynthesizer;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
 import com.xuhao.didi.core.iocore.interfaces.ISendable;
@@ -80,10 +82,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public String mSocketPort;
     public String mMac;
 
-    public String[] mPermissions;
+    public String[] mPermissions;//申请权限
 
     ///默认语音格式
-    public String voiceFormat = "请(line)(name)到(department)(room)(doctor)就诊";
+    public String voiceFormat = "请(line)号(name)到(department)(room)(doctor)处(type)";
 
     public Presenter mPresenter;
     public SimpleDateFormat mDateFormat;
@@ -91,11 +93,15 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public SimpleDateFormat mWeekFormat;
     public TimeThread mTimeThread;
 
-    public RestartThread mRestartThread;
+    // public RestartThread mRestartThread;
     public String mRebootStarTime = "";//开关机 开机时间
     public String mRebootEndTime = "";//开关机 关机时间
 
     public String mVoiceSwitch = "1";//语音播报开关
+    public String URL_UPLOAD_SCREEN;//上传截图链接http
+    public String URL_FINISH_VOICE;//语音播报结束
+    public BVoiceSetting mVoiceSetting;//语音设置
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +150,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     /**
      * 开启开关机线程
      */
-    public void startRebootThread() {
+   /* public void startRebootThread() {
         mRestartThread = new RestartThread(mContext, mDataHandler);
         mRestartThread.sleep_time = 10 * 1000;
         //重启设备线程 固定时间
@@ -160,9 +166,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             }
         }
         mRestartThread.start();
-    }
-
-
+    }*/
     public void hasPermission() {
         //6.0以上申请权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -188,9 +192,27 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         mIP = ToolSP.getDIYString(IConfigs.SP_IP);
         mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
         mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
+
         mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWICH);
         if (mVoiceSwitch.length() < 1) {
             mVoiceSwitch = "1";
+        }
+        String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
+        if (mVoice != null && mVoice.length() > 0) {
+            mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
+        } else {
+            mVoiceSetting = new BVoiceSetting();
+            mVoiceSetting.setVoFormat(voiceFormat);
+            mVoiceSetting.setVoNumber("1");
+            mVoiceSetting.setVoSex("1");
+            mVoiceSetting.setVoSpeed("3");
+        }
+
+
+        Map<String, ?> mAll = ToolSP.getAll();
+        LogUtils.file("【本地配置信息】：");
+        for (String str : mAll.keySet()) {
+            LogUtils.file("key= " + str + " value= " + mAll.get(str));
         }
 
         if (mIP.length() < 6) {
@@ -201,24 +223,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             mHttpPort = "8080";
         }
         mHost = String.format(IConfigs.HOST, mIP, mHttpPort);
-
-        String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
-        if (mVoice != null && mVoice.length() > 0) {
-            mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
-        } else {
-            mVoiceSetting = new BVoiceSetting();
-            mVoiceSetting.setVoFormat(voiceFormat);
-            mVoiceSetting.setVoNumber("1");
-            mVoiceSetting.setVoSex(1 + "");
-            mVoiceSetting.setVoSpeed("3");
-        }
-
-
-        Map<String, ?> mAll = ToolSP.getAll();
-        LogUtils.file("【本地配置信息】：");
-        for (String str : mAll.keySet()) {
-            LogUtils.file("key= " + str + " value= " + mAll.get(str));
-        }
     }
 
 
@@ -248,12 +252,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
     @Override
-    public void showMessage(final BResult2 result) {
-        ToolLog.e(ERROR, JSON.toJSONString(result));
-        LogUtils.file(ERROR, JSON.toJSONString(result));
-    }
-
-    @Override
     public void showError(final String error) {
         ToolLog.e(ERROR, error);
         LogUtils.file(ERROR, error);
@@ -276,17 +274,29 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         });
     }
 
-    @Override
-    public void downloadApk(String url) {
-        LogUtils.file(HTTP, "【下载更新】" + url);
-        mPresenter.downloadApk(url);
-    }
 
-    @Override
+    /**
+     * 上传截图
+     *
+     * @param url
+     * @param sessionId
+     */
     public void uploadScreen(String url, String sessionId) {
-        String res = ToolCommon.getBitmapString(mBaseLlRoot);
-        LogUtils.file(HTTP, "【上传截图】" + url);
-        mPresenter.uploadScreen(url, res, sessionId);
+        ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
+            @Override
+            public String doInBackground() throws Throwable {
+                String res = ToolCommon.getBitmapString(mBaseLlRoot);
+                LogUtils.file(HTTP, "【上传截图】" + url);
+                mPresenter.uploadScreen(url, res, sessionId);
+                return null;
+            }
+
+            @Override
+            public void onSuccess(String result) {
+
+            }
+        });
+
     }
 
 
@@ -348,9 +358,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                                 if (pbd != null) {
                                     mRebootStarTime = pbd.getStarTime();
                                     mRebootEndTime = pbd.getEndTime();
-                                    if (mRebootEndTime.length() > 0 && mRestartThread != null) {//关机时间
-                                        mRestartThread.setRebootTime(mRebootEndTime);
-                                    }
+                                    // if (mRebootEndTime.length() > 0 && mRestartThread != null) {//关机时间
+                                    //     mRestartThread.setRebootTime(mRebootEndTime);
+                                    // }
                                     ToolSP.putDIYString(IConfigs.SP_POWER, JSON.toJSONString(pbd));
                                 }
                             }
@@ -378,9 +388,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             String week = mWeekFormat.format(mDate);
 
                             //以服务器时间来控制开关机重启
-                            if (mRestartThread != null) {
-                                mRestartThread.setNetTime(timeStr);
-                            }
+                            // if (mRestartThread != null) {
+                            //     mRestartThread.setNetTime(timeStr);
+                            // }
                             showTime(dateStr, timeStr, week);
                             break;
                         case "voiceSwitch"://flag
@@ -432,8 +442,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         case "upgrade"://更新apk
                             showInfo("收到软件更新");
                             String link = mObject.getString("link");
-                            if (link.length() > 0)
-                                downloadApk(mHost + link);
+                            if (!TextUtils.isEmpty(link)) {
+                                LogUtils.file(HTTP, "【下载更新】" + mHost + link);
+                                mPresenter.downloadApk(mHost + link);
+                            }
 
                             break;
                        /* case "voice"://通知语音播报
@@ -484,7 +496,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             mVoiceSetting = JSON.parseObject(mObject.get("data").toString(), BVoiceSetting.class);
                             if (mVoiceSetting != null) {
                                 ToolSP.putDIYString(IConfigs.SP_VOICE_TEMP, JSON.toJSONString(mVoiceSetting));
-                                InitTtsSetting();
+
+                                ToolTts.Instance().setSpeed(Integer.parseInt(mVoiceSetting.getVoSpeed()) * 10);
+                                ToolVoice.Instance().setVoiceSetting(mVoiceSetting);
                             }
 
                             break;
@@ -544,7 +558,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                 } else {
                     ToolLZ.Instance().hardReboot();//重启
                 }
-                finish();
+                close();
             }
         }, 2000);
 
@@ -552,13 +566,19 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     /**
      * 显示时间
+     * 在此基础上判断开关机时间
      *
      * @param dateStr
      * @param timeStr
      * @param week
      */
     public void showTime(String dateStr, String timeStr, String week) {
-
+        if (timeStr.equals(mRebootEndTime)) {
+            LogUtils.file("【关机时间到了】: " + mRebootEndTime);
+            if (mDataHandler != null) {
+                mDataHandler.sendEmptyMessage(IConfigs.MSG_REBOOT_LISTENER);
+            }
+        }
     }
 
     public void close() {
@@ -582,63 +602,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
 
-    public SpeechSynthesizer mTTSPlayer;//呼叫播放
-    public boolean isSpeeking;//是否在播报语音
-    public int speakTimes;//播报次数（已经）
-    public boolean isSpeakTest;//测试语音
-    public Map<String, BVoice> mapVoice = new HashMap<>();//记录语音播报
-    public BVoice mNext;//下一位语音
-    public String URL_UPDATE_VOICE;//修改语音完成的链接http
-    public String URL_UPLOAD_SCREEN;//上传截图链接http
-
-
-    //是否可以播报
-    public void hasVoiceSpeak() {
-        if (mapVoice != null && mapVoice.size() > 0 && "1".equals(mVoiceSwitch)) {
-            Iterator<BVoice> mIterator = mapVoice.values().iterator();
-            if (mIterator.hasNext()) {
-                if (isSpeeking) {
-                    return;
-                }
-                mNext = mIterator.next();
-                speakTimes = 0;//归0
-                //开始语音播报
-                ttsSpeak();
-
-            }
-        }
-    }
-
-
-    public synchronized void ttsSpeak() {
-        if (mNext != null) {
-            //"请(line)(name)到(department)(room)(doctor)就诊"
-            String txt = mVoiceSetting.getVoFormat();
-            txt = txt.replace("name", ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
-                    .replace("line", mNext.getQueNum() + "")
-                    .replace("department", mNext.getPatientName())
-                    .replace("room", mNext.getRoom())
-                    .replace("doctor", mNext.getDoctor())
-                    .replace("(", "")
-                    .replace(")", "");
-            String voice = mVoiceSetting.getVoFormat();
-            voice = voice.replace("name", mNext.getPatientName())
-                    .replace("line", mNext.getQueNum() + "")
-                    .replace("department", mNext.getPatientName())
-                    .replace("room", mNext.getRoom())
-                    .replace("doctor", mNext.getDoctor())
-                    .replace("(", "")
-                    .replace(")", "");
-
-            showVoice(txt);
-            if (mTTSPlayer != null && "1".equals(mVoiceSwitch)) {
-                mTTSPlayer.playText(voice);
-            }
-        }
-
-
-    }
-
     /**
      * 处理语音类容 是否显示
      *
@@ -649,33 +612,12 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
 
-    /**
-     * z直接播放语音
-     *
-     * @param txt
-     */
-    private synchronized void TTsSpeak(String txt) {
-        if (txt != null && mTTSPlayer != null) {
-            mTTSPlayer.playText(txt);
-        }
-
-    }
-
-    public int voiceCount = 1;//语音播报次数 默认1次
-    public BVoiceSetting mVoiceSetting;//语音设置
-
     public void InitTtsSetting() {
 
-        ToolTts.Instance(mContext).initTts().initTtsSetting(mVoiceSetting);
-
-        mTTSPlayer = ToolTts.Instance(mContext).getTTSPlayer();
-
-        voiceFormat = mVoiceSetting.getVoFormat();
-        String mNumber = mVoiceSetting.getVoNumber();
-        if (mNumber.length() > 0) {
-            voiceCount = Integer.parseInt(mNumber);
-            voiceCount = voiceCount > 0 ? voiceCount : 1;
-        }
+        //初始化语音sdk
+        ToolTts.Instance(mContext).InitTtsSetting(Integer.parseInt(mVoiceSetting.getVoSpeed()));
+        //初始化语音控制
+        ToolVoice.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
 
     }
 

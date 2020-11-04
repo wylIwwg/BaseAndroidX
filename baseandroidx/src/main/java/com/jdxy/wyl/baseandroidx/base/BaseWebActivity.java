@@ -180,11 +180,6 @@ public class BaseWebActivity extends AppCompatActivity implements BaseDataHandle
 
     }
 
-    @Override
-    public void showMessage(final BResult2 result) {
-        ToolLog.e(ERROR, JSON.toJSONString(result));
-        LogUtils.file(ERROR, JSON.toJSONString(result));
-    }
 
     @Override
     public void showError(final String error) {
@@ -196,17 +191,6 @@ public class BaseWebActivity extends AppCompatActivity implements BaseDataHandle
                 Toasty.error(mContext, error, Toast.LENGTH_LONG, true).show();
             }
         });
-    }
-
-    @Override
-    public void downloadApk(String url) {
-        mPresenter.downloadApk(url);
-    }
-
-    @Override
-    public void uploadScreen(String url, String sessionId) {
-        String res = ToolCommon.getBitmapString(mBaseLlRoot);
-        mPresenter.uploadScreen(url, res, sessionId);
     }
 
 
@@ -265,10 +249,6 @@ public class BaseWebActivity extends AppCompatActivity implements BaseDataHandle
 
                         case "timing"://定时开关机
                             break;
-                        case "screen"://截屏请求
-                            String sessionId = mObject.getString("sessionId");
-                            uploadScreen(URL_UPLOAD_SCREEN, sessionId);
-                            break;
                         case "voiceSize"://设置声音大小
                             BVolume volume = JSON.parseObject(msg.obj.toString(), BVolume.class);
                             BVolume.Data vdata = volume.getData();
@@ -300,7 +280,7 @@ public class BaseWebActivity extends AppCompatActivity implements BaseDataHandle
                             }
                             String link = mObject.getString("link");
                             if (link.length() > 0)
-                                downloadApk(mHost + link);
+                                mPresenter.downloadApk(mHost + link);
 
                             break;
                        /* case "voice"://通知语音播报
@@ -347,14 +327,6 @@ public class BaseWebActivity extends AppCompatActivity implements BaseDataHandle
                             addDevice(clientId);
                             break;
 
-                        case "voiceFormat"://语音格式
-                            mVoiceSetting = JSON.parseObject(mObject.get("data").toString(), BVoiceSetting.class);
-                            if (mVoiceSetting != null) {
-                                ToolSP.putDIYString("voice", JSON.toJSONString(mVoiceSetting));
-                                initTts();
-                            }
-
-                            break;
                         //添加设备
                     }
                 } catch (Exception e) {
@@ -423,78 +395,11 @@ public class BaseWebActivity extends AppCompatActivity implements BaseDataHandle
         release();
     }
 
-
-    public SpeechSynthesizer mTTSPlayer;//呼叫播放
-    public boolean isSpeeking;//是否在播报语音
-    public int speakTimes;//播报次数（已经）
-    public boolean isSpeakTest;//测试语音
-    public Map<String, BVoice> mapVoice = new HashMap<>();//记录语音播报
-    public BVoice mNext;//下一位语音
-    public String URL_UPDATE_VOICE;//修改语音完成的链接http
     public String URL_UPLOAD_SCREEN;//上传截图链接http
 
-    public void InitTtsSetting() {
-
-        ToolTts.Instance(mContext).initTts().initTtsSetting(mVoiceSetting);
-
-        mTTSPlayer = ToolTts.Instance(mContext).getTTSPlayer();
-
-        voiceFormat = mVoiceSetting.getVoFormat();
-        String mNumber = mVoiceSetting.getVoNumber();
-        if (mNumber.length() > 0) {
-            voiceCount = Integer.parseInt(mNumber);
-            voiceCount = voiceCount > 0 ? voiceCount : 1;
-        }
-
-    }
-
-    //是否可以播报
-    public void hasVoiceSpeak() {
-        if (mapVoice != null && mapVoice.size() > 0 && "1".equals(mVoiceSwitch)) {
-            Iterator<BVoice> mIterator = mapVoice.values().iterator();
-            if (mIterator.hasNext()) {
-                if (isSpeeking) {
-                    return;
-                }
-                mNext = mIterator.next();
-                speakTimes = 0;//归0
-                //开始语音播报
-                ttsSpeak();
-
-            }
-        }
-    }
 
     public String mVoiceSwitch = "1";//语音播报开关
 
-    public synchronized void ttsSpeak() {
-        if (mNext != null) {
-            //"请(line)(name)到(department)(room)(doctor)就诊"
-            String txt = mVoiceSetting.getVoFormat();
-            txt = txt.replace("name", ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
-                    .replace("line", mNext.getQueNum() + "")
-                    .replace("department", mNext.getPatientName())
-                    .replace("room", mNext.getRoom())
-                    .replace("doctor", mNext.getDoctor())
-                    .replace("(", "")
-                    .replace(")", "");
-            String voice = mVoiceSetting.getVoFormat();
-            voice = voice.replace("name", mNext.getPatientName())
-                    .replace("line", mNext.getQueNum() + "")
-                    .replace("department", mNext.getPatientName())
-                    .replace("room", mNext.getRoom())
-                    .replace("doctor", mNext.getDoctor())
-                    .replace("(", "")
-                    .replace(")", "");
-
-            showVoice(txt);
-            if (mTTSPlayer != null && "1".equals(mVoiceSwitch)) {
-                mTTSPlayer.playText(voice);
-            }
-        }
-
-
-    }
 
     /**
      * 处理语音类容 是否显示
@@ -503,34 +408,6 @@ public class BaseWebActivity extends AppCompatActivity implements BaseDataHandle
      */
     public void showVoice(String txt) {
 
-    }
-
-
-    /**
-     * z直接播放语音
-     *
-     * @param txt
-     */
-    private synchronized void ttsSpeak(String txt) {
-        //"请(line)(name)到(department)(room)(doctor)就诊"
-        if (txt != null && mTTSPlayer != null) {
-            mTTSPlayer.playText(txt);
-        }
-
-    }
-
-    public int voiceCount = 1;//语音播报次数 默认1次
-    public BVoiceSetting mVoiceSetting;//语音设置
-
-    public void initTts() {
-        ToolTts.Instance(mContext).initTtsSetting(mVoiceSetting);
-        voiceFormat = mVoiceSetting.getVoFormat();
-        String mNumber = mVoiceSetting.getVoNumber();
-        if (mNumber.length() > 0) {
-            voiceCount = Integer.parseInt(mNumber);
-            voiceCount = voiceCount > 0 ? voiceCount : 1;
-        }
-        //  mTTSPlayer.setOption(SpeechConstants.TTS_KEY_BACKEND_MODEL_PATH, TTSManager.Instance(mContext).defaultDir + TTSManager.Instance(mContext).backName);
     }
 
 

@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.jdxy.wyl.baseandroidx.listeners.CopyFilesListener;
 import com.lztek.toolkit.Lztek;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -23,6 +24,8 @@ import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
+import com.unisound.client.SpeechSynthesizer;
+import com.unisound.client.SpeechSynthesizerListener;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 
@@ -376,10 +379,7 @@ public class Presenter {
     /**
      * 拷贝tts文件
      */
-    public void checkTtsFiles() {
-        if (!ToolTts.Instance(mContext).existsTTsFile(IConfigs.PATH_TTS)) {
-            ToolTts.Instance(mContext).copyFile();
-        }
+    public void InitTts(SpeechSynthesizerListener listener) {
 
     }
 }

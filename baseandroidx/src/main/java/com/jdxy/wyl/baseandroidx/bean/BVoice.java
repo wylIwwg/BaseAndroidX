@@ -17,15 +17,47 @@ public class BVoice {
     private String nextName;//下一位
     private String nextNum;//下一位排队号
 
-    private String type;
-    private String departName;
-    private String departId;
-    private String room;
-    private String depart;
-    private String doctor;
-    private String queNum;
-    private String qId;
-    private String txt;
+    private String type;//呼叫类型 就诊/复诊/
+
+    public String getType() {
+        return type == null ? "" : type;
+    }
+
+    public void setType(String type) {
+        this.type = type == null ? "" : type;
+    }
+
+    public String getPatientName() {
+        return patientName == null ? "" : patientName;
+    }
+
+    public void setPatientName(String patientName) {
+        this.patientName = patientName == null ? "" : patientName;
+    }
+
+    public String getPatientNum() {
+        return patientNum == null ? "" : patientNum;
+    }
+
+    public void setPatientNum(String patientNum) {
+        this.patientNum = patientNum == null ? "" : patientNum;
+    }
+
+    public String getPatientId() {
+        return patientId == null ? "" : patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId == null ? "" : patientId;
+    }
+
+    public String getDoctorName() {
+        return doctorName == null ? "" : doctorName;
+    }
+
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName == null ? "" : doctorName;
+    }
 
     public String getDocid() {
         return docid == null ? "" : docid;
@@ -41,6 +73,22 @@ public class BVoice {
 
     public void setDepartmentName(String departmentName) {
         this.departmentName = departmentName == null ? "" : departmentName;
+    }
+
+    public String getClinicName() {
+        return clinicName == null ? "" : clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName == null ? "" : clinicName;
+    }
+
+    public String getClinicId() {
+        return clinicId == null ? "" : clinicId;
+    }
+
+    public void setClinicId(String clinicId) {
+        this.clinicId = clinicId == null ? "" : clinicId;
     }
 
     public String getCount() {
@@ -65,128 +113,6 @@ public class BVoice {
 
     public void setNextNum(String nextNum) {
         this.nextNum = nextNum == null ? "" : nextNum;
-    }
-
-    public void setQueNum(String queNum) {
-        this.queNum = queNum == null ? "" : queNum;
-    }
-
-    public void setqId(String qId) {
-        this.qId = qId == null ? "" : qId;
-    }
-
-    public String getDoctorName() {
-
-        return doctorName == null ? "" : doctorName;
-    }
-
-    public void setDoctorName(String doctorName) {
-        this.doctorName = doctorName == null ? "" : doctorName;
-    }
-
-    public String getClinicName() {
-        return clinicName == null ? "" : clinicName;
-    }
-
-    public void setClinicName(String clinicName) {
-        this.clinicName = clinicName;
-    }
-
-    public String getDepartName() {
-        return departName == null ? "" : departName;
-    }
-
-    public void setDepartName(String departName) {
-        this.departName = departName;
-    }
-
-    public String getClinicId() {
-        return clinicId == null ? "" : clinicId;
-    }
-
-    public void setClinicId(String clinicId) {
-        this.clinicId = clinicId;
-    }
-
-    public String getDepartId() {
-        return departId == null ? "" : departId;
-    }
-
-    public void setDepartId(String departId) {
-        this.departId = departId;
-    }
-
-    public String getDepart() {
-        return depart == null ? "" : depart;
-    }
-
-    public void setDepart(String depart) {
-        this.depart = depart;
-    }
-
-    public String getDoctor() {
-        return doctor == null ? "" : doctor;
-    }
-
-    public void setDoctor(String doctor) {
-        this.doctor = doctor;
-    }
-
-    public String getRoom() {
-        return room == null ? "" : room;
-    }
-
-    public void setRoom(String room) {
-        this.room = room;
-    }
-
-    public String getPatientNum() {
-        return patientNum == null ? "" : patientNum;
-    }
-
-    public void setPatientNum(String patientNum) {
-        this.patientNum = patientNum;
-    }
-
-    public String getType() {
-        return type == null ? "" : type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getPatientName() {
-        return patientName == null ? "" : patientName;
-    }
-
-    public void setPatientName(String patientName) {
-        this.patientName = patientName;
-    }
-
-    public String getPatientId() {
-        return patientId == null ? "" : patientId;
-    }
-
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
-
-
-    public String getTxt() {
-        return txt == null ? "" : txt;
-    }
-
-    public void setTxt(String txt) {
-        this.txt = txt;
-    }
-
-    public String getQueNum() {
-        return queNum == null ? "" : queNum;
-    }
-
-    public String getqId() {
-        return qId == null ? "" : qId;
     }
 }
 

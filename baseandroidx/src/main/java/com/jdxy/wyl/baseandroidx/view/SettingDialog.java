@@ -58,7 +58,7 @@ public class SettingDialog extends DialogFragment {
             public void onClick(DialogInterface dialogInterface, int i) {
             }
         });
-        AlertDialog alertDialog = builder.setView(R.layout.item_setting).create();
+        AlertDialog alertDialog = builder.setView(R.layout.layout_loading).create();
         // 设置宽度为屏宽、位置在屏幕底部
         Window window = alertDialog.getWindow();
         window.setBackgroundDrawableResource(R.color.halftrans);

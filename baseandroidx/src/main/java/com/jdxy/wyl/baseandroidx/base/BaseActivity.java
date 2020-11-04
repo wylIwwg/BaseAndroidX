@@ -1,5 +1,6 @@
 package com.jdxy.wyl.baseandroidx.base;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ public class BaseActivity extends AppCompatActivity implements com.jdxy.wyl.base
 
     }
 
+    @SuppressLint("WrongConstant")
     public void hasPermission() {
         if (PERMISSIONS != null && PERMISSIONS.length > 0) {
             if (AndPermission.hasPermissions(mContext, PERMISSIONS)) {

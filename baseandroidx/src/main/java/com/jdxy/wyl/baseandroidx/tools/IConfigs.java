@@ -7,9 +7,9 @@ import android.os.Environment;
  */
 public interface IConfigs {
 
-
-    public static final String appKey = "medtrhg7qrnnhkxploclzxezjumq667zc3l3rkaf";
-    public static final String secret = "bbe919b0d4234c4b0f13ebfeb4e7173f";
+    String LOG_ERROR = "【Error】";
+    String LOG_SOCKET = "【Socket】";
+    String LOG_HTTP = "【Http】";
 
     String PATH_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/";
     String PATH_APK = PATH_ROOT + "apk/";
@@ -55,13 +55,13 @@ public interface IConfigs {
     int REGISTER_FOREVER = -1;//永久注册
     int REGISTER_LIMIT = 1;//注册时间剩余
 
-    String APK_VERSION_CODE = "version_code";
+    String APK_VERSION_CODE = "versionCode";
 
     /*配置相关*/
     String SP_IP = "ip";
-    String SP_PORT_HTTP = "port_http";
-    String SP_PORT_SOCKET = "port_socket";//
-    String SP_VOICE_TEMP = "voice_temp";//
+    String SP_PORT_HTTP = "portHttp";
+    String SP_PORT_SOCKET = "portSocket";//
+    String SP_VOICE_TEMP = "voiceFormat";//
 
     String SP_POWER = "power";//开关机
 
@@ -77,13 +77,13 @@ public interface IConfigs {
     String SP_AREA = "area";
 
     String SP_VOICE_SWICH = "flag";
-    String SP_VOICE_FORMAT = "voice_format";
+    String SP_VOICE_FORMAT = "voiceFormat";
 
-    String SP_DEPART_NAME = "depart_n";//科室名
-    String SP_DEPART_ID = "depart_id";//科室id
+    String SP_DEPART_NAME = "deptName";//科室名
+    String SP_DEPART_ID = "deptId";//科室id
 
-    String SP_CLINIC_NAME = "clinic_n";//诊室名
-    String SP_CLINIC_ID = "clinic_id";//诊室id
+    String SP_CLINIC_NAME = "clinicName";//诊室名
+    String SP_CLINIC_ID = "clinicId";//诊室id
 
     String SP_SETTING_SCROLL_TIME = "scroll";//轮播滚动时间
     String SP_SETTING_DELAY_TIME = "delay";//延迟滚动时间
@@ -95,7 +95,7 @@ public interface IConfigs {
     String SP_APK_ID = "apkid";
     String SP_TARGET_APP = "target";
     String SP_APK_VERSION_CODE = "code";
-    String SP_CLIENT_ID = "client_id";
+    String SP_CLIENT_ID = "clientId";
     String SP_PATH_DATA = "source";
     String SP_PATH_DATA_BACKUP = "source_backup";
 

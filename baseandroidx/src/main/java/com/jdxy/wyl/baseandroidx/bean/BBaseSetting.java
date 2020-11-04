@@ -6,9 +6,9 @@ public class BBaseSetting {
     @IDescription("服务器IP地址:")
     private String ip;
     @IDescription("服务器http端口:")
-    private String httpPort;
+    private String portHttp;
     @IDescription("服务器socket端口:")
-    private String socketPort;
+    private String portSocket;
     @IDescription("房间名称:")
     private String roomName;
     @IDescription("房间id")
@@ -61,20 +61,20 @@ public class BBaseSetting {
         this.ip = ip == null ? "" : ip;
     }
 
-    public String getHttpPort() {
-        return httpPort == null ? "" : httpPort;
+    public String getPortHttp() {
+        return portHttp == null ? "" : portHttp;
     }
 
-    public void setHttpPort(String httpPort) {
-        this.httpPort = httpPort == null ? "" : httpPort;
+    public void setPortHttp(String portHttp) {
+        this.portHttp = portHttp == null ? "" : portHttp;
     }
 
-    public String getSocketPort() {
-        return socketPort == null ? "" : socketPort;
+    public String getPortSocket() {
+        return portSocket == null ? "" : portSocket;
     }
 
-    public void setSocketPort(String socketPort) {
-        this.socketPort = socketPort == null ? "" : socketPort;
+    public void setPortSocket(String portSocket) {
+        this.portSocket = portSocket == null ? "" : portSocket;
     }
 
     public String getRoomName() {

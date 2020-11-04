@@ -2,11 +2,19 @@ package com.jdxy.wyl.baseandroidx.tools;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.Handler;
+import android.text.TextUtils;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ThreadUtils;
+import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
+import com.jdxy.wyl.baseandroidx.listeners.CopyFilesListener;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 import com.unisound.client.SpeechConstants;
 import com.unisound.client.SpeechSynthesizer;
 import com.unisound.client.SpeechSynthesizerListener;
@@ -15,6 +23,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by wyl on 2019/2/25.
@@ -29,6 +39,10 @@ public class ToolTts {
 
     public static ToolTts Instance(Context context) {
         mContext = context;
+        return Instance();
+    }
+
+    public static ToolTts Instance() {
         if (mToolTts == null) {
             synchronized (mObject) {
                 if (mToolTts == null) {
@@ -54,60 +68,54 @@ public class ToolTts {
 
 
     public void copyFile() {
-
-        new Thread(new Runnable() {
+        ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
             @Override
-            public void run() {
+            public String doInBackground() throws Throwable {
                 ToolLog.e(TAG, "run: 复制语音文件：");
                 File dir = new File(defaultDir);
                 if (!dir.exists())
                     dir.mkdirs();
 
-                {
-                    LogUtils.file("复制语音文件:");
-                    File mFileFont = new File(defaultDir + frontName);
-                    File mFileBack = new File(defaultDir + backName);
-                    try {
-                        InputStream front = mContext.getAssets().open(frontName);
-                        byte[] frontmBytes = new byte[1024];
-                        mFileFont.delete();
-                        FileOutputStream frontmBytesfos = new FileOutputStream(mFileFont);
-                        while ((front.read(frontmBytes, 0, frontmBytes.length)) != -1) {
-                            frontmBytesfos.write(frontmBytes);
-                        }
-                        frontmBytesfos.close();
-                        front.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        InputStream front = mContext.getAssets().open(backName);
-                        byte[] frontmBytes = new byte[1024];
-                        mFileBack.delete();
-                        FileOutputStream frontmBytesfos = new FileOutputStream(mFileBack);
-                        while ((front.read(frontmBytes, 0, frontmBytes.length)) != -1) {
-                            frontmBytesfos.write(frontmBytes);
-                        }
-                        frontmBytesfos.close();
-                        front.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    File mFile = new File(defaultDir + "tts.txt");
+                File mFileFont = new File(defaultDir + frontName);
+                File mFileBack = new File(defaultDir + backName);
 
-                    FileIOUtils.writeFileFromString(mFile, backName + ":" + FileUtils.getSize(mFileBack) + "\n" + frontName + ":" + FileUtils.getSize(mFileFont));
+                LogUtils.file("复制语音文件: " + mFileFont.getAbsolutePath());
+                LogUtils.file("复制语音文件: " + mFileBack.getAbsolutePath());
+                try {
+                    InputStream is = mContext.getAssets().open(frontName);
 
-                    initTts();
+                    FileIOUtils.writeFileFromIS(mFileFont, is);
+
+                    is = mContext.getAssets().open(backName);
+
+                    FileIOUtils.writeFileFromIS(mFileBack, is);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    LogUtils.file(IConfigs.LOG_ERROR, e.toString());
+                    return null;
+                }
+
+                File mFile = new File(defaultDir + "tts.txt");
+
+                FileIOUtils.writeFileFromString(mFile, backName + ":" + FileUtils.getSize(mFileBack) + "\n" + frontName + ":" + FileUtils.getSize(mFileFont));
+
+                return "null";
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                if (!TextUtils.isEmpty(result)) {
+                    InitTts();
                 }
             }
-        }).start();
-
-
+        });
     }
 
     public boolean existsTTsFile() {
         return existsTTsFile(defaultDir);
     }
+
 
     /**
      * 指定目录下是否存在语音播放文件
@@ -132,10 +140,12 @@ public class ToolTts {
         return false;
     }
 
+
     /**
      * 初始化呼叫
      */
-    public ToolTts initTts() {
+    public ToolTts InitTts() {
+
         if (mTTSPlayer == null) {
             // 初始化语音合成对象
             mTTSPlayer = new SpeechSynthesizer(mContext, appKey, secret);
@@ -145,27 +155,69 @@ public class ToolTts {
             mTTSPlayer.setOption(SpeechConstants.TTS_KEY_FRONTEND_MODEL_PATH, defaultDir + frontName);
             // 设置后端模型
             mTTSPlayer.setOption(SpeechConstants.TTS_KEY_BACKEND_MODEL_PATH, defaultDir + backName);
-            mTTSPlayer.setOption(SpeechConstants.TTS_KEY_VOICE_SPEED, 30);
+            //设置语音速度
+            mTTSPlayer.setOption(SpeechConstants.TTS_KEY_VOICE_SPEED, speed > 0 ? speed : 30);
+            //设置音量
             mTTSPlayer.setOption(SpeechConstants.TTS_KEY_VOICE_VOLUME, 100);
             // 初始化合成引擎
             int mInit = mTTSPlayer.init("");
             ToolLog.e(TAG, "语音初始化 initTts: " + mInit);
+            if (mSynthesizerListener != null)
+                mTTSPlayer.setTTSListener(mSynthesizerListener);
+
         }
 
         return this;
     }
 
-    public ToolTts initTtsSetting(BVoiceSetting mVoiceSetting) {
+    public ToolTts InitTtsSetting() {
 
-        mTTSPlayer.setOption(SpeechConstants.TTS_KEY_VOICE_VOLUME, 100);
-        mTTSPlayer.setOption(SpeechConstants.TTS_KEY_VOICE_SPEED, (mVoiceSetting.getVoSpeed().length() > 0 ? Integer.parseInt(mVoiceSetting.getVoSpeed()) * 10 : 30));
-        /*voiceFormat = mVoiceSetting.getVoFormat();
-        String mNumber = mVoiceSetting.getVoNumber();
-        if (mNumber.length() > 0) {
-            voiceCount = Integer.parseInt(mNumber);
-            voiceCount = voiceCount > 0 ? voiceCount : 1;
-        }*/
+        if (!existsTTsFile()) {
+            copyFile();
+        } else {
+            InitTts();
+        }
+        return this;
+    }
+
+    SpeechSynthesizerListener mSynthesizerListener;
+
+    public void setSynthesizerListener(SpeechSynthesizerListener synthesizerListener) {
+        mSynthesizerListener = synthesizerListener;
+        if (mTTSPlayer != null)
+            mTTSPlayer.setTTSListener(synthesizerListener);
+    }
+
+    int speed;
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+        if (mTTSPlayer != null)
+            mTTSPlayer.setOption(SpeechConstants.TTS_KEY_VOICE_SPEED, speed > 0 ? speed : 30);
+    }
+
+    public ToolTts InitTtsSetting(int speed) {
+        this.speed = speed;
+        if (!existsTTsFile()) {
+            copyFile();
+        } else {
+            InitTts();
+        }
         //  mTTSPlayer.setOption(SpeechConstants.TTS_KEY_BACKEND_MODEL_PATH, TTSManager.getInstance(mContext).defaultDir + TTSManager.getInstance(mContext).backName);
         return this;
+    }
+
+    public void TtsSpeak(String txt) {
+        if (mTTSPlayer != null) {
+            mTTSPlayer.playText(txt);
+            ToolLog.e(TAG, "TtsSpeak: " + txt);
+        }
+    }
+
+    public void TtsSpeakTest(String test) {
+        if (mTTSPlayer != null) {
+            mTTSPlayer.playText(test);
+            ToolLog.e(TAG, "TtsSpeakTest: " + test);
+        }
     }
 }
