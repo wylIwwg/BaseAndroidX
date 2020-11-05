@@ -98,9 +98,12 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public String mRebootEndTime = "";//开关机 关机时间
 
     public String mVoiceSwitch = "1";//语音播报开关
-    public String URL_UPLOAD_SCREEN;//上传截图链接http
-    public String URL_FINISH_VOICE;//语音播报结束
     public BVoiceSetting mVoiceSetting;//语音设置
+
+    public String URL_UPLOAD_SCREEN;//上传截图链接http
+    public String URL_UPLOAD_LOGS;//上传截图链接http
+
+    public String URL_FINISH_VOICE;//语音播报结束
 
 
     @Override
@@ -365,6 +368,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                                 }
                             }
                             break;
+                        case "reconnection"://重连 就重启
+                            mDataHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AppUtils.relaunchApp(true);
+                                }
+                            }, 1000);
+                            break;
                         case "pong"://心跳处理
                             Date mDate;
                             feed();
@@ -489,7 +500,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                                 mTimeThread.onDestroy();
                                 mTimeThread = null;
                             }
-                            addDevice(clientId);
+                            addDevice(clientId); //添加设备
                             break;
 
                         case "voiceFormat"://语音格式
@@ -502,7 +513,11 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             }
 
                             break;
-                        //添加设备
+                        case "logs":
+                            String sessionId2 = mObject.getString("sessionId");
+                            mPresenter.uploadLogs(URL_UPLOAD_LOGS, sessionId2, mMac);
+                            break;
+
                     }
                 } catch (Exception e) {
                     LogUtils.file(ERROR, e.toString());
