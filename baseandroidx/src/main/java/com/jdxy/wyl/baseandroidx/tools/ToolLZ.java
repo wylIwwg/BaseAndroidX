@@ -32,6 +32,8 @@ public class ToolLZ {
      * @return
      */
     public boolean getEthEnable() {
+        if (mLztek == null)
+            return false;
         return mLztek.getEthEnable();
     }
 
@@ -44,6 +46,8 @@ public class ToolLZ {
      * @param dns
      */
     public void setEthIpAddress(String ip, String mask, String gateway, String dns) {
+        if (mLztek == null)
+            return;
         mLztek.setEthIpAddress(ip, mask, gateway, dns);
     }
 
@@ -53,6 +57,8 @@ public class ToolLZ {
      * @return
      */
     public String getEthMac() {
+        if (mLztek == null)
+            return "";
         return mLztek.getEthMac();
     }
 
@@ -63,6 +69,8 @@ public class ToolLZ {
      * @param milliseconds1970
      */
     public void setSystemTime(long milliseconds1970) {
+        if (mLztek == null)
+            return;
         mLztek.setSystemTime(milliseconds1970);
 
     }
@@ -74,6 +82,8 @@ public class ToolLZ {
      * @param date
      */
     public void setSystemTime(Date date) {
+        if (mLztek == null)
+            return;
         mLztek.setSystemTime(date);
 
     }
@@ -83,6 +93,8 @@ public class ToolLZ {
      * 方式开机。注意：该 API 需要 root 权限
      */
     public void hardShutdown() {
+        if (mLztek == null)
+            return;
         mLztek.hardShutdown();
     }
 
@@ -91,6 +103,8 @@ public class ToolLZ {
      * 开始启动，而并不能确保所有硬件设备和接口的完全复位。注意：该 API 需要 root 权限！
      */
     public void softReboot() {
+        if (mLztek == null)
+            return;
         mLztek.softReboot();
     }
 
@@ -100,6 +114,8 @@ public class ToolLZ {
      * 并不能实时重启，从断电到重新上电之间的时间间隔为几十秒钟（这个时间最大不会超过 60 秒）。
      */
     public void hardReboot() {
+        if (mLztek == null)
+            return;
         mLztek.hardReboot();
 
     }
@@ -119,6 +135,8 @@ public class ToolLZ {
      * 隐藏安卓底部导航条。
      */
     public void hideNavigationBar() {
+        if (mLztek == null)
+            return;
         mLztek.hideNavigationBar();
     }
 
@@ -129,10 +147,13 @@ public class ToolLZ {
      * @param apkPath
      */
     public void installApplication(String apkPath) {
+        if (mLztek == null)
+            return;
         mLztek.installApplication(apkPath);
     }
 
     public void installAppSlince(Context context, File apk) {
+
         //7.0以下 安装升级
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             Intent intentapk = new Intent(Intent.ACTION_VIEW);
@@ -142,6 +163,8 @@ public class ToolLZ {
             context.startActivity(intentapk);
 
         } else {
+            if (mLztek == null)
+                return;
             String SHELL = "am start -a android.intent.action.VIEW -d %1$s " +
                     "-t application/vnd.android.package-archive -e IMPLUS_INSTALL SILENT_INSTALL";
             String apkPath = "file:///" + apk.getAbsolutePath();
@@ -157,6 +180,8 @@ public class ToolLZ {
      * @param packageName
      */
     public void uninstallApplication(String packageName) {
+        if (mLztek == null)
+            return;
         mLztek.uninstallApplication(packageName);
     }
 

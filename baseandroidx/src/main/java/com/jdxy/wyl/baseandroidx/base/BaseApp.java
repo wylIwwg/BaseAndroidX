@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
+import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
@@ -55,10 +57,13 @@ public class BaseApp extends Application {
                 .setTextSize(18)
                 .apply();
 
-        ToolSP.Init(mContext, getPackageName());
+        ToolSP.Init(this, getPackageName());
 
         Utils.init(this);
 
+        if (Build.USER.contains("liaokai")) {
+            ToolLZ.Init(this);
+        }
         LogUtils.getConfig().setDir(IConfigs.PATH_LOG).setFilePrefix("log");
 
 
