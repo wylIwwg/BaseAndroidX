@@ -477,22 +477,19 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 */
                         case "register"://在线注册
                             String mRegister_code = mObject.getString("register_code");
-                            boolean registered = ToolRegister.Instance(mContext).registerDevice(mRegister_code);
-                            if (registered) {
-                                Toasty.info(mContext, "注册信息已修改，软件即将重启", Toast.LENGTH_SHORT, true).show();
-                                if (mDataHandler != null)
-                                    mDataHandler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            AppUtils.relaunchApp(true);
-                                        }
-                                    }, 2000);
-                            }
+                            ToolRegister.Instance(mContext).registerDevice(mRegister_code);
+                            showInfo("注册信息已更改，软件即将重启");
+                            if (mDataHandler != null)
+                                mDataHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        AppUtils.relaunchApp(true);
+                                    }
+                                }, 2000);
+
                             break;
                         case "init": //socket连接成功之后 做初始化操作
                             String clientId = mObject.getString("id");
-                            ToolSP.putDIYString(IConfigs.SP_CLIENT_ID, clientId);
-                            ToolLog.e(TAG, "handleMessage:  clientId : " + clientId);
                             String ping = "{\"type\":\"ping\",\"id\":\"" + clientId + "\"}";
                             mPulseData.setPing(ping);
                             mSocketManager.getPulseManager().setPulseSendable(mPulseData);
@@ -520,13 +517,13 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
                     }
                 } catch (Exception e) {
-                    LogUtils.file(ERROR, e.toString());
                     showError(e.getMessage());
                 }
                 break;
         }
 
     }
+
 
     /**
      * 添加设备
@@ -729,8 +726,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         @Override
         public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
             ToolLog.e(TAG, "onSocketDisconnection");
-            LogUtils.file(SOCKET, " 【socket断开连接】");
-            showError("socket断开连接");
+            showError("【socket断开连接】" + e.getMessage());
 
             startLocalTime();
 
@@ -739,8 +735,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         @Override
         public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
             ToolLog.e(TAG, "onSocketConnectionFailed");
-            LogUtils.file(SOCKET, " 【socket连接失败】");
-            showError("socket连接失败");
+            showError("【socket连接失败】"+ e.getMessage());
         }
 
         @Override

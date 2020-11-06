@@ -2,6 +2,7 @@ package com.jdxy.wyl.baseandroidx.base;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
@@ -24,16 +25,19 @@ import com.jdxy.wyl.baseandroidx.bean.BResult2;
 import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
+import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.thread.RestartThread;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolCommon;
 import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
+import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
+import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
 import com.unisound.client.SpeechSynthesizer;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
 import com.xuhao.didi.core.iocore.interfaces.ISendable;
@@ -89,9 +93,17 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     public TimeThread mTimeThread;
 
 
-    public RestartThread mRestartThread;
+    //  public RestartThread mRestartThread;
     public String mRebootStarTime = "";//开关机 开机时间
     public String mRebootEndTime = "";//开关机 关机时间
+
+    public String mVoiceSwitch = "1";//语音播报开关
+    public BVoiceSetting mVoiceSetting;//语音设置
+
+    public String URL_UPLOAD_SCREEN;//上传截图链接http
+    public String URL_UPLOAD_LOGS;//上传截图链接http
+
+    public String URL_FINISH_VOICE;//语音播报结束
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +123,14 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         mWeekFormat = new SimpleDateFormat("EEEE", Locale.CHINA);
 
+        mPresenter.checkPhpRegister(new RegisterListener() {
+            @Override
+            public void RegisterCallBack(BRegisterResult registerResult) {
+                mRegisterCode = registerResult.getRegisterCode();
+                mRegisterViper = registerResult.getRegisterStr();
+                isRegistered = registerResult.isRegistered();
+            }
+        });
     }
 
     public void startLocalTime() {
@@ -126,7 +146,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     /**
      * 开启开关机线程
      */
-    public void startRebootThread() {
+   /* public void startRebootThread() {
         mRestartThread = new RestartThread(mContext, mDataHandler);
         mRestartThread.sleep_time = 10 * 1000;
         //重启设备线程 固定时间
@@ -142,10 +162,15 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
             }
         }
         mRestartThread.start();
-    }
-
+    }*/
     public void hasPermission() {
-        mPresenter.checkPermission(mPermissions);
+        //6.0以上申请权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mPresenter.checkPermission(mPermissions);
+        } else {
+            initData();
+        }
+
     }
 
     @Override
@@ -159,20 +184,31 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
     }
 
-    public void initData() {
-        initListener();
-
-        BRegisterResult mRegisterResult = ToolRegister.Instance(mContext).checkDeviceRegisteredPhp();
-        mRegisterCode = mRegisterResult.getRegisterCode();
-        isRegistered = mRegisterResult.isRegistered();
-        mRegisterViper = mRegisterResult.getRegisterStr();
-
+    public void initSetting() {
         mIP = ToolSP.getDIYString(IConfigs.SP_IP);
         mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
         mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
+
         mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWICH);
         if (mVoiceSwitch.length() < 1) {
             mVoiceSwitch = "1";
+        }
+        String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
+        if (mVoice != null && mVoice.length() > 0) {
+            mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
+        } else {
+            mVoiceSetting = new BVoiceSetting();
+            mVoiceSetting.setVoFormat(voiceFormat);
+            mVoiceSetting.setVoNumber("1");
+            mVoiceSetting.setVoSex("1");
+            mVoiceSetting.setVoSpeed("3");
+        }
+
+
+        Map<String, ?> mAll = ToolSP.getAll();
+        LogUtils.file("【本地配置信息】：");
+        for (String str : mAll.keySet()) {
+            LogUtils.file("key= " + str + " value= " + mAll.get(str));
         }
 
         if (mIP.length() < 6) {
@@ -183,12 +219,12 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
             mHttpPort = "80";
         }
         mHost = String.format(IConfigs.HOST, mIP, mHttpPort);
+    }
 
-        Map<String, ?> mAll = ToolSP.getAll();
-        LogUtils.file("【本地配置信息】：");
-        for (String str : mAll.keySet()) {
-            LogUtils.file("key= " + str + " value= " + mAll.get(str).toString());
-        }
+    public void initData() {
+        initListener();
+        initSetting();
+
     }
 
     @Override
@@ -275,6 +311,17 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                     JSONObject mObject = JSONObject.parseObject(obj);
                     String mType = mObject.getString("type");
                     switch (mType) {
+                        case "timing"://定时开关机
+                            BPower mPowerBean = JSON.parseObject(obj, BPower.class);
+                            if (mPowerBean != null) {
+                                BPower.Data pbd = mPowerBean.getData();
+                                if (pbd != null) {
+                                    mRebootStarTime = pbd.getStarTime();
+                                    mRebootEndTime = pbd.getEndTime();
+                                    ToolSP.putDIYString(IConfigs.SP_POWER, JSON.toJSONString(pbd));
+                                }
+                            }
+                            break;
                         case "pong"://心跳处理
                             Date mDate;
                             feed();
@@ -325,12 +372,19 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                                 }
                             }
                             break;
+                        case "voiceSwitch"://flag
+                            mVoiceSwitch = mObject.getString("flag");
+                            ToolSP.putDIYString(IConfigs.SP_VOICE_SWICH, mVoiceSwitch);
+
+                            break;
                         case "upgrade":
                             showInfo("收到软件更新");
                             String cloudVersionCode = mObject.get("version").toString();
                             String mApply = mObject.get("apply").toString();
-                            if (TextUtils.isEmpty(cloudVersionCode) || TextUtils.isEmpty(mApply))
+                            if (TextUtils.isEmpty(cloudVersionCode) || TextUtils.isEmpty(mApply)) {
+                                showError("软件链接为空或版本号存在");
                                 return;
+                            }
 
                             if (Integer.parseInt(cloudVersionCode) > AppUtils.getAppVersionCode() && mApply.length() > 0
                                     && mApply.toLowerCase().endsWith("apk")) {
@@ -351,23 +405,33 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                                 }
                             }, 2000);
                             break;
-                        case "timing"://定时开关机
-                            BPower mPowerBean = JSON.parseObject(obj, BPower.class);
-                            if (mPowerBean != null) {
-                                BPower.Data pbd = mPowerBean.getData();
-                                if (pbd != null) {
-                                    mRebootStarTime = pbd.getStarTime();
-                                    mRebootEndTime = pbd.getEndTime();
-                                    if (mRebootEndTime.length() > 0 && mRestartThread != null) {//关机时间
-                                        mRestartThread.setRebootTime(mRebootEndTime);
+                        case "register":
+                            String mRegister_code = mObject.getString("register_code");
+                            ToolRegister.Instance(mContext).registerDevice(mRegister_code);
+                            showInfo("注册信息已更改，软件即将重启");
+                            if (mDataHandler != null)
+                                mDataHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        AppUtils.relaunchApp(true);
                                     }
-                                    ToolSP.putDIYString(IConfigs.SP_POWER, JSON.toJSONString(pbd));
-                                }
-                            }
+                                }, 2000);
                             break;
+                        case "init": //socket连接成功之后 做初始化操作
+                            mClientID = mObject.getString("client_id");
+                            // String ping = "{\"type\":\"ping\",\"id\":\"" + mClientID + "\"}";
+                            // mPulseData.setPing(ping);
+                            //  mSocketManager.getPulseManager().setPulseSendable(mPulseData);
+                            addDevice(mClientID);
+                            if (mTimeThread != null) {
+                                mTimeThread.onDestroy();
+                                mTimeThread = null;
+                            }
 
+                            break;
                     }
                 } catch (Exception e) {
+                    LogUtils.file(ERROR, e.toString());
                     showError(e.toString());
                 }
         }
@@ -414,12 +478,25 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     }
 
 
-    public void hardReboot(final int l) {
+    public void setSystemTime(long time) {
+        ToolLZ.Instance().setSystemTime(time);
+    }
+
+
+    /**
+     * @param seconds 单位秒
+     */
+    public void hardReboot(final int seconds) {
         release();
         mDataHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-               AppUtils.relaunchApp(true);
+                if (seconds > 0) {
+                    ToolLZ.Instance().alarmPoweron(seconds);////定时开机
+                } else {
+                    ToolLZ.Instance().hardReboot();//重启
+                }
+                close();
             }
         }, 2000);
 
@@ -427,39 +504,50 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
     /**
      * 显示时间
+     * 在此基础上判断开关机时间
      *
      * @param dateStr
      * @param timeStr
      * @param week
      */
     public void showTime(String dateStr, String timeStr, String week) {
-
+        if (timeStr.equals(mRebootEndTime)) {
+            LogUtils.file("【关机时间到了】: " + mRebootEndTime);
+            if (mDataHandler != null) {
+                mDataHandler.sendEmptyMessage(IConfigs.MSG_REBOOT_LISTENER);
+            }
+        }
     }
 
-    public void close() {
-        this.finish();
+
+    @Override
+    public void onBackPressed() {
+        close();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         release();
+        if (mDataHandler != null) {
+            mDataHandler.removeCallbacksAndMessages(null);
+            mDataHandler = null;
+        }
     }
 
 
-
-    public String mVoiceSwitch = "1";//语音播报开关
-
-
-    /**
-     * 处理语音类容 是否显示
-     *
-     * @param txt
-     */
-    public void showVoice(String txt) {
-
+    public void close() {
+        this.finish();
     }
 
+    public void InitTtsSetting() {
+
+        //初始化语音sdk
+        ToolTts.Instance(mContext).InitTtsSetting(Integer.parseInt(mVoiceSetting.getVoSpeed()));
+        //初始化语音控制
+        ToolVoice.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
+
+    }
 
 
     public IConnectionManager mSocketManager;
@@ -547,9 +635,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         @Override
         public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
             ToolLog.e(TAG, "onSocketDisconnection");
-            LogUtils.file(SOCKET, " 【socket断开连接】");
-            showError("socket断开连接");
-
+            showError("【socket断开连接】"+ e.getMessage());
             startLocalTime();
 
         }
@@ -558,7 +644,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
             ToolLog.e(TAG, "onSocketConnectionFailed");
             LogUtils.file(SOCKET, " 【socket连接失败】");
-            showError("socket连接失败");
+            showError("【socket连接失败】"+ e.getMessage());
         }
 
         @Override

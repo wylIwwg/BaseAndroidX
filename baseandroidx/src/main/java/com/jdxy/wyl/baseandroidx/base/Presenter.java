@@ -11,6 +11,7 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.listeners.CopyFilesListener;
+import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.lztek.toolkit.Lztek;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 public class Presenter {
 
+    private static final String TAG = " Presenter ";
     private IView mView;
     private Context mContext;
 
@@ -73,13 +75,14 @@ public class Presenter {
                                 @Override
                                 public void onSuccess(Response<String> response) {
                                     isCapturing = false;
+                                    ToolLog.e(TAG, "HTTP截图上传结果: " + response.body());
                                     LogUtils.file("HTTP截图上传结果：" + response.body());
                                 }
 
                                 @Override
                                 public void onError(Response<String> response) {
                                     isCapturing = false;
-                                    mView.showError("截图上传失败");
+                                    mView.showError("截图上传失败"+response.getException().toString());
                                 }
                             });
                     return null;
@@ -117,22 +120,25 @@ public class Presenter {
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {
-                OkGo.<Result>post(url)
+                OkGo.<String>post(url)
                         .params("content", content.toJSONString())
                         .params("checkinfo", "{\"timestamp\":\"123\",\"token\":\"123\"}")
                         .params("method", IConfigs.METHOD_UPLOAD_CAPTURE)
                         .params("file", file)
                         .tag(this)
-                        .execute(new JsonCallBack<Result>(Result.class) {
+                        .execute(new StringCallback() {
                             @Override
-                            public void onSuccess(Response<Result> response) {
+                            public void onSuccess(Response<String> response) {
                                 isCapturing = false;
+                                ToolLog.e(TAG, "onSuccess: " + response.body());
+                                LogUtils.file("HTTP 日志上传失败" + response.getException().toString());
                             }
 
                             @Override
-                            public void onError(Response<Result> response) {
+                            public void onError(Response<String> response) {
                                 super.onError(response);
                                 isCapturing = false;
+                                mView.showError("截图上传失败"+response.getException().toString());
                             }
                         });
                 return null;
@@ -182,7 +188,7 @@ public class Presenter {
                         }
                     });
                     if (fileList.size() > 0) {
-                        OkGo.<Result>post(url)
+                        OkGo.<String>post(url)
                                 .params("content", content.toJSONString())
                                 .params("checkinfo", "{\"timestamp\":\"123\",\"token\":\"123\"}")
                                 .params("method", IConfigs.METHOD_UPLOAD_LOG)
@@ -190,16 +196,18 @@ public class Presenter {
                                 .addFileParams("file[]", fileList)//文件集合
 
                                 .tag(this)
-                                .execute(new JsonCallBack<Result>(Result.class) {
+                                .execute(new StringCallback() {
                                     @Override
-                                    public void onSuccess(Response<Result> response) {
+                                    public void onSuccess(Response<String> response) {
                                         isLoging = false;
+                                        LogUtils.file("HTTP 日志上传结果" + response.body());
                                     }
 
                                     @Override
-                                    public void onError(Response<Result> response) {
+                                    public void onError(Response<String> response) {
                                         super.onError(response);
                                         isLoging = false;
+                                        mView.showError("日志上传失败"+response.getException().toString());
                                     }
                                 });
                     }
@@ -257,6 +265,7 @@ public class Presenter {
                                     public void onError(Response<String> response) {
                                         super.onError(response);
                                         isLoging = false;
+                                        mView.showError("日志上传失败"+response.getException().toString());
                                     }
                                 });
                     }
@@ -340,6 +349,11 @@ public class Presenter {
                         }
                     }
 
+                    @Override
+                    public void onError(Response<File> response) {
+                        super.onError(response);
+                        mView.showError("apk下载失败"+response.getException().toString());
+                    }
                 });
     }
 
@@ -376,10 +390,4 @@ public class Presenter {
             listener.RegisterCallBack(mRegisterResult);
     }
 
-    /**
-     * 拷贝tts文件
-     */
-    public void InitTts(SpeechSynthesizerListener listener) {
-
-    }
 }
