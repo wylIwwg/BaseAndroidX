@@ -68,6 +68,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public static final String SOCKET = "【socket】";
     public static final String HTTP = "【http】";
     public static final String ERROR = "【error】";
+    public static final String SUCCESS = "【success】";
     public Context mContext;
     public LinearLayout mBaseLlRoot;//根布局
     public BaseDataHandler mDataHandler;
@@ -91,6 +92,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public SimpleDateFormat mDateFormat;
     public SimpleDateFormat mTimeFormat;
     public SimpleDateFormat mWeekFormat;
+    public SimpleDateFormat mDateTimeFormat;
     public TimeThread mTimeThread;
 
     // public RestartThread mRestartThread;
@@ -105,6 +107,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     public String URL_FINISH_VOICE;//语音播报结束
 
+    public boolean localTimeSeted = false;//是否设置过本地时间
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +126,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         mTimeFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         mWeekFormat = new SimpleDateFormat("EEEE", Locale.CHINA);
+
+        mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
 
         mPresenter.checkJavaRegister(new RegisterListener() {
             @Override
@@ -248,16 +253,24 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         mBaseLlRoot.addView(view, lp);
     }
 
-
-    @Override
-    public void showSuccess(String success) {
+    public void showPrintLog(String log) {
 
     }
 
     @Override
+    public void showSuccess(String success) {
+        ToolLog.efile(SUCCESS, "showSuccess: " + success);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toasty.success(mContext, success, Toast.LENGTH_LONG, true).show();
+            }
+        });
+    }
+
+    @Override
     public void showError(final String error) {
-        ToolLog.e(ERROR, error);
-        LogUtils.file(ERROR, error);
+        ToolLog.efile(ERROR, "showError: " + error);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -267,8 +280,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
     public void showInfo(final String info) {
-        ToolLog.e(ERROR, info);
-        LogUtils.file(ERROR, info);
+        ToolLog.efile(TAG, "showInfo: " + info);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -383,6 +395,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                                 long mTime = mObject.getLong("date");
                                 if (mTime > 0) {
                                     mDate = new Date(mTime);
+                                    if (!localTimeSeted)
+                                        setSystemTime(mTime);
                                 } else {
                                     mDate = new Date(System.currentTimeMillis());
                                 }
@@ -454,7 +468,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             showInfo("收到软件更新");
                             String link = mObject.getString("link");
                             if (!TextUtils.isEmpty(link)) {
-                                LogUtils.file(HTTP, "【下载更新】" + mHost + link);
+                                ToolLog.efile(TAG, "userHandler: " + "【下载更新】" + mHost + link);
                                 mPresenter.downloadApk(mHost + link);
                             }
 
@@ -552,8 +566,15 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
 
+    /**
+     * 设置系统时间
+     *
+     * @param time
+     */
     public void setSystemTime(long time) {
-        ToolLZ.Instance().setSystemTime(time);
+        showPrintLog("本地时间：" + mDateTimeFormat.format(new Date(System.currentTimeMillis())));
+        showPrintLog("设置的时间：" + mDateTimeFormat.format(new Date(time)));
+        localTimeSeted = ToolLZ.Instance().setSystemTime(time);
     }
 
 
@@ -711,8 +732,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
         @Override
         public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
-            ToolLog.e(TAG, "连接成功(Connecting Successful)");
-            LogUtils.file(SOCKET, " 【socket 连接成功】");
+            ToolLog.efile(TAG, "onSocketConnectionSuccess: " + " 【socket 连接成功】");
             //连接成功其他操作...
             //链式编程调用,给心跳管理器设置心跳数据,一个连接只有一个心跳管理器,因此数据只用设置一次,如果断开请再次设置.
            /* OkSocket.open(info)
@@ -725,17 +745,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
         @Override
         public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
-            ToolLog.e(TAG, "onSocketDisconnection");
-            showError("【socket断开连接】" + e.getMessage());
-
+            ToolLog.efile(TAG, "onSocketDisconnection: " + "【socket断开连接】" + e.getMessage());
             startLocalTime();
 
         }
 
         @Override
         public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-            ToolLog.e(TAG, "onSocketConnectionFailed");
-            showError("【socket连接失败】"+ e.getMessage());
+            ToolLog.efile(TAG, "onSocketConnectionFailed: " +"【socket连接失败】" + e.getMessage() );
         }
 
         @Override

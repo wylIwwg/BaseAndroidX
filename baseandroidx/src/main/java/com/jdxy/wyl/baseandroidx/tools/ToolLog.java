@@ -2,6 +2,8 @@ package com.jdxy.wyl.baseandroidx.tools;
 
 import android.util.Log;
 
+import com.blankj.utilcode.util.LogUtils;
+
 /**
  * Created by wyl on 2018/5/22.
  */
@@ -10,6 +12,7 @@ public class ToolLog {
 
     public static boolean showLog = true;//是否打印日志
     static int LOG_MAX_LENGTH = 2000;
+
 
     public static void e(String tag, String msg) {
         if (showLog) {
@@ -28,5 +31,13 @@ public class ToolLog {
 
             }
         }
+    }
+
+
+
+    public static void efile(String tag, String msg) {
+
+        e(tag, msg);
+        LogUtils.file(tag, msg);
     }
 }

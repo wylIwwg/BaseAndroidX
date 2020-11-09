@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.jdxy.wyl.baseandroidx.base.BaseDataHandler;
 import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
@@ -98,10 +99,10 @@ public class ToolVoice {
                         isSpeeking = false;
                         if (isSpeakTest) {
                             isSpeakTest = false;
-                            ToolLog.e(TAG, "【测试语音播报完成】");
+                            ToolLog.efile(TAG, "【测试语音播报完成】");
                             return;
                         }
-                        ToolLog.e(TAG, "播放次数 speakTimes=" + speakTimes + " voiceCount=" + voiceCount);
+                        ToolLog.efile(TAG, "播放次数 speakTimes=" + speakTimes + " voiceCount=" + voiceCount);
                         if (speakTimes >= voiceCount) {//播放次数达标
                             // 呼叫成功 通知后台改状态
                             if (mapVoice != null && mapVoice.size() > 0 && mNext != null) {
@@ -114,6 +115,7 @@ public class ToolVoice {
                                         @Override
                                         public void onSuccess(Response<String> response) {
                                             isSpeeking = false;
+                                            ToolLog.efile(TAG, "onSuccess:语音播报结束： " + response.body());
                                             if (response != null && response.body().contains("1")) {
                                                 //修改状态成功后再移除
                                                 mapVoice.remove(mNext.getDocid());
@@ -229,9 +231,11 @@ public class ToolVoice {
                     .replace("一", "衣");
 
             if (mTextView != null) {
-                mTextView.setText(voice);
+                mTextView.setText(txt);
             }
             ToolTts.Instance().TtsSpeak(voice);
+            ToolLog.efile(TAG, "ttsSpeak txt: " + txt);
+            ToolLog.efile(TAG, "ttsSpeak voice: " + voice);
 
         }
 

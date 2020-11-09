@@ -68,11 +68,11 @@ public class ToolLZ {
      *
      * @param milliseconds1970
      */
-    public void setSystemTime(long milliseconds1970) {
+    public boolean setSystemTime(long milliseconds1970) {
         if (mLztek == null)
-            return;
+            return false;
         mLztek.setSystemTime(milliseconds1970);
-
+        return true;
     }
 
     /**

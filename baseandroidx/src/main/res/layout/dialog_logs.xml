@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btnBgTans"
+        style="@style/baseBtn"
+        android:layout_width="100dp"
+        android:layout_marginTop="@dimen/permission_dp_10"
+        android:text="白背景"
+        app:layout_constraintLeft_toRightOf="@id/btnLogsReal"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnLogsLocal"
+        style="@style/baseBtn"
+        android:layout_width="100dp"
+        android:layout_marginTop="@dimen/permission_dp_10"
+        android:text="查看本地日志"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnLogsReal"
+        style="@style/baseBtn"
+        android:layout_width="100dp"
+        android:layout_marginTop="@dimen/permission_dp_10"
+        android:text="查看实时日志"
+        app:layout_constraintLeft_toRightOf="@id/btnLogsLocal"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvLogsLocal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/permission_dp_10"
+        android:fadeScrollbars="false"
+        android:maxHeight="200dp"
+        android:overScrollMode="always"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarSize="@dimen/permission_dp_10"
+        android:scrollbarThumbVertical="@color/red"
+        android:scrollbarTrackVertical="@color/white"
+        android:scrollbars="vertical"
+        android:textColor="@color/red"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogsLocal" />
+
+    <TextView
+        android:id="@+id/tvLogsReal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/permission_dp_10"
+        android:fadeScrollbars="false"
+        android:overScrollMode="always"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarSize="@dimen/permission_dp_10"
+        android:scrollbarThumbVertical="@color/red"
+        android:scrollbarTrackVertical="@color/white"
+        android:scrollbars="vertical"
+        android:textColor="@color/red"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogsLocal" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
