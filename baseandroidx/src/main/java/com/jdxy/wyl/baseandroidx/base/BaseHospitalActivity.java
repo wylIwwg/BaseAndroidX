@@ -112,7 +112,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public boolean localTimeSeted = false;//是否设置过本地时间
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -555,6 +554,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
 
+
+
+
+
     /**
      * 添加设备
      *
@@ -588,8 +591,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      * @param time
      */
     public void setSystemTime(long time) {
-        showPrintLog("本地时间：" + mDateTimeFormat.format(new Date(System.currentTimeMillis())));
-        showPrintLog("设置的时间：" + mDateTimeFormat.format(new Date(time)));
+
         localTimeSeted = ToolLZ.Instance().setSystemTime(time);
     }
 
@@ -761,14 +763,13 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
         @Override
         public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
-            ToolLog.efile(TAG, "onSocketDisconnection: " + "【socket断开连接】" + e.getMessage());
+            showError("【socket断开连接】" + e.getMessage());
             startLocalTime();
-
         }
 
         @Override
         public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-            ToolLog.efile(TAG, "onSocketConnectionFailed: " + "【socket连接失败】" + e.getMessage());
+            showError("【socket连接失败】" + e.getMessage());
         }
 
         @Override

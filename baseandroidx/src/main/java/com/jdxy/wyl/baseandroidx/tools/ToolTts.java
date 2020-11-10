@@ -214,10 +214,5 @@ public class ToolTts {
         }
     }
 
-    public void TtsSpeakTest(String test) {
-        if (mTTSPlayer != null) {
-            mTTSPlayer.playText(test);
-            ToolLog.e(TAG, "TtsSpeakTest: " + test);
-        }
-    }
+
 }

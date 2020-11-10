@@ -1,13 +1,17 @@
 package com.jdxy.wyl.baseandroidx.tools;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.text.TextUtils;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.base.BaseDataHandler;
 import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
+import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
@@ -18,6 +22,7 @@ import com.unisound.client.SpeechSynthesizerListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class ToolVoice {
 
@@ -147,11 +152,23 @@ public class ToolVoice {
                             }
                         } else {
                             //重复呼叫
+                            ThreadUtils.executeByCachedWithDelay(new ThreadUtils.SimpleTask<Object>() {
+                                @Override
+                                public Object doInBackground() throws Throwable {
+                                    ttsSpeak();
+                                    return null;
+                                }
+
+                                @Override
+                                public void onSuccess(Object result) {
+
+                                }
+                            }, 1000, TimeUnit.SECONDS);
                             if (mDataHandler != null)
                                 mDataHandler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ttsSpeak();
+
                                     }
                                 }, 1000);
                         }
@@ -207,11 +224,17 @@ public class ToolVoice {
         return this;
     }
 
+    public void TtsSpeakTest(String test) {
+        isSpeakTest = true;
+        ToolTts.Instance().TtsSpeak(test);
+        ToolLog.e(TAG, "TtsSpeakTest: " + test);
+    }
+
     public synchronized void ttsSpeak() {
         if (mNext != null) {
             //"请(line)(name)到(department)(room)(doctor)就诊"
-            String txt = mVoiceSetting.getVoFormat();
-            txt = txt.replace("name", ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
+            String format = mVoiceSetting.getVoFormat();
+            final String txt = format.replace("name", ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
                     .replace("line", mNext.getPatientNum() + "")
                     .replace("department", mNext.getPatientName())
                     .replace("room", mNext.getClinicName())
@@ -219,8 +242,7 @@ public class ToolVoice {
                     .replace("type", mNext.getType())
                     .replace("(", "")
                     .replace(")", "");
-            String voice = mVoiceSetting.getVoFormat();
-            voice = voice.replace("name", mNext.getPatientName())
+            String voice = format.replace("name", mNext.getPatientName())
                     .replace("line", mNext.getPatientNum() + "")
                     .replace("department", mNext.getDepartmentName())
                     .replace("room", mNext.getClinicName())
@@ -231,14 +253,22 @@ public class ToolVoice {
                     .replace("一", "衣");
 
             if (mTextView != null) {
-                mTextView.setText(txt);
+                ThreadUtils.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTextView.setText(txt);
+                    }
+                });
+
             }
+
             ToolTts.Instance().TtsSpeak(voice);
             ToolLog.efile(TAG, "ttsSpeak txt: " + txt);
             ToolLog.efile(TAG, "ttsSpeak voice: " + voice);
 
         }
 
-
     }
+
+
 }
