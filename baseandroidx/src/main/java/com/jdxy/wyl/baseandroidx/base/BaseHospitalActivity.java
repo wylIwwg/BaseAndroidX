@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -39,6 +40,7 @@ import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
+import com.jdxy.wyl.baseandroidx.view.DialogLogs;
 import com.unisound.client.SpeechSynthesizer;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
 import com.xuhao.didi.core.iocore.interfaces.ISendable;
@@ -108,6 +110,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public String URL_FINISH_VOICE;//语音播报结束
 
     public boolean localTimeSeted = false;//是否设置过本地时间
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -289,6 +293,13 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         });
     }
 
+    public DialogLogs mDialogLogs;
+
+    public void showLogsDialog() {
+        mDialogLogs = DialogLogs.newInstance();
+        mDialogLogs.setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_FullScreen);
+        mDialogLogs.show(getSupportFragmentManager(), "");
+    }
 
     /**
      * 上传截图
@@ -322,6 +333,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      */
     @Override
     public void userHandler(Message msg) {
+
         switch (msg.what) {
             case IConfigs.MSG_REBOOT_LISTENER://设备关机 重启
                 int mins;
@@ -356,8 +368,12 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                 }
                 break;
             case IConfigs.MSG_SOCKET_RECEIVED:
+
                 try {
                     String obj = msg.obj.toString();
+                    if (mDialogLogs != null) {
+                        mDialogLogs.showSocketMsg(obj);
+                    }
                     JSONObject mObject = JSONObject.parseObject(obj);
                     String mType = mObject.getString("type");
                     //不打印心跳日志
@@ -752,7 +768,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
         @Override
         public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-            ToolLog.efile(TAG, "onSocketConnectionFailed: " +"【socket连接失败】" + e.getMessage() );
+            ToolLog.efile(TAG, "onSocketConnectionFailed: " + "【socket连接失败】" + e.getMessage());
         }
 
         @Override

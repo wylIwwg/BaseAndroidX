@@ -1,7 +1,6 @@
 package com.jdxy.wyl.baseandroidx.view;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -16,12 +15,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.R2;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
+import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 
 import java.io.File;
@@ -36,6 +37,8 @@ import butterknife.ButterKnife;
  * Created by wyl on 2020/5/11.
  */
 public class DialogLogs extends DialogFragment {
+
+    private static final String TAG = " DialogLogs  ";
 
     public static DialogLogs newInstance() {
 
@@ -52,6 +55,7 @@ public class DialogLogs extends DialogFragment {
             return;
         if (tvLogsReal != null) {
             tvLogsReal.setText(tvLogsReal.getText().toString() + "\n" + msg);
+            tvLogsReal.computeScroll();
         }
     }
 
@@ -91,15 +95,17 @@ public class DialogLogs extends DialogFragment {
         Button btnLogsLocal = mInflate.findViewById(R.id.btnLogsLocal);
         Button btnBgTans = mInflate.findViewById(R.id.btnBgTans);
         Button btnLogsReal = mInflate.findViewById(R.id.btnLogsReal);
-
         //设置内容可滚动
         tvLogsReal.setMovementMethod(ScrollingMovementMethod.getInstance());
         tvLogsLocal.setMovementMethod(ScrollingMovementMethod.getInstance());
+
         btnLogsReal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tvLogsLocal.setText("");
+                tvLogsReal.setText("");
                 localLogs = false;
+                ToolLog.e(TAG, "onClick:查看实时： " + tvLogsReal);
 
             }
         });
@@ -132,6 +138,14 @@ public class DialogLogs extends DialogFragment {
                 window.setBackgroundDrawableResource(R.color.white);
             }
         });
+        //竖屏 960dp  横屏 540
+        if (getResources().getConfiguration().orientation == 1) {
+            tvLogsLocal.setMaxHeight(ToolDisplay.dip2px(getActivity(), 600));
+            tvLogsReal.setMaxHeight(ToolDisplay.dip2px(getActivity(), 600));
+        } else {
+            tvLogsLocal.setMaxHeight(ToolDisplay.dip2px(getActivity(), 350));
+            tvLogsReal.setMaxHeight(ToolDisplay.dip2px(getActivity(), 350));
+        }
         window.getDecorView().setPadding(0, 0, 0, 0);
         WindowManager.LayoutParams wlp = window.getAttributes();
         wlp.gravity = Gravity.BOTTOM;

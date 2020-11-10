@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -37,6 +38,25 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/permission_dp_10"
         android:fadeScrollbars="false"
+        android:overScrollMode="always"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarSize="@dimen/permission_dp_10"
+        android:scrollbarThumbVertical="@color/red"
+        android:scrollbarTrackVertical="@color/white"
+        android:scrollbars="vertical"
+        android:textColor="@color/red"
+        android:textSize="12sp"
+        android:maxHeight="200dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogsLocal" />
+
+    <TextView
+        android:id="@+id/tvLogsReal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/permission_dp_10"
+        android:layout_marginTop="8dp"
+        android:fadeScrollbars="false"
         android:maxHeight="200dp"
         android:overScrollMode="always"
         android:scrollbarAlwaysDrawVerticalTrack="true"
@@ -49,21 +69,10 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnLogsLocal" />
 
-    <TextView
-        android:id="@+id/tvLogsReal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/permission_dp_10"
-        android:fadeScrollbars="false"
-        android:overScrollMode="always"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:scrollbarSize="@dimen/permission_dp_10"
-        android:scrollbarThumbVertical="@color/red"
-        android:scrollbarTrackVertical="@color/white"
-        android:scrollbars="vertical"
-        android:textColor="@color/red"
-        android:textSize="12sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnLogsLocal" />
-
+    <View
+        android:id="@+id/guide"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

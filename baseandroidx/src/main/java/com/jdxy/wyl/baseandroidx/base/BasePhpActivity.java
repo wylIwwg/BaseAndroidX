@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -38,6 +39,7 @@ import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
+import com.jdxy.wyl.baseandroidx.view.DialogLogs;
 import com.unisound.client.SpeechSynthesizer;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
 import com.xuhao.didi.core.iocore.interfaces.ISendable;
@@ -243,14 +245,19 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
     @Override
     public void showSuccess(String success) {
-
+        ToolLog.efile(TAG, "showError: " + success);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toasty.success(mContext, success, Toast.LENGTH_LONG, true).show();
+            }
+        });
     }
 
 
     @Override
     public void showError(final String error) {
-        ToolLog.e(ERROR, error);
-        LogUtils.file(ERROR, error);
+        ToolLog.efile(TAG, "showError: " + error);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -266,6 +273,14 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         mPresenter.uploadCapture(url, res, sessionId, mFile);
     }
 
+
+    public DialogLogs mDialogLogs;
+
+    public void showLogsDialog() {
+        mDialogLogs = DialogLogs.newInstance();
+        mDialogLogs.setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_FullScreen);
+        mDialogLogs.show(getSupportFragmentManager(), "");
+    }
 
     @Override
     public void userHandler(Message msg) {
@@ -304,6 +319,11 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                 break;
             case IConfigs.MSG_SOCKET_RECEIVED:
                 String obj = msg.obj.toString();
+
+                if (mDialogLogs != null) {
+                    mDialogLogs.showSocketMsg(obj);
+                }
+
                 if (!obj.contains("pong"))//不再打印心跳
                     LogUtils.file(SOCKET, obj);
                 ToolLog.e(TAG, "handleMessage: socket  " + obj);
@@ -431,7 +451,6 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                             break;
                     }
                 } catch (Exception e) {
-                    LogUtils.file(ERROR, e.toString());
                     showError(e.toString());
                 }
         }
@@ -440,8 +459,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
 
     public void showInfo(final String info) {
-        ToolLog.e(ERROR, info);
-        LogUtils.file(ERROR, info);
+        ToolLog.efile(TAG, "showInfo: " + info);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -620,8 +638,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
         @Override
         public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
-            ToolLog.e(TAG, "连接成功(Connecting Successful)");
-            LogUtils.file(SOCKET, " 【socket 连接成功】");
+            ToolLog.efile(TAG, "onSocketConnectionSuccess: " + " 【socket 连接成功】");
             //连接成功其他操作...
             //链式编程调用,给心跳管理器设置心跳数据,一个连接只有一个心跳管理器,因此数据只用设置一次,如果断开请再次设置.
            /* OkSocket.open(info)
@@ -634,17 +651,14 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
         @Override
         public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
-            ToolLog.e(TAG, "onSocketDisconnection");
-            showError("【socket断开连接】"+ e.getMessage());
+            ToolLog.efile(TAG, "onSocketDisconnection: " + "【socket断开连接】" + e.getMessage());
             startLocalTime();
 
         }
 
         @Override
         public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-            ToolLog.e(TAG, "onSocketConnectionFailed");
-            LogUtils.file(SOCKET, " 【socket连接失败】");
-            showError("【socket连接失败】"+ e.getMessage());
+            ToolLog.efile(TAG, "onSocketConnectionFailed: " + "【socket连接失败】" + e.getMessage());
         }
 
         @Override
@@ -655,21 +669,24 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
             //  JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
             // String type = jsonObject.get("type").getAsString();
             //处理socket消息
+            Message msg = Message.obtain();
+            msg.what = IConfigs.MSG_SOCKET_RECEIVED;
+            msg.obj = str;
             if (mDataHandler != null) {
-                Message msg = Message.obtain();
-                msg.what = IConfigs.MSG_SOCKET_RECEIVED;
-                msg.obj = str;
                 mDataHandler.sendMessage(msg);
+            } else {
+                // showError("handler 为空");
             }
 
         }
 
         @Override
         public void onSocketWriteResponse(ConnectionInfo info, String action, ISendable data) {
-           /* byte[] bytes = data.parse();
+        /*    byte[] bytes = data.parse();
             bytes = Arrays.copyOfRange(bytes, 4, bytes.length);
             String str = new String(bytes, Charset.forName("utf-8"));
-*/
+            ToolLog.e(TAG, "onSocketWriteResponse: " + action + "     " + str);*/
+
         }
 
         @Override
@@ -678,7 +695,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
             bytes = Arrays.copyOfRange(bytes, 8, bytes.length);
             String str = new String(bytes, Charset.forName("utf-8"));
             // JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
-            ToolLog.e(TAG, "发送心跳包(Heartbeat Sending)" + str);
+            ToolLog.e(TAG, "发送心跳包：" + str);
         }
     };
 

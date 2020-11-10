@@ -75,14 +75,13 @@ public class Presenter {
                                 @Override
                                 public void onSuccess(Response<String> response) {
                                     isCapturing = false;
-                                    ToolLog.e(TAG, "HTTP截图上传结果: " + response.body());
-                                    LogUtils.file("HTTP截图上传结果：" + response.body());
+                                    ToolLog.efile(TAG, "onSuccess: 截图上传成功：" + response.body());
                                 }
 
                                 @Override
                                 public void onError(Response<String> response) {
                                     isCapturing = false;
-                                    mView.showError("截图上传失败"+response.getException().toString());
+                                    mView.showError("截图上传失败" + response.getException().toString());
                                 }
                             });
                     return null;
@@ -130,15 +129,14 @@ public class Presenter {
                             @Override
                             public void onSuccess(Response<String> response) {
                                 isCapturing = false;
-                                ToolLog.e(TAG, "onSuccess: " + response.body());
-                                LogUtils.file("HTTP 日志上传失败" + response.getException().toString());
+                                ToolLog.efile(TAG, "onSuccess: 截图上传成功：" + response.body());
                             }
 
                             @Override
                             public void onError(Response<String> response) {
                                 super.onError(response);
                                 isCapturing = false;
-                                mView.showError("截图上传失败"+response.getException().toString());
+                                mView.showError("截图上传失败" + response.getException().toString());
                             }
                         });
                 return null;
@@ -207,7 +205,7 @@ public class Presenter {
                                     public void onError(Response<String> response) {
                                         super.onError(response);
                                         isLoging = false;
-                                        mView.showError("日志上传失败"+response.getException().toString());
+                                        mView.showError("日志上传失败" + response.getException().toString());
                                     }
                                 });
                     }
@@ -265,7 +263,7 @@ public class Presenter {
                                     public void onError(Response<String> response) {
                                         super.onError(response);
                                         isLoging = false;
-                                        mView.showError("日志上传失败"+response.getException().toString());
+                                        mView.showError("日志上传失败" + response.getException().toString());
                                     }
                                 });
                     }
@@ -352,7 +350,7 @@ public class Presenter {
                     @Override
                     public void onError(Response<File> response) {
                         super.onError(response);
-                        mView.showError("apk下载失败"+response.getException().toString());
+                        mView.showError("apk下载失败" + response.getException().toString());
                     }
                 });
     }
