@@ -256,9 +256,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         mBaseLlRoot.addView(view, lp);
     }
 
-    public void showPrintLog(String log) {
-
-    }
 
     @Override
     public void showSuccess(String success) {
@@ -353,7 +350,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                 }
                 showInfo("设备即将关机，将在" + mins + "分钟后重启");
                 hardReboot(60 * mins);
-            case IConfigs.NET_TIME_CHANGED:
+                break;
+            case IConfigs.NET_TIME_CHANGED://本地时间变化
                 HashMap<String, String> times = (HashMap<String, String>) msg.obj;
                 if (times != null) {
                     //时间
@@ -366,7 +364,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     showTime(dateStr, timeStr, week);
                 }
                 break;
-            case IConfigs.MSG_SOCKET_RECEIVED:
+            case IConfigs.MSG_SOCKET_RECEIVED://socket收到通知
 
                 try {
                     String obj = msg.obj.toString();
@@ -466,10 +464,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             }
                             break;
                         case "restart":
-                            showInfo("设备即将重启");
-                            hardReboot(0);
-
-                            break;
                         case "restartApp"://重启软件
                             showInfo("软件即将重启");
                             mDataHandler.postDelayed(new Runnable() {
@@ -554,10 +548,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
 
-
-
-
-
     /**
      * 添加设备
      *
@@ -597,10 +587,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
 
     /**
+     * 定时开关机
+     *
      * @param seconds 单位秒
      */
     public void hardReboot(final int seconds) {
-        release();
+        if (ToolLZ.Instance().isLZDevice()) {
+            release();
+        }
         mDataHandler.postDelayed(new Runnable() {
             @Override
             public void run() {

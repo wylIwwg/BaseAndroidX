@@ -26,6 +26,10 @@ public class ToolLZ {
         return mToolLZ;
     }
 
+    public boolean isLZDevice() {
+        return mLztek == null;
+    }
+
     /**
      * 读取以太网状态
      *
