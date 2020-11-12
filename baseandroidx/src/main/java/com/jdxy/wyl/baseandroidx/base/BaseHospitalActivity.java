@@ -644,6 +644,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             mDataHandler.removeCallbacksAndMessages(null);
             mDataHandler = null;
         }
+        AppUtils.exitApp();
     }
 
 

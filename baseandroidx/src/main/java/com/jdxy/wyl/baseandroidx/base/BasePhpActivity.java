@@ -547,6 +547,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
             mDataHandler.removeCallbacksAndMessages(null);
             mDataHandler = null;
         }
+        AppUtils.exitApp();
     }
 
 
@@ -647,14 +648,13 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
         @Override
         public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
-            ToolLog.efile(TAG, "onSocketDisconnection: " + "【socket断开连接】" + e.getMessage());
+            showError("【socket断开连接】" + e.getMessage());
             startLocalTime();
-
         }
 
         @Override
         public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-            ToolLog.efile(TAG, "onSocketConnectionFailed: " + "【socket连接失败】" + e.getMessage());
+            showError("【socket连接失败】" + e.getMessage());
         }
 
         @Override
