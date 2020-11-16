@@ -202,4 +202,15 @@ public class ToolLZ {
         intentapk.putExtra("IMPLUS_UNINSTALL", "SILENT_UNINSTALL");
         context.startActivity(intentapk);
     }
+
+    /**
+     * 执行命令
+     *
+     * @return
+     */
+    public String suExec(String su) {
+        if (mLztek == null)
+            return "";
+        return mLztek.getEthMac();
+    }
 }

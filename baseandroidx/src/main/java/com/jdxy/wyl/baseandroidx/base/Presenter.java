@@ -5,12 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
+
+import androidx.core.content.FileProvider;
 
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.listeners.CopyFilesListener;
+import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.lztek.toolkit.Lztek;
 import com.lzy.okgo.OkGo;
@@ -320,59 +324,88 @@ public class Presenter {
      * @param url
      */
     public void downloadApk(String url) {
-        OkGo.<File>get(url)
-                .tag(this)
-                .execute(new FileCallback(IConfigs.PATH_APK, "") {
-                    @Override
-                    public void onSuccess(Response<File> response) {
-                        final File apk = response.body();
-                        if (apk != null) {
-                            String mPackageName = AppUtils.getApkInfo(apk.getAbsolutePath()).getPackageName();
-                            //如果当前包名是root包 说明可以安装其他软件  否则只能安装同包名软件
-                            if (mContext.getPackageName().endsWith("root")) {
-                                installApk(apk);
-                            } else {
-                                if (mPackageName.equals(mContext.getPackageName())) {
-                                    //包名一样  是正确的apk
-                                    //如果更新包的apk的版本号大 则更新apk
+        if (!TextUtils.isEmpty(url) && url.endsWith(".apk")) {
+            OkGo.<File>get(url)
+                    .tag(this)
+                    .execute(new FileCallback(IConfigs.PATH_APK, "") {
+                        @Override
+                        public void onSuccess(Response<File> response) {
+                            final File apk = response.body();
+                            if (apk != null) {
+                                AppUtils.AppInfo mApkInfo = AppUtils.getApkInfo(apk.getAbsolutePath());
+                                if (mApkInfo == null) {
+                                    mView.showError("apk软件解析异常！");
+                                    return;
+                                }
+                                String mPackageName = mApkInfo.getPackageName();
+                                //如果当前包名是root包 说明可以安装其他软件  否则只能安装同包名软件
+                                if (mContext.getPackageName().endsWith("root")) {
                                     installApk(apk);
-
-
                                 } else {
-                                    mView.showError("应用程序不匹配");
+                                    if (mPackageName.equals(mContext.getPackageName())) {
+                                        //包名一样  是正确的apk
+                                        //如果更新包的apk的版本号大 则更新apk
+                                        installApk(apk);
+                                    } else {
+                                        mView.showError("应用程序不匹配");
+                                    }
                                 }
                             }
-
-
                         }
-                    }
 
-                    @Override
-                    public void onError(Response<File> response) {
-                        super.onError(response);
-                        mView.showError("apk下载失败" + response.getException().toString());
-                    }
-                });
+                        @Override
+                        public void onError(Response<File> response) {
+                            super.onError(response);
+                            mView.showError("apk下载失败" + response.getException().toString());
+                        }
+                    });
+        } else {
+            mView.showError("文件链接不是apk软件！");
+        }
+
     }
 
 
     public void installApk(File apk) {
-        //7.0以下 安装升级
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Intent intentapk = new Intent(Intent.ACTION_VIEW);
-            intentapk.setDataAndType(Uri.fromFile(apk),
-                    "application/vnd.android.package-archive");
-            intentapk.putExtra("IMPLUS_INSTALL", "SILENT_INSTALL");
-            mContext.startActivity(intentapk);
+        //亮钻
+        if (Build.USER.contains("liaokai")) {
+            //7.0以下 安装升级
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                LogUtils.file("【亮钻7.0以下系统升级】" + Build.USER);
+                Intent intentapk = new Intent(Intent.ACTION_VIEW);
+                intentapk.setDataAndType(Uri.fromFile(apk),
+                        "application/vnd.android.package-archive");
+                intentapk.putExtra("IMPLUS_INSTALL", "SILENT_INSTALL");
+                mContext.startActivity(intentapk);
 
+            } else {
+                String SHELL = "am start -a android.intent.action.VIEW -d %1$s " +
+                        "-t application/vnd.android.package-archive -e IMPLUS_INSTALL SILENT_INSTALL";
+                String apkPath = "file:///" + apk.getAbsolutePath();
+
+                LogUtils.file("【亮钻7.0以上系统升级】" + Build.USER, "onSuccess: " + String.format(SHELL, apkPath));
+                ToolLZ.Instance().suExec(String.format(SHELL, apkPath));
+            }
         } else {
-            String SHELL = "am start -a android.intent.action.VIEW -d %1$s " +
-                    "-t application/vnd.android.package-archive -e IMPLUS_INSTALL SILENT_INSTALL";
-            String apkPath = "file:///" + apk.getAbsolutePath();
-            Lztek mLztek = Lztek.create(mContext);
-            LogUtils.file("【7.0系统升级】", "onSuccess: " + String.format(SHELL, apkPath));
-            mLztek.suExec(String.format(SHELL, apkPath));
+            //普通板子
+            Intent intent = new Intent();
+            //执行动作
+            intent.setAction(Intent.ACTION_VIEW);
+            //判读版本是否在7.0以上
+            if (Build.VERSION.SDK_INT >= 24) {
+                LogUtils.file("【普通7.0以上系统升级】" + Build.USER);
+                Uri apkUri = FileProvider.getUriForFile(mContext, "com.test.fileprovider", apk);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            } else {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setDataAndType(Uri.fromFile(apk), "application/vnd.android.package-archive");
+                LogUtils.file("【普通7.0以下系统升级】" + Build.USER);
+            }
+            mContext.startActivity(intent);
         }
+
+
     }
 
     public void checkPhpRegister(RegisterListener listener) {
