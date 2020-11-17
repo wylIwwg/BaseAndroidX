@@ -1,6 +1,5 @@
 package com.jdxy.wyl.baseandroidx.base;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -36,7 +35,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class BaseSettingActivity extends AppCompatActivity {
+public class LzSettingActivity extends AppCompatActivity {
     public String TAG = "【" + this.getClass().getSimpleName() + "】";
     public static final String SOCKET = "【socket】";
     public static final String HTTP = "【http】";
@@ -51,7 +50,7 @@ public class BaseSettingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        super.setContentView(R.layout.activity_base_setting);
+        super.setContentView(R.layout.activity_lz_setting);
         mContext = this;
         mLlRootSetting = findViewById(R.id.llRootSetting);
         mHolder = new BaseHolder(mLlRootSetting);

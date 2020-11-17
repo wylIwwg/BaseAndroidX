@@ -540,6 +540,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     showError(e.getMessage());
                 }
                 break;
@@ -644,7 +645,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             mDataHandler.removeCallbacksAndMessages(null);
             mDataHandler = null;
         }
-        AppUtils.exitApp();
     }
 
 

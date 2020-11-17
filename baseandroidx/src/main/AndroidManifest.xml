@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.jdxy.wyl.baseandroidx" >
+    package="com.jdxy.wyl.baseandroidx">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -10,9 +10,9 @@
     <application
         android:allowBackup="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".base.BaseSettingActivity" >
-        </activity>
+        android:theme="@style/AppTheme">
+        <activity android:name=".base.CommonSettingActivity"></activity>
+        <activity android:name=".base.LzSettingActivity"></activity>
         <activity android:name=".base.BaseHospitalActivity" />
         <activity android:name=".base.BasePhpActivity" />
         <activity

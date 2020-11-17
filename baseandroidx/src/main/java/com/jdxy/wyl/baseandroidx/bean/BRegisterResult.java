@@ -4,9 +4,9 @@ package com.jdxy.wyl.baseandroidx.bean;
  * Created by wyl on 2020/1/20.
  */
 public class BRegisterResult {
-    private String registerStr;
-    private int registerCode;
-    private boolean registered;
+    private String registerStr;//注册码
+    private int registerCode;//注册状态
+    private boolean registered;//是否注册
 
 
     @Override

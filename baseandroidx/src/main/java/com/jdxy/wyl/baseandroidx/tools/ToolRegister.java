@@ -123,17 +123,7 @@ public class ToolRegister {
                         if (mParseInt == 0) {//不允许注册
                             return false;
                         } else {
-                            File mFile = new File(PATH);
-                            try {
-                                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mFile, false), Charset.forName("UTF-8")));
-                                bw.write(data);//写入密文数据
-                                bw.flush();
-                                bw.close();
-                                return true;
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                return false;
-                            }
+                            return writeDevice(data);
                         }
                     }
                 }
@@ -147,13 +137,68 @@ public class ToolRegister {
 
     }
 
+    /**
+     * //设备注册成功，写入本地
+     *
+     * @return
+     */
+    public boolean registerDevice(BRegister result) {
+        try {
+            ToolLog.e(TAG, "registerDevice: 允许注册： " + result);
+            if (result != null) {
+                String mLimit = result.getLimit();
+                if (mLimit != null && mLimit.length() > 0) {
+                    int mParseInt = Integer.parseInt(mLimit);
+                    if (mParseInt == 0) {//不允许注册
+                        return false;
+                    } else {
+                        return writeDevice(JSON.toJSONString(result));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+
+    }
+
+    /**
+     * //设备注册成功，写入本地
+     *
+     * @param data 加密数据
+     * @return
+     */
+    public boolean writeDevice(String data) {
+        try {
+            if (data == null || data.equals(""))
+                return false;
+            File mFile = new File(PATH);
+            try {
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mFile, false), Charset.forName("UTF-8")));
+                bw.write(data);//写入密文数据
+                bw.flush();
+                bw.close();
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
 
     /**
      * 获取注册数据  在 PATH 目录/文件
      *
      * @return
      */
-    public BRegister getRegisterText() {
+    private BRegister getRegisterText() {
 
         try {
             File mFile = new File(PATH);
@@ -216,7 +261,18 @@ public class ToolRegister {
                             long mMillis = System.currentTimeMillis();//采用系统时间  如果是亮钻的板子
                             //如果注册时间 + 注册天数 的总时间 小于当前时间 注册过期
                             Date newDate2 = new Date(rt + (long) mInt * 24L * 60L * 60L * 1000L);
-                            if (newDate2.getTime() < mMillis) {
+                            long mL = newDate2.getTime() - mMillis;
+
+                            long days = (mL / (24L * 60L * 60L * 1000L));
+                            if (days > 0) {
+                                //若还有剩余天数。更新到本地
+                                int result = (int) days;
+                                //若还有剩余天数。更新到本地
+                                ToolLog.e(TAG, "还有剩余天数。更新到本地: " + days + "  " + result);
+                                mRegister.setResidue(result + "");
+                                // registerDevice(mRegister);
+                            }
+                            if (mL < 0) {
                                 mResult.setRegisterCode(3);
                                 mResult.setRegistered(false);
                             }
@@ -278,7 +334,17 @@ public class ToolRegister {
                             long mMillis = System.currentTimeMillis();//采用系统时间  如果是亮钻的板子
                             //如果注册时间 + 注册天数 的总时间 小于当前时间 注册过期
                             Date newDate2 = new Date(rt + (long) mInt * 24L * 60L * 60L * 1000L);
-                            if (newDate2.getTime() < mMillis) {
+                            long mL = newDate2.getTime() - mMillis;
+
+                            long days = (mL / (24L * 60L * 60L * 1000L));
+                            if (days > 0) {
+                                int result = (int) days;
+                                //若还有剩余天数。更新到本地
+                                ToolLog.e(TAG, "还有剩余天数。更新到本地: " + days + "  " + result);
+                                mRegister.setResidue(result + "");
+                                // registerDevice(mRegister);
+                            }
+                            if (mL < 0) {
                                 mResult.setRegisterCode(2);
                                 mResult.setRegistered(false);
                             }
@@ -309,13 +375,14 @@ public class ToolRegister {
     public String str2Regsiter(String data) {
         //解密
         try {
+            ToolLog.e(TAG, "str2Regsiter:源数据 " + data);
             byte[] mDataBytes = Base64.decode(data, base64Mode);
             byte[] mDecryptBytes = ToolEncrypt.decryptRSA(mDataBytes, mPrivateBytes, false, transform);
 
             String b64 = Base64.encodeToString(mDecryptBytes, base64Mode);
             byte[] mEncode = Base64.decode(b64, base64Mode);
             String result = new String(mEncode);
-            ToolLog.e(TAG, "BRegister: 解密后的数据： " + result);
+            ToolLog.e(TAG, "str2Regsiter: 解密后的数据： " + result);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
