@@ -168,12 +168,14 @@
 
     <color name="main">#199fda</color><!--黑色 -->
     <color name="main2">#1185B8</color><!--黑色 -->
+    <color name="main3">#91D4F3</color><!--黑色 -->
 
     <color name="comcolor">#e0e6f1</color><!--黑色 -->
     <color name="normal">#00557b</color><!--黑色 -->
     <color name="pressed">#023248</color>
     <color name="gray1">#60676767</color>
     <color name="halftrans">#60000000</color>
+    <color name="halfwhite">#90000000</color>
 
     <color name="main_theme">#FF5836</color>
     <color name="main_theme1">#70FF5836</color>

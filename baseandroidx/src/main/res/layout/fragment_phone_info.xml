@@ -46,7 +46,7 @@
             <TextView
                 android:id="@+id/tv_phone_content"
                 android:textColor="#196EB2"
-                android:background="@drawable/shape_url_content"
+                android:background="@drawable/bg_sky_content"
                 style="@style/DetailContent"/>
 
             <TextView
@@ -76,7 +76,7 @@
             <TextView
                 android:id="@+id/tv_web_info"
                 android:textColor="#257ada"
-                android:background="@drawable/shape_response_headers"
+                android:background="@drawable/bg_purple_content"
                 style="@style/DetailContent"/>
 
             <TextView

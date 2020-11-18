@@ -8,14 +8,14 @@ public class BRegister {
     private String date;//注册时间
     private String limit;//注册限制/天数
     private String mark;//标记
-    private String residue;//剩余天数
+    private int residue;//剩余天数
 
-    public String getResidue() {
-        return residue == null ? "" : residue;
+    public int getResidue() {
+        return residue;
     }
 
-    public void setResidue(String residue) {
-        this.residue = residue == null ? "" : residue;
+    public void setResidue(int residue) {
+        this.residue = residue;
     }
 
     public String getDate() {

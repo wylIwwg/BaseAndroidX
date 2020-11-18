@@ -1,14 +1,19 @@
 package com.jdxy.wyl.baseandroidx.base;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Process;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,18 +22,16 @@ import androidx.fragment.app.DialogFragment;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BPulse;
 import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
-import com.jdxy.wyl.baseandroidx.bean.BResult2;
-import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
-import com.jdxy.wyl.baseandroidx.thread.RestartThread;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolCommon;
@@ -41,7 +44,6 @@ import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
 import com.jdxy.wyl.baseandroidx.view.DialogLogs;
-import com.unisound.client.SpeechSynthesizer;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
 import com.xuhao.didi.core.iocore.interfaces.ISendable;
 import com.xuhao.didi.core.pojo.OriginalData;
@@ -55,14 +57,17 @@ import com.xuhao.didi.socket.client.sdk.client.connection.IConnectionManager;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 
 public class BaseHospitalActivity extends AppCompatActivity implements BaseDataHandler.MessageListener, IView {
@@ -72,7 +77,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public static final String ERROR = "【error】";
     public static final String SUCCESS = "【success】";
     public Context mContext;
-    public LinearLayout mBaseLlRoot;//根布局
+    public RelativeLayout mBaseRlRoot;//根布局
     public BaseDataHandler mDataHandler;
     public String mHost = "";
     public boolean isRegistered = false;
@@ -117,7 +122,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_base);
         mContext = this;
-        mBaseLlRoot = findViewById(R.id.baseLlRoot);
+        mBaseRlRoot = findViewById(R.id.baseRlRoot);
 
         mPresenter = new Presenter(mContext, this);
         mDataHandler = new BaseDataHandler(this);
@@ -142,6 +147,22 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         });
 
 
+    }
+
+    View viewRegister;
+
+    /**
+     * @param msg
+     */
+    public void showRegister(String msg) {
+        viewRegister = View.inflate(mContext, R.layout.item_register, null);
+        TextView tv = viewRegister.findViewById(R.id.tvRegister);
+        tv.setText(msg);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ToolDisplay.dip2px(mContext, 250), ToolDisplay.dip2px(mContext, 180));
+        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+        viewRegister.setLayoutParams(lp);
+        mBaseRlRoot.addView(viewRegister);
+        viewRegister.bringToFront();
     }
 
     /**
@@ -251,9 +272,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     @Override
     public void setContentView(View view) {
 
-        if (mBaseLlRoot == null) return;
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mBaseLlRoot.addView(view, lp);
+        if (mBaseRlRoot == null) return;
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mBaseRlRoot.addView(view, lp);
     }
 
 
@@ -307,7 +328,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {
-                String res = ToolCommon.getBitmapString(mBaseLlRoot);
+                String res = ToolCommon.getBitmapString(mBaseRlRoot);
                 LogUtils.file(HTTP, "【上传截图】" + url);
                 mPresenter.uploadScreen(url, res, sessionId);
                 return null;
@@ -667,6 +688,18 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
+    public void showSetting(String api) {
+        Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
+        mIntent.putExtra(IConfigs.SP_API, api);
+        startActivity(mIntent);
+
+    }
+
+    public void showSetting() {
+        Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
+        startActivity(mIntent);
+
+    }
 
     public IConnectionManager mSocketManager;
 

@@ -21,7 +21,9 @@ import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.R2;
 import com.jdxy.wyl.baseandroidx.base.NetworkFeedBean;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
+import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
+import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
@@ -75,7 +77,7 @@ public class PingFragment extends Fragment {
 
         PingFragment fragment = new PingFragment();
         Bundle args = new Bundle();
-        args.putString("api", api);
+        args.putString(IConfigs.SP_API, api);
         fragment.setArguments(args);
         return fragment;
     }
@@ -117,6 +119,10 @@ public class PingFragment extends Fragment {
         mTvResponseHeaders = inflate.findViewById(R.id.tv_response_headers);
 
 
+        mEtSocketPort.setText(ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET));
+        mEtHttpPort.setText(ToolSP.getDIYString(IConfigs.SP_PORT_HTTP));
+        mEtHttpIP.setText(ToolSP.getDIYString(IConfigs.SP_IP));
+
         mBtnPingApi.setOnClickListener((v) -> {
             BtnClick(v);
         });
@@ -128,8 +134,12 @@ public class PingFragment extends Fragment {
         });
 
         if (getArguments() != null) {
-            mApi = getArguments().getString("api");
+            mApi = getArguments().getString(IConfigs.SP_API);
             if (mEtApi != null) {
+                if (mApi != null && !mApi.contains("http")) {
+                    mApi = "http://" + mEtHttpIP.getText().toString() + ":" + mEtHttpPort
+                            .getText().toString() + mApi;
+                }
                 mEtApi.setText(mApi);
             }
         }
@@ -198,19 +208,22 @@ public class PingFragment extends Fragment {
                         super.onError(response);
                         mNetworkFeedModel = new NetworkFeedBean();
                         mNetworkFeedModel.setBody(response.body());
-                        mNetworkFeedModel.setCreateTime(response.getRawResponse().sentRequestAtMillis());
-                        mNetworkFeedModel.setCostTime(response.getRawResponse().receivedResponseAtMillis() - response.getRawResponse().sentRequestAtMillis());
+                        if (response.getRawResponse() != null) {
+                            mNetworkFeedModel.setCreateTime(response.getRawResponse().sentRequestAtMillis());
+                            mNetworkFeedModel.setCostTime(response.getRawResponse().receivedResponseAtMillis() - response.getRawResponse().sentRequestAtMillis());
+                            mNetworkFeedModel.setStatus(response.getRawResponse().code());
+                            mTvResponseHeaders.setText(response.getRawResponse().headers().toString());
+                        }
 
-                        mNetworkFeedModel.setStatus(response.getRawResponse().code());
+                        if (response.getRawCall() != null) {
 
-                        mNetworkFeedModel.setMethod(response.getRawCall().request().method());
-                        mNetworkFeedModel.setUrl(response.getRawCall().request().url().toString());
+                            mNetworkFeedModel.setMethod(response.getRawCall().request().method());
+                            mNetworkFeedModel.setUrl(response.getRawCall().request().url().toString());
+                            mTvRequestHeaders.setText(response.getRawCall().request().headers().toString());
+                        }
 
                         setCURLContent();
 
-                        mTvRequestHeaders.setText(response.getRawCall().request().headers().toString());
-
-                        mTvResponseHeaders.setText(response.getRawResponse().headers().toString());
 
                         mTvBody.setText(response.body());
                     }

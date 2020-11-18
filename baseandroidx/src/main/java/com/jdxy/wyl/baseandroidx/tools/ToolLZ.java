@@ -27,7 +27,7 @@ public class ToolLZ {
     }
 
     public boolean isLZDevice() {
-        return mLztek == null;
+        return mLztek != null;
     }
 
     /**

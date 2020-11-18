@@ -63,6 +63,8 @@ public interface IConfigs {
     String SP_PORT_SOCKET = "portSocket";//
     String SP_VOICE_TEMP = "voiceFormat";//
 
+    String SP_API = "api";
+
     String SP_POWER = "power";//开关机
 
     /*区域*/

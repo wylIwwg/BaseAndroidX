@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,7 +71,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     public static final String HTTP = "【http】";
     public static final String ERROR = "【error】";
     public Context mContext;
-    public LinearLayout mBaseLlRoot;//根布局
+    public RelativeLayout mBaseRlRoot;//根布局
     public BaseDataHandler mDataHandler;
     public String mHost = "";
     public boolean isRegistered = false;
@@ -112,7 +113,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_base);
         mContext = this;
-        mBaseLlRoot = findViewById(R.id.baseLlRoot);
+        mBaseRlRoot = findViewById(R.id.baseRlRoot);
 
         mPresenter = new Presenter(mContext, this);
         mDataHandler = new BaseDataHandler(this);
@@ -237,9 +238,9 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     @Override
     public void setContentView(View view) {
 
-        if (mBaseLlRoot == null) return;
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mBaseLlRoot.addView(view, lp);
+        if (mBaseRlRoot == null) return;
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mBaseRlRoot.addView(view, lp);
     }
 
 
@@ -268,8 +269,8 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
 
     public void uploadScreen(String url, String sessionId) {
-        String res = ToolCommon.getBitmapString(mBaseLlRoot);
-        File mFile = ToolCommon.getBitmapFile(mBaseLlRoot);
+        String res = ToolCommon.getBitmapString(mBaseRlRoot);
+        File mFile = ToolCommon.getBitmapFile(mBaseRlRoot);
         mPresenter.uploadCapture(url, res, sessionId, mFile);
     }
 
@@ -369,8 +370,8 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                             mPresenter.uploadLogs(mHost);
                             break;
                         case "capture":
-                            File file = ToolCommon.getBitmapFile(mBaseLlRoot);
-                            mPresenter.uploadCapture(mHost, ToolCommon.getBitmapString(mBaseLlRoot), "", file);
+                            File file = ToolCommon.getBitmapFile(mBaseRlRoot);
+                            mPresenter.uploadCapture(mHost, ToolCommon.getBitmapString(mBaseRlRoot), "", file);
                             break;
                         case "voiceSize"://设置声音大小
                             BVolume volume = JSON.parseObject(msg.obj.toString(), BVolume.class);

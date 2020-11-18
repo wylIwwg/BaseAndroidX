@@ -27,7 +27,6 @@
             android:layout_weight="1"
             android:background="@drawable/bg_et_none"
             android:inputType="number|textUri"
-            android:text="192.168.2.134"
             android:textSize="13sp" />
 
         <Button
@@ -57,7 +56,6 @@
             android:layout_weight="1"
             android:background="@drawable/bg_et_none"
             android:inputType="number"
-            android:text="8"
             android:textSize="13sp" />
 
         <Button
@@ -175,7 +173,7 @@
             <TextView
                 android:id="@+id/tv_url_content"
                 style="@style/DetailContent"
-                android:background="@drawable/shape_url_content"
+                android:background="@drawable/bg_sky_content"
                 android:textColor="#196EB2" />
 
             <TextView
@@ -195,7 +193,7 @@
             <TextView
                 android:id="@+id/tv_response_headers"
                 style="@style/DetailContent"
-                android:background="@drawable/shape_response_headers"
+                android:background="@drawable/bg_purple_content"
                 android:textColor="#257ada" />
 
             <TextView

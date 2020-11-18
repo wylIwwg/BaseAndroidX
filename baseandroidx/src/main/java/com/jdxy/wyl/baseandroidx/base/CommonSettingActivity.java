@@ -23,12 +23,13 @@ import androidx.viewpager.widget.ViewPager;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.jdxy.wyl.baseandroidx.R;
-import com.jdxy.wyl.baseandroidx.R2;
 import com.jdxy.wyl.baseandroidx.fragments.BasePagerAdapter;
 import com.jdxy.wyl.baseandroidx.fragments.DeviceFragment;
 import com.jdxy.wyl.baseandroidx.fragments.PingFragment;
+import com.jdxy.wyl.baseandroidx.fragments.SettingFragment;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
+import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 
 import org.json.JSONArray;
@@ -55,6 +56,10 @@ public class CommonSettingActivity extends BaseHospitalActivity {
     private ViewPager mViewPager;
     String mApi = "";
 
+    Button mBtnLZSetting;
+    Button mBtnPsw;
+    EditText mEtPsw;
+    LinearLayout mLlPsw;
 
     public static final int JSON_INDENT = 4;
 
@@ -63,10 +68,7 @@ public class CommonSettingActivity extends BaseHospitalActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common_setting);
 
-
         initFindViewById();
-        initTabLayout();
-
         startLocalTime();
     }
 
@@ -84,6 +86,10 @@ public class CommonSettingActivity extends BaseHospitalActivity {
         mTabLayout = findViewById(R.id.tab_layout);
         mViewPager = findViewById(R.id.view_pager);
         mTvSystemTime = findViewById(R.id.tvSystemTime);
+        mLlPsw = findViewById(R.id.llPsw);
+        mEtPsw = findViewById(R.id.etAdmin);
+        mBtnLZSetting = findViewById(R.id.btnLZSetting);
+        mBtnPsw = findViewById(R.id.btnPswConfirm);
 
         mTvBack = findViewById(R.id.tvBack);
         mImgBack = findViewById(R.id.imgBack);
@@ -93,12 +99,48 @@ public class CommonSettingActivity extends BaseHospitalActivity {
         mImgBack.setOnClickListener(v -> {
             finish();
         });
+        if (ToolLZ.Instance().isLZDevice()) {
+            mBtnLZSetting.setVisibility(View.VISIBLE);
+        }
+
+        mBtnLZSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkPsw()) {
+                    showInfo("功能后续完善");
+                }
+            }
+        });
+        mBtnPsw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkPsw()) {
+                    initTabLayout();
+                    mLlPsw.setVisibility(View.GONE);
+                    mTabLayout.setVisibility(View.VISIBLE);
+                    mViewPager.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
+    boolean checkPsw() {
+        String psw = mEtPsw.getText().toString();
+        if (TextUtils.isEmpty(psw)) {
+            showError("请输入密码");
+            return false;
+        }
+        if ("sjjd".equals(psw) || "jdxy".equals(psw)) {
+            return true;
+        }
+        showError("密码不正确");
+        return false;
+    }
 
     private void initTabLayout() {
         ArrayList<String> mTitleList = new ArrayList<>();
         ArrayList<Fragment> mFragments = new ArrayList<>();
+        mTitleList.add("区域设置");
         mTitleList.add("网络诊断");
         mTitleList.add("设备信息");
         Intent mIntent = getIntent();
@@ -106,6 +148,7 @@ public class CommonSettingActivity extends BaseHospitalActivity {
             mApi = mIntent.getStringExtra("api");
             ToolLog.e(TAG, "initTabLayout: " + mApi);
         }
+        mFragments.add(SettingFragment.newInstance(mApi));
         mFragments.add(PingFragment.newInstance(mApi));
         mFragments.add(new DeviceFragment());
 

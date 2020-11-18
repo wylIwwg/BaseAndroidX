@@ -44,7 +44,7 @@ public class BaseActivity extends AppCompatActivity implements com.jdxy.wyl.base
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_base);
         mContext = this;
-        mBaseLlRoot = findViewById(R.id.baseLlRoot);
+        mBaseLlRoot = findViewById(R.id.baseRlRoot);
         mDataHandler = new com.jdxy.wyl.baseandroidx.base.BaseDataHandler(this);
         mDataHandler.setMessageListener(this);
 

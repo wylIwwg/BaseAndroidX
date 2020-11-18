@@ -106,7 +106,7 @@ public class ToolRegister {
      * //设备注册成功，写入本地
      *
      * @param data 加密数据
-     * @return
+     * @return 是否写入成功
      */
     public boolean registerDevice(String data) {
         try {
@@ -117,7 +117,8 @@ public class ToolRegister {
             if (result != null) {
                 mRegister = JSON.parseObject(result, BRegister.class);
                 if (mRegister != null) {
-                    String mLimit = mRegister.getLimit();
+                    return writeDevice(data);//直接写入
+                    /*String mLimit = mRegister.getLimit();
                     if (mLimit != null && mLimit.length() > 0) {
                         int mParseInt = Integer.parseInt(mLimit);
                         if (mParseInt == 0) {//不允许注册
@@ -125,7 +126,7 @@ public class ToolRegister {
                         } else {
                             return writeDevice(data);
                         }
-                    }
+                    }*/
                 }
                 return false;
             }
@@ -269,7 +270,7 @@ public class ToolRegister {
                                 int result = (int) days;
                                 //若还有剩余天数。更新到本地
                                 ToolLog.e(TAG, "还有剩余天数。更新到本地: " + days + "  " + result);
-                                mRegister.setResidue(result + "");
+                                mRegister.setResidue(result);
                                 // registerDevice(mRegister);
                             }
                             if (mL < 0) {
@@ -341,7 +342,7 @@ public class ToolRegister {
                                 int result = (int) days;
                                 //若还有剩余天数。更新到本地
                                 ToolLog.e(TAG, "还有剩余天数。更新到本地: " + days + "  " + result);
-                                mRegister.setResidue(result + "");
+                                mRegister.setResidue(result);
                                 // registerDevice(mRegister);
                             }
                             if (mL < 0) {
