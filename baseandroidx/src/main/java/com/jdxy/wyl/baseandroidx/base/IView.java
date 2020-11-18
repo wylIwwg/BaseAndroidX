@@ -12,6 +12,8 @@ public interface IView {
 
     void showError(String error);
 
+    void showInfo(String info);
+
     void release();
 
     void initData();

@@ -66,4 +66,10 @@ public class ToolLog {
         e(tag, msg);
         LogUtils.file(tag, msg);
     }
+
+    public static void efile(String msg) {
+
+        e(TAG, msg);
+        LogUtils.file(TAG, msg);
+    }
 }

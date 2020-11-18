@@ -1,6 +1,7 @@
 package com.jdxy.wyl.baseandroidx.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Process;
@@ -171,6 +172,20 @@ public class SettingFragment extends Fragment {
                 Process.killProcess(Process.myPid());
             }
         });
+
+        if (ToolSP.getDIYBoolean(IConfigs.SP_ShowLog)) {
+            mHolder.mBtnShowLog.setText("关闭日志");
+        } else {
+            mHolder.mBtnShowLog.setText("查看日志");
+        }
+        mHolder.mBtnShowLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToolSP.putDIYBoolean(IConfigs.SP_ShowLog, !ToolSP.getDIYBoolean(IConfigs.SP_ShowLog));
+                getActivity().finish();
+
+            }
+        });
         mHolder.mBtnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -309,6 +324,8 @@ public class SettingFragment extends Fragment {
         Button mBtnConfirm;
         @BindView(R2.id.tvMore)
         TextView mTvMore;
+        @BindView(R2.id.btnShowLog)
+        Button mBtnShowLog;
         @BindView(R2.id.btnClose)
         Button mBtnClose;
         @BindView(R2.id.llArea)

@@ -213,6 +213,13 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     protected void onResume() {
         super.onResume();
         ToolDisplay.hideBottomUIMenu(this);
+        if (ToolSP.getDIYBoolean(IConfigs.SP_ShowLog)) {
+            showLogsDialog();
+        } else {
+            if (mDialogLogs != null) {
+                mDialogLogs.dismiss();
+            }
+        }
     }
 
 
@@ -242,9 +249,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
 
         Map<String, ?> mAll = ToolSP.getAll();
-        LogUtils.file("【本地配置信息】：");
+        ToolLog.efile("【本地配置信息】：");
         for (String str : mAll.keySet()) {
-            LogUtils.file("key= " + str + " value= " + mAll.get(str));
+            ToolLog.efile("key= " + str + " value= " + mAll.get(str));
         }
 
         if (mIP.length() < 6) {
@@ -329,7 +336,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             @Override
             public String doInBackground() throws Throwable {
                 String res = ToolCommon.getBitmapString(mBaseRlRoot);
-                LogUtils.file(HTTP, "【上传截图】" + url);
+                ToolLog.efile(HTTP, "【上传截图】" + url);
                 mPresenter.uploadScreen(url, res, sessionId);
                 return null;
             }
@@ -396,7 +403,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     String mType = mObject.getString("type");
                     //不打印心跳日志
                     if (!"pong".equals(mType)) {
-                        LogUtils.file(SOCKET, obj);
+                        ToolLog.efile(SOCKET, obj);
                     }
                     ToolLog.e(TAG, "handleMessage: socket  " + obj);
                     switch (mType) {
@@ -479,7 +486,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                                         int value = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);//设置前
                                         int index = max * Integer.parseInt(vsize) / 100;//需要设置的值
                                         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index, 0); //音量
-                                        LogUtils.file("【音量设置 】 " + vsize + " ，设置前：" + value + "， 设置后：" + mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                                        ToolLog.efile(SOCKET, "【音量设置 】 " + vsize + " ，设置前：" + value + "， 设置后：" + mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
                                     }
                                 }
                             }
@@ -641,7 +648,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      */
     public void showTime(String dateStr, String timeStr, String week) {
         if (timeStr.equals(mRebootEndTime)) {
-            LogUtils.file("【关机时间到了】: " + mRebootEndTime);
+            ToolLog.efile("【关机时间到了】: " + mRebootEndTime);
             if (mDataHandler != null) {
                 mDataHandler.sendEmptyMessage(IConfigs.MSG_REBOOT_LISTENER);
             }

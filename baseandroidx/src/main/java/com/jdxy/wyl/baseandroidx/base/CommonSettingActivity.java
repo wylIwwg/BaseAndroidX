@@ -45,7 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-public class CommonSettingActivity extends BaseHospitalActivity {
+public class CommonSettingActivity extends AppCompatActivity implements IView {
     ImageView mImgBack;
     TextView mTvBack;
     TextView mTvTitleLeft;
@@ -62,6 +62,7 @@ public class CommonSettingActivity extends BaseHospitalActivity {
     LinearLayout mLlPsw;
 
     public static final int JSON_INDENT = 4;
+    private String TAG = "CommonSettingActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,18 +70,8 @@ public class CommonSettingActivity extends BaseHospitalActivity {
         setContentView(R.layout.activity_common_setting);
 
         initFindViewById();
-        startLocalTime();
     }
 
-    @Override
-    public void userHandler(Message msg) {
-        super.userHandler(msg);
-    }
-
-    @Override
-    public void showTime(String dateStr, String timeStr, String week) {
-        mTvSystemTime.setText(dateStr + " " + timeStr);
-    }
 
     private void initFindViewById() {
         mTabLayout = findViewById(R.id.tab_layout);
@@ -172,4 +163,28 @@ public class CommonSettingActivity extends BaseHospitalActivity {
     }
 
 
+    @Override
+    public void showSuccess(String success) {
+
+    }
+
+    @Override
+    public void showError(String error) {
+
+    }
+
+    @Override
+    public void showInfo(String info) {
+
+    }
+
+    @Override
+    public void release() {
+
+    }
+
+    @Override
+    public void initData() {
+
+    }
 }

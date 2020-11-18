@@ -262,6 +262,12 @@
                     style="@style/baseBtn"
                     android:layout_marginLeft="20dp"
                     android:text="退出应用" />
+
+                <Button
+                    android:id="@+id/btnShowLog"
+                    style="@style/baseBtn"
+                    android:layout_marginLeft="20dp"
+                    android:text="查看日志" />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

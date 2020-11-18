@@ -67,7 +67,7 @@ public interface IConfigs {
     String SP_HOST = "host";
 
     String SP_POWER = "power";//开关机
-
+    String SP_ShowLog = "showlog";
     /*区域*/
     String SP_WINDOW_NUM = "win_num";//窗口号
     String SP_WINDOW_ID = "win_id";//窗口id

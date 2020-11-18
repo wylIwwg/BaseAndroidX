@@ -56,9 +56,8 @@ public class BaseApp extends Application {
                 .allowQueue(false)
                 .setTextSize(18)
                 .apply();
-
         ToolSP.Init(this, getPackageName());
-
+        ToolSP.putDIYBoolean(IConfigs.SP_ShowLog, false);
         Utils.init(this);
 
         if (Build.USER.contains("liaokai")) {
@@ -163,7 +162,7 @@ public class BaseApp extends Application {
         //第三方的开源库，使用通知显示当前请求的log，不过在做文件下载的时候，这个库好像有问题，对文件判断不准确
         //builder.addInterceptor(new ChuckInterceptor(this));
         // builder.eventListenerFactory(NetworkListener.get());
-       // builder.addNetworkInterceptor(new NetworkInterceptor());
+        // builder.addNetworkInterceptor(new NetworkInterceptor());
 
         //超时时间设置，默认60秒
         //全局的读取超时时间
