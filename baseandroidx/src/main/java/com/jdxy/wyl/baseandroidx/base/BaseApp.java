@@ -45,13 +45,11 @@ import okhttp3.OkHttpClient;
 public class BaseApp extends Application {
 
     public static final String TAG = " 【Application】 ";
-    public Context mContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
         new ANRThread().start();
-        mContext = getApplicationContext();
         Toasty.Config.getInstance()
                 .allowQueue(false)
                 .setTextSize(18)
@@ -67,6 +65,8 @@ public class BaseApp extends Application {
 
 
     }
+
+
 
     /**
      * 删除指定时间内的文件  保留

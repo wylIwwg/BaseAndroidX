@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.jdxy.wyl.baseandroidx.R;
@@ -84,25 +85,24 @@ public class DialogLogs extends DialogFragment {
 
             }
         });
-        builder.setNegativeButton("关闭", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-            }
-        });
+
         View mInflate = View.inflate(getActivity(), R.layout.dialog_logs, null);
-        TextView tvLogsLocal = mInflate.findViewById(R.id.tvLogsLocal);
-        tvLogsReal = mInflate.findViewById(R.id.tvLogsReal);
+        tvLogsReal = mInflate.findViewById(R.id.tvLogs);
         Button btnLogsLocal = mInflate.findViewById(R.id.btnLogsLocal);
         Button btnBgTans = mInflate.findViewById(R.id.btnBgTans);
         Button btnLogsReal = mInflate.findViewById(R.id.btnLogsReal);
+        Button btnClose = mInflate.findViewById(R.id.btnClose);
         //设置内容可滚动
         tvLogsReal.setMovementMethod(ScrollingMovementMethod.getInstance());
-        tvLogsLocal.setMovementMethod(ScrollingMovementMethod.getInstance());
-
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
         btnLogsReal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvLogsLocal.setText("");
                 tvLogsReal.setText("");
                 localLogs = false;
                 ToolLog.e(TAG, "onClick:查看实时： " + tvLogsReal);
@@ -117,13 +117,14 @@ public class DialogLogs extends DialogFragment {
                     @Override
                     public boolean accept(File pathname) {
                         ToolLog.e("TAG", "accept: " + pathname);
-                        return pathname.lastModified() > System.currentTimeMillis() - 24 * 60 * 60 * 1000 && pathname.getAbsolutePath().endsWith("txt");
+
+                        return pathname.lastModified() > System.currentTimeMillis() - 24 * 60 * 60 * 1000
+                                && pathname.getAbsolutePath().endsWith("txt") && pathname.getAbsolutePath().contains(AppUtils.getAppPackageName());
                     }
                 });
-                tvLogsReal.setText("");
                 if (mFiles.size() > 0 && FileUtils.isFileExists(mFiles.get(0))) {
                     String mFile2String = FileIOUtils.readFile2String(mFiles.get(0));
-                    tvLogsLocal.setText(mFile2String);
+                    tvLogsReal.setText(mFile2String);
                 }
 
             }
@@ -140,10 +141,8 @@ public class DialogLogs extends DialogFragment {
         });
         //竖屏 960dp  横屏 540
         if (getResources().getConfiguration().orientation == 1) {
-            tvLogsLocal.setMaxHeight(ToolDisplay.dip2px(getActivity(), 600));
             tvLogsReal.setMaxHeight(ToolDisplay.dip2px(getActivity(), 600));
         } else {
-            tvLogsLocal.setMaxHeight(ToolDisplay.dip2px(getActivity(), 350));
             tvLogsReal.setMaxHeight(ToolDisplay.dip2px(getActivity(), 350));
         }
         window.getDecorView().setPadding(0, 0, 0, 0);
@@ -155,16 +154,4 @@ public class DialogLogs extends DialogFragment {
         return alertDialog;
     }
 
-    static class Holder {
-        @BindView(R2.id.btnLogsLocal)
-        Button mBtnLogsLocal;
-        @BindView(R2.id.tvLogsLocal)
-        TextView mTvLogsLocal;
-        @BindView(R2.id.tvLogsReal)
-        TextView mTvLogsReal;
-
-        Holder(View view) {
-            ButterKnife.bind(this, view);
-        }
-    }
 }

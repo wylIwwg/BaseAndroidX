@@ -58,6 +58,11 @@ public interface IConfigs {
     String APK_VERSION_CODE = "versionCode";
 
     /*配置相关*/
+
+
+    String SP_MODIFIED_PROJECT_NAME = "m_project_name";//修改后的项目
+    String SP_DEFAULT_PROJECT_NAME = "d_project_name";//默认项目
+
     String SP_IP = "ip";
     String SP_PORT_HTTP = "portHttp";
     String SP_PORT_SOCKET = "portSocket";//

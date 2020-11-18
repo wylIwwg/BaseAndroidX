@@ -33,6 +33,7 @@ import com.jdxy.wyl.baseandroidx.bean.BHosSetting;
 import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
+import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
@@ -109,17 +110,16 @@ public class SettingFragment extends Fragment {
 
         //如果是综合屏
         if (ToolSP.getDIYString(IConfigs.SP_APP_TYPE).equals("4")) {
-            mHolder.mTvMore.setVisibility(View.VISIBLE);
             mHolder.mRgSynthesisType.setVisibility(View.VISIBLE);
 
         }
 
-        mHolder.mTvMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        //设置项目名  获取系统项目名称
+        if (!TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME))) {
+            mHolder.mEtProjectName.setText(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME));
+            mHolder.mEtProjectName.setEnabled(false);
+        }
 
-            }
-        });
 
         mHolder.mBtnGetArea.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,10 +131,15 @@ public class SettingFragment extends Fragment {
                 ToolSP.putDIYString(IConfigs.SP_PORT_HTTP, mHolder.mEtPort.getText().toString().trim());
                 ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString().trim());
                 if (!TextUtils.isEmpty(ip) && !TextUtils.isEmpty(port)) {
-                    if (!mApi.contains(ip)) {
-                        mApi = String.format(IConfigs.HOST, ip, port) + mApi;
+                    String api=mApi;
+                    if (!api.contains(ip)) {
+                        String mp = mHolder.mEtProjectName.getText().toString();
+                        ToolLog.efile("SETTING", "onClick: " + mp);
+                        api = String.format(IConfigs.HOST, ip, port) +
+                                (TextUtils.isEmpty(mp) ? ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME) : ("/" + mp)) + api;
                     }
-                    OkGo.<BHosSetting>get(mApi).execute(new JsonCallBack<BHosSetting>(BHosSetting.class) {
+                    ToolLog.efile("SETTING", "onClick: " + api);
+                    OkGo.<BHosSetting>get(api).execute(new JsonCallBack<BHosSetting>(BHosSetting.class) {
                         @Override
                         public void onSuccess(Response<BHosSetting> response) {
                             if (response != null) {
@@ -204,6 +209,10 @@ public class SettingFragment extends Fragment {
                     ToolSP.putDIYString(IConfigs.SP_CLINIC_NAME, clinic.getName() + "");
                     ToolSP.putDIYString(IConfigs.SP_CLINIC_ID, clinic.getId() + "");
 
+                }
+                if (!TextUtils.isEmpty(mHolder.mEtProjectName.getText().toString())) {
+                    ToolSP.putDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME, mHolder.mEtProjectName.getText().toString());
+                    ToolSP.putDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME, "/" + mHolder.mEtProjectName.getText().toString());
                 }
 
                 AppUtils.relaunchApp(true);
@@ -314,6 +323,8 @@ public class SettingFragment extends Fragment {
         EditText mEtPort;
         @BindView(R2.id.etSocketPort)
         EditText mEtSocketPort;
+        @BindView(R2.id.etProjectName)
+        EditText mEtProjectName;
         @BindView(R2.id.btnGetArea)
         Button mBtnGetArea;
         @BindView(R2.id.rlvDepart)
@@ -322,8 +333,6 @@ public class SettingFragment extends Fragment {
         RecyclerView mRlvClinic;
         @BindView(R2.id.btnConfirm)
         Button mBtnConfirm;
-        @BindView(R2.id.tvMore)
-        TextView mTvMore;
         @BindView(R2.id.btnShowLog)
         Button mBtnShowLog;
         @BindView(R2.id.btnClose)

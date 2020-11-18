@@ -79,7 +79,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public Context mContext;
     public RelativeLayout mBaseRlRoot;//根布局
     public BaseDataHandler mDataHandler;
-    public String mHost = "";
+    public String mBaseHost = "";//host http://192.168.2.188:8080
+    public String mHost = "";//host http://192.168.2.188:8080/项目名
+
     public boolean isRegistered = false;
     public int mRegisterCode = 0;
     public String mRegisterViper = "";
@@ -113,7 +115,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public String URL_UPLOAD_LOGS;//上传截图链接http
 
     public String URL_FINISH_VOICE;//语音播报结束
-
+    public String ProjectName = "";
     public boolean localTimeSeted = false;//是否设置过本地时间
 
 
@@ -146,10 +148,16 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             }
         });
 
+        ProjectName = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
+        if (TextUtils.isEmpty(ProjectName)) {
+            showInfo("请设置 ProjectName");
+        }
+
 
     }
 
     View viewRegister;
+
 
     /**
      * @param msg
@@ -261,7 +269,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         if (mHttpPort.length() < 1) {
             mHttpPort = "8080";
         }
-        mHost = String.format(IConfigs.HOST, mIP, mHttpPort);
+        mBaseHost = String.format(IConfigs.HOST, mIP, mHttpPort);
     }
 
 
@@ -505,8 +513,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             showInfo("收到软件更新");
                             String link = mObject.getString("link");
                             if (!TextUtils.isEmpty(link)) {
-                                ToolLog.efile(TAG, "userHandler: " + "【下载更新】" + mHost + link);
-                                mPresenter.downloadApk(mHost + link);
+                                ToolLog.efile(TAG, "userHandler: " + "【下载更新】" + mBaseHost + link);
+                                mPresenter.downloadApk(mBaseHost + link);
                             }
 
                             break;
