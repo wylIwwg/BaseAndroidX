@@ -623,18 +623,20 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public void hardReboot(final int seconds) {
         if (ToolLZ.Instance().isLZDevice()) {
             release();
-        }
-        mDataHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (seconds > 0) {
-                    ToolLZ.Instance().alarmPoweron(seconds);////定时开机
-                } else {
-                    ToolLZ.Instance().hardReboot();//重启
+
+            mDataHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (seconds > 0) {
+                        ToolLZ.Instance().alarmPoweron(seconds);////定时开机
+                    } else {
+                        ToolLZ.Instance().hardReboot();//重启
+                    }
+                    close();
                 }
-                close();
-            }
-        }, 2000);
+            }, 2000);
+        }
+
 
     }
 
