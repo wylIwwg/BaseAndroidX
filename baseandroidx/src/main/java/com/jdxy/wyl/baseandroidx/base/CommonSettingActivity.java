@@ -93,9 +93,11 @@ public class CommonSettingActivity extends BaseHospitalActivity {
 
         mTvBack = findViewById(R.id.tvBack);
         mImgBack = findViewById(R.id.imgBack);
+
         mTvBack.setOnClickListener(v -> {
             finish();
         });
+
         mImgBack.setOnClickListener(v -> {
             finish();
         });

@@ -10,9 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -103,6 +106,20 @@ public class SettingFragment extends Fragment {
         mHolder.mEtPort.setText(ToolSP.getDIYString(IConfigs.SP_PORT_HTTP));
         mHolder.mEtSocketPort.setText(ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET));
 
+        //如果是综合屏
+        if (ToolSP.getDIYString(IConfigs.SP_APP_TYPE).equals("4")) {
+            mHolder.mTvMore.setVisibility(View.VISIBLE);
+            mHolder.mRgSynthesisType.setVisibility(View.VISIBLE);
+
+        }
+
+        mHolder.mTvMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         mHolder.mBtnGetArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,6 +193,43 @@ public class SettingFragment extends Fragment {
 
                 AppUtils.relaunchApp(true);
 
+            }
+        });
+
+        int type = ToolSP.getDIYInt(IConfigs.SP_SYNTHESIS_TYPE);
+
+        switch (type) {
+            case IConfigs.SYNTHESIS_TYPE_YaoFang://药房
+                mHolder.mRbYaofang.setChecked(true);
+                break;
+            case IConfigs.SYNTHESIS_TYPE_YiJi://医技
+                mHolder.mRbYiji.setChecked(true);
+                break;
+            case IConfigs.SYNTHESIS_TYPE_MenZhen://门诊
+                mHolder.mRbMenzhen.setChecked(true);
+                break;
+        }
+
+
+        mHolder.mRbYiji.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    ToolSP.putDIYInt(IConfigs.SP_SYNTHESIS_TYPE, IConfigs.SYNTHESIS_TYPE_YiJi);
+            }
+        });
+        mHolder.mRbYaofang.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    ToolSP.putDIYInt(IConfigs.SP_SYNTHESIS_TYPE, IConfigs.SYNTHESIS_TYPE_YaoFang);
+            }
+        });
+        mHolder.mRbMenzhen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    ToolSP.putDIYInt(IConfigs.SP_SYNTHESIS_TYPE, IConfigs.SYNTHESIS_TYPE_MenZhen);
             }
         });
 
@@ -253,12 +307,23 @@ public class SettingFragment extends Fragment {
         RecyclerView mRlvClinic;
         @BindView(R2.id.btnConfirm)
         Button mBtnConfirm;
+        @BindView(R2.id.tvMore)
+        TextView mTvMore;
         @BindView(R2.id.btnClose)
         Button mBtnClose;
         @BindView(R2.id.llArea)
         LinearLayout mLlArea;
         @BindView(R2.id.popRoot)
         LinearLayout mPopRoot;
+        @BindView(R2.id.rgSynthesisType)
+        RadioGroup mRgSynthesisType;
+
+        @BindView(R2.id.rbMenzhen)
+        RadioButton mRbMenzhen;
+        @BindView(R2.id.rbYaofang)
+        RadioButton mRbYaofang;
+        @BindView(R2.id.rbYiji)
+        RadioButton mRbYiji;
 
         Holder(View view) {
             ButterKnife.bind(this, view);

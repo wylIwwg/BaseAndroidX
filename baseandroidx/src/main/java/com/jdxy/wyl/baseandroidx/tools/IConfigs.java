@@ -64,6 +64,7 @@ public interface IConfigs {
     String SP_VOICE_TEMP = "voiceFormat";//
 
     String SP_API = "api";
+    String SP_HOST = "host";
 
     String SP_POWER = "power";//开关机
 
@@ -72,7 +73,14 @@ public interface IConfigs {
     String SP_WINDOW_ID = "win_id";//窗口id
     String SP_ROOM_NUM = "room_num";//房间号
     String SP_ROOM_ID = "room_id";//房间id
-    String SP_APP_TYPE = "app_type";
+
+    String SP_APP_TYPE = "app_type";//软件类型
+
+    String SP_SYNTHESIS_TYPE = "synthesis_type";//综合屏类型
+
+    int SYNTHESIS_TYPE_YaoFang = 1;//药房
+    int SYNTHESIS_TYPE_YiJi = 2;//医技
+    int SYNTHESIS_TYPE_MenZhen = 3;//门诊
 
     String SP_UNITID = "unitid";
     String SP_FLOOR = "floor";
