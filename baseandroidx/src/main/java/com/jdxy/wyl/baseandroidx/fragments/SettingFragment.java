@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.R2;
 import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
@@ -40,6 +41,7 @@ import com.lzy.okgo.model.Response;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -114,10 +116,15 @@ public class SettingFragment extends Fragment {
 
         }
 
+
         //设置项目名  获取系统项目名称
         if (!TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME))) {
+            mHolder.mTvModify.setText("* 项目名已修改*");
+            mHolder.mTvModify.setTextColor(getResources().getColor(R.color.grey));
             mHolder.mEtProjectName.setText(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME));
             mHolder.mEtProjectName.setEnabled(false);
+        } else {
+            mHolder.mEtProjectName.setText(ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME));
         }
 
 
@@ -131,7 +138,7 @@ public class SettingFragment extends Fragment {
                 ToolSP.putDIYString(IConfigs.SP_PORT_HTTP, mHolder.mEtPort.getText().toString().trim());
                 ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString().trim());
                 if (!TextUtils.isEmpty(ip) && !TextUtils.isEmpty(port)) {
-                    String api=mApi;
+                    String api = mApi;
                     if (!api.contains(ip)) {
                         String mp = mHolder.mEtProjectName.getText().toString();
                         ToolLog.efile("SETTING", "onClick: " + mp);
@@ -174,7 +181,7 @@ public class SettingFragment extends Fragment {
         mHolder.mBtnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Process.killProcess(Process.myPid());
+                AppUtils.exitApp();
             }
         });
 
@@ -210,11 +217,13 @@ public class SettingFragment extends Fragment {
                     ToolSP.putDIYString(IConfigs.SP_CLINIC_ID, clinic.getId() + "");
 
                 }
-                if (!TextUtils.isEmpty(mHolder.mEtProjectName.getText().toString())) {
-                    ToolSP.putDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME, mHolder.mEtProjectName.getText().toString());
-                    ToolSP.putDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME, "/" + mHolder.mEtProjectName.getText().toString());
+                String pn = mHolder.mEtProjectName.getText().toString();
+                if (!TextUtils.isEmpty(pn)) {
+                    ToolSP.putDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME, pn);
+                    if (!pn.startsWith("/"))
+                        pn = "/" + pn;
+                    ToolSP.putDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME, pn);
                 }
-
                 AppUtils.relaunchApp(true);
 
             }
@@ -317,6 +326,8 @@ public class SettingFragment extends Fragment {
 
 
     static class Holder {
+        @BindView(R2.id.tvModify)
+        TextView mTvModify;
         @BindView(R2.id.etIp)
         EditText mEtIp;
         @BindView(R2.id.etPort)

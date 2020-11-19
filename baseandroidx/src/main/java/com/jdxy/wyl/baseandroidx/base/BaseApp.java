@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
+import android.text.TextUtils;
 
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileUtils;
@@ -55,7 +56,9 @@ public class BaseApp extends Application {
                 .setTextSize(18)
                 .apply();
         ToolSP.Init(this, getPackageName());
+
         ToolSP.putDIYBoolean(IConfigs.SP_ShowLog, false);
+
         Utils.init(this);
 
         if (Build.USER.contains("liaokai")) {
@@ -66,6 +69,16 @@ public class BaseApp extends Application {
 
     }
 
+    /**
+     * 设置项目名
+     * @param pn
+     */
+    public void setProjectName(String pn) {
+        //如果没有修改过项目名 则以原来的为准
+        if (TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME))) {
+            ToolSP.putDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME, pn);
+        }
+    }
 
 
     /**

@@ -259,11 +259,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         Map<String, ?> mAll = ToolSP.getAll();
         ToolLog.efile("【本地配置信息】：");
         for (String str : mAll.keySet()) {
-            ToolLog.efile("key= " + str + " value= " + mAll.get(str));
+            ToolLog.efile("【key= " + str + " value= " + mAll.get(str) + "】");
         }
 
         if (mIP.length() < 6) {
-            showError("请设置ip与端口号");
             return;
         }
         if (mHttpPort.length() < 1) {

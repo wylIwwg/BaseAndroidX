@@ -52,6 +52,18 @@
             android:background="@drawable/bg_settting"
             android:orientation="vertical"
             android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tvModify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="155dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:text="*项目名称仅可修改一次 以 ‘/’开头*"
+                android:textColor="@color/red"
+                android:textSize="13sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,7 +82,7 @@
                     android:id="@+id/etProjectName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_login_et"
+                    android:background="@drawable/bg_base_et"
                     android:hint="项目名称仅可修改一次"
                     android:padding="5dp"
                     android:textColor="@color/txt"
@@ -97,7 +109,7 @@
                     android:id="@+id/etIp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_login_et"
+                    android:background="@drawable/bg_base_et"
                     android:hint="输入正确的ip地址"
                     android:inputType="number|textUri"
                     android:padding="5dp"
@@ -126,7 +138,7 @@
                     android:id="@+id/etPort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_login_et"
+                    android:background="@drawable/bg_base_et"
                     android:hint="输入正确的端口号"
                     android:inputType="number"
                     android:padding="5dp"
@@ -155,7 +167,7 @@
                     android:id="@+id/etSocketPort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_login_et"
+                    android:background="@drawable/bg_base_et"
                     android:hint="输入正确的端口号"
                     android:inputType="number"
                     android:padding="5dp"

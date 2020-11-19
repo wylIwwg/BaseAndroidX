@@ -61,7 +61,7 @@
 
             <TextView
                 style="@style/DetailTitle"
-                android:text="Wi-Fi信息"/>
+                android:text="网络信息"/>
 
             <TextView
                 android:id="@+id/tv_content_info"

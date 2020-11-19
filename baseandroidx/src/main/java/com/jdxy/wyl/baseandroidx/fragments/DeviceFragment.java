@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.base.NetworkFeedBean;
 import com.jdxy.wyl.baseandroidx.network.NetDeviceUtils;
@@ -33,6 +34,7 @@ import com.jdxy.wyl.baseandroidx.network.NetWorkUtils;
 import com.jdxy.wyl.baseandroidx.network.NetworkTool;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
+import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 
 import org.jetbrains.annotations.NotNull;
@@ -165,7 +167,7 @@ public class DeviceFragment extends Fragment {
         }
         StringBuilder sb = new StringBuilder();
         sb.append("软件App包名:").append(NetworkTool.getInstance().getApplication().getPackageName());
-        sb.append("\n是否是DEBUG版本:").append(AppUtils.isAppDebug());
+        //  sb.append("\n是否是DEBUG版本:").append(AppUtils.isAppDebug());
         if (versionName != null && versionName.length() > 0) {
             sb.append("\n版本名称:").append(versionName);
             sb.append("\n版本号:").append(versionCode);
@@ -187,23 +189,54 @@ public class DeviceFragment extends Fragment {
     private void setLocationInfo() {
         Application application = NetworkTool.getInstance().getApplication();
         StringBuilder sb = new StringBuilder();
-        sb.append("wifi信号强度:").append(NetDeviceUtils.getWifiState(application));
-        sb.append("\nAndroidID:").append(NetDeviceUtils.getAndroidID(application));
-        sb.append("\nMac地址:").append(NetDeviceUtils.getMacAddress(application));
-        sb.append("\nWifi名称:").append(NetDeviceUtils.getWifiName(application));
-        int wifiIp = NetDeviceUtils.getWifiIp(application);
-        String ip = NetDeviceUtils.intToIp(wifiIp);
-        sb.append("\nWifi的Ip地址:").append(ip);
-        DhcpInfo dhcpInfo = NetDeviceUtils.getDhcpInfo(application);
-        if (dhcpInfo != null) {
-            //sb.append("\nipAddress：").append(NetDeviceUtils.intToIp(dhcpInfo.ipAddress));
-            sb.append("\n子网掩码地址：").append(NetDeviceUtils.intToIp(dhcpInfo.netmask));
-            sb.append("\n网关地址：").append(NetDeviceUtils.intToIp(dhcpInfo.gateway));
-            sb.append("\nserverAddress：").append(NetDeviceUtils.intToIp(dhcpInfo.serverAddress));
-            sb.append("\nDns1：").append(NetDeviceUtils.intToIp(dhcpInfo.dns1));
-            sb.append("\nDns2：").append(NetDeviceUtils.intToIp(dhcpInfo.dns2));
+        if (NetworkUtils.getNetworkType() == NetworkUtils.NetworkType.NETWORK_WIFI) {
+            sb.append("wifi网络");
+            sb.append("wifi信号强度:").append(NetDeviceUtils.getWifiState(application));
+            sb.append("\nAndroidID:").append(NetDeviceUtils.getAndroidID(application));
+            sb.append("\nMac地址:").append(NetDeviceUtils.getMacAddress(application).toUpperCase());
+            sb.append("\nWifi名称:").append(NetDeviceUtils.getWifiName(application));
+            int wifiIp = NetDeviceUtils.getWifiIp(application);
+            String ip = NetDeviceUtils.intToIp(wifiIp);
+            sb.append("\nWifi的Ip地址:").append(ip);
+            DhcpInfo dhcpInfo = NetDeviceUtils.getDhcpInfo(application);
+            if (dhcpInfo != null) {
+                sb.append("\n子网掩码地址：").append(NetDeviceUtils.intToIp(dhcpInfo.netmask));
+                sb.append("\n网关地址：").append(NetDeviceUtils.intToIp(dhcpInfo.gateway));
+                sb.append("\nserverAddress：").append(NetDeviceUtils.intToIp(dhcpInfo.serverAddress));
+                sb.append("\nDns1：").append(NetDeviceUtils.intToIp(dhcpInfo.dns1));
+                sb.append("\nDns2：").append(NetDeviceUtils.intToIp(dhcpInfo.dns2));
+            }
+            tvContentInfo.setText(sb.toString());
+        } else if (NetworkUtils.getNetworkType() == NetworkUtils.NetworkType.NETWORK_NO){
+            sb.append("无网络");
+            sb.append("\nAndroidID:").append(NetDeviceUtils.getAndroidID(application));
+            sb.append("\nMac地址:").append(ToolDevice.getMac());
+            sb.append("\nIp地址:").append(NetworkUtils.getIPAddress(true));
+            DhcpInfo dhcpInfo = NetDeviceUtils.getDhcpInfo(application);
+            if (dhcpInfo != null) {
+                sb.append("\n子网掩码地址：").append(NetDeviceUtils.intToIp(dhcpInfo.netmask));
+                sb.append("\n网关地址：").append(NetDeviceUtils.intToIp(dhcpInfo.gateway));
+                sb.append("\nserverAddress：").append(NetDeviceUtils.intToIp(dhcpInfo.serverAddress));
+                sb.append("\nDns1：").append(NetDeviceUtils.intToIp(dhcpInfo.dns1));
+                sb.append("\nDns2：").append(NetDeviceUtils.intToIp(dhcpInfo.dns2));
+            }
+            tvContentInfo.setText(sb.toString());
+        }else {
+            sb.append("移动网络");
+            sb.append("\nAndroidID:").append(NetDeviceUtils.getAndroidID(application));
+            sb.append("\nMac地址:").append(ToolDevice.getMac());
+            sb.append("\nIp地址:").append(NetworkUtils.getIPAddress(true));
+            DhcpInfo dhcpInfo = NetDeviceUtils.getDhcpInfo(application);
+            if (dhcpInfo != null) {
+                sb.append("\n子网掩码地址：").append(NetDeviceUtils.intToIp(dhcpInfo.netmask));
+                sb.append("\n网关地址：").append(NetDeviceUtils.intToIp(dhcpInfo.gateway));
+                sb.append("\nserverAddress：").append(NetDeviceUtils.intToIp(dhcpInfo.serverAddress));
+                sb.append("\nDns1：").append(NetDeviceUtils.intToIp(dhcpInfo.dns1));
+                sb.append("\nDns2：").append(NetDeviceUtils.intToIp(dhcpInfo.dns2));
+            }
+            tvContentInfo.setText(sb.toString());
         }
-        tvContentInfo.setText(sb.toString());
+
     }
 
 
