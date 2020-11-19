@@ -14,6 +14,7 @@ import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
 import com.unisound.client.SpeechConstants;
 import com.unisound.client.SpeechSynthesizer;
@@ -114,8 +115,14 @@ public class ToolVoice {
 
                                 //如果结束播报的连接不为空，就请求结束
                                 if (!TextUtils.isEmpty(urlFinishVoice)) {
-                                    String url = urlFinishVoice + mNext.getPatientId();
-                                    OkGo.<String>get(url)
+                                    HttpParams hp = new HttpParams();
+                                    hp.put("pid", mNext.getPatientId());
+                                    hp.put("queNum", mNext.getPatientNum());
+                                    ToolLog.efile(TAG, "【语音播报链接】: " + urlFinishVoice);
+                                    ToolLog.efile(TAG, "【语音播报参数】: " + JSON.toJSONString(hp));
+
+                                    OkGo.<String>post(urlFinishVoice)
+                                            .params(hp)
                                             .tag(this).execute(new StringCallback() {
                                         @Override
                                         public void onSuccess(Response<String> response) {

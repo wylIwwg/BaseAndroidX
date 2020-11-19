@@ -19,7 +19,9 @@ public interface IConfigs {
     String PATH_ERROR = PATH_ROOT + "error/";//错误日志
     String PATH_CAPTURE = PATH_ROOT + "capture/";//截图保存
     String PATH_VIDEO = PATH_ROOT + "video/";//截图保存
+
     String PATH_PROGRAM = PATH_ROOT + "program/";//项目节目
+    String PATH_ZIP = PATH_ROOT + "zip/";//项目节目
 
     /**
      * 网络请求相关
@@ -50,6 +52,7 @@ public interface IConfigs {
 
     int MSG_REBOOT_LISTENER = 2003;//设备关机重启
 
+    int MSG_MEDIA_INIT = 17853;
     ///设备注册
     int REGISTER_FORBIDDEN = 0;//禁止注册
     int REGISTER_FOREVER = -1;//永久注册
@@ -57,9 +60,17 @@ public interface IConfigs {
 
     String APK_VERSION_CODE = "versionCode";
 
+    /*节目配置相关*/
+    String SP_PROGRAM_ID = "proid";//节目id
+    String SP_APK_ID = "apkid";//
+    String SP_TARGET_APP = "target";//需要跳转的app报名
+    String SP_PATH_DATA = "source";//节目资源目录
+    String SP_PATH_DATA_BACKUP = "sourceBackup";//节目资源备份
+    String SP_SETTING_TRY_TIME = "try";
+    String SP_SETTING_START_TIME = "start_time";
+    String SP_SETTING_END_TIME = "end_time";
+
     /*配置相关*/
-
-
     String SP_MODIFIED_PROJECT_NAME = "m_project_name";//修改后的项目
     String SP_DEFAULT_PROJECT_NAME = "d_project_name";//默认项目
 
@@ -70,9 +81,10 @@ public interface IConfigs {
 
     String SP_API = "api";
     String SP_HOST = "host";
-
+    String SP_TIPS = "tips";//终端提示
+    String SP_PHONE = "phone";///联系号码
     String SP_POWER = "power";//开关机
-    String SP_ShowLog = "showlog";
+    String SP_SHOWLOG = "showlog";//是否显示日志
     /*区域*/
     String SP_WINDOW_NUM = "win_num";//窗口号
     String SP_WINDOW_ID = "win_id";//窗口id
@@ -106,18 +118,14 @@ public interface IConfigs {
 
     String SP_FORCED_URL = "forcedurl";
     String SP_FORCED_STATE = "forcedstate";
-    String SP_PROGRAM_ID = "proid";
-    String SP_APK_ID = "apkid";
-    String SP_TARGET_APP = "target";
     String SP_APK_VERSION_CODE = "code";
     String SP_CLIENT_ID = "clientId";
-    String SP_PATH_DATA = "source";
-    String SP_PATH_DATA_BACKUP = "source_backup";
 
     int DEVICE_FORBIDDEN = 0;//未注册
     int DEVICE_REGISTERED = 1;//已注册
     int DEVICE_OUTTIME = 2;//已过期
 
+    String URL_ADD_PUSH = "/Push/addPush";
 
     String METHOD_BIND = "Bind.machineRegister";
     String METHOD_ADD_DEVICE = "Bind.machineRegister";

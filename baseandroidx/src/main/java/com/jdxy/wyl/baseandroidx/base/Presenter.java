@@ -11,11 +11,16 @@ import androidx.core.content.FileProvider;
 
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.jdxy.wyl.baseandroidx.bean.BProgram;
 import com.jdxy.wyl.baseandroidx.listeners.CopyFilesListener;
+import com.jdxy.wyl.baseandroidx.media.zip.DownLoaderTask;
+import com.jdxy.wyl.baseandroidx.media.zip.ZipExtractorTask;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
+import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.lztek.toolkit.Lztek;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -36,8 +41,19 @@ import com.yanzhenjie.permission.AndPermission;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 
 /**
@@ -155,6 +171,133 @@ public class Presenter {
 
     }
 
+    public void downProgram(BProgram.Data mData) {
+
+        if (mData != null) {
+            ToolSP.putDIYString(IConfigs.SP_SETTING_BACK_TIME, mData.getTemNoops());
+            ToolSP.putDIYString(IConfigs.SP_SETTING_DELAY_TIME, mData.getTemIntime());
+            ToolSP.putDIYString(IConfigs.SP_SETTING_SCROLL_TIME, mData.getTemBytime());
+            ToolSP.putDIYString(IConfigs.SP_SETTING_TRY_TIME, mData.getTemTryTime());
+
+            ToolSP.putDIYString(IConfigs.SP_SETTING_START_TIME, mData.getStartTime());
+            ToolSP.putDIYString(IConfigs.SP_SETTING_END_TIME, mData.getEndTime());
+
+
+            if (mData.getTemLink() != null && mData.getTemLink().length() > 0) {
+
+                ToolSP.putDIYString(IConfigs.SP_PROGRAM_ID, mData.getId());
+                OkGo.<File>get(mData.getTemLink())
+                        .tag(this)
+                        .execute(new FileCallback(IConfigs.PATH_ZIP, null) {
+                            @Override
+                            public void onSuccess(Response<File> response) {
+                                //节目包下载完成
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.CHINA);
+                                //2020-11-20-18-11-22_123
+                                //目标解压目录
+                                String dir = sdf.format(new Date(System.currentTimeMillis())) + "_" + mData.getId();
+
+                                operationProgram(response.body(), dir);
+                            }
+                        });
+
+            }
+        }
+
+    }
+
+    void operationProgram(File mFile, String dir) {
+        //
+
+        //通知更新
+        String port = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
+        String ip = ToolSP.getDIYString(IConfigs.SP_IP);
+        //读取默认配置信息
+        String host = String.format(IConfigs.HOST, ip, port);
+        //通知后台更新
+        OkGo.<String>post(host + IConfigs.URL_ADD_PUSH)
+                .params("pushTem", ToolSP.getDIYString(IConfigs.SP_PROGRAM_ID))
+                .params("pushMac", ToolDevice.getMac())
+                .params("pushState", "1")
+                .tag(this)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+
+                    }
+                });
+
+        ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<Object>() {
+            @Override
+            public Object doInBackground() throws Throwable {
+                //新节目文件夹
+                String cur = IConfigs.PATH_PROGRAM + "/" + dir + "/";
+                FileUtils.createOrExistsDir(cur);
+                ToolLog.e(TAG, "【PATH_PROGRAM】: " + cur);
+                ToolSP.putDIYString(IConfigs.SP_PATH_DATA, cur);
+
+                try {
+                    ZipFile zipFile = new ZipFile(mFile);
+                    InputStream is = null;
+                    Enumeration e = zipFile.entries();
+                    int count = 0;
+                    while (e.hasMoreElements()) {
+                        ZipEntry entry = (ZipEntry) e.nextElement();
+                        File dstFile = new File(cur + "/" + entry.getName());
+                        ToolLog.e(TAG, "operationProgram: " + dstFile.getAbsolutePath());
+                        if (entry.isDirectory()) {
+                            FileUtils.createOrExistsDir(dstFile);
+                            continue;
+                        }
+                        is = zipFile.getInputStream(entry);
+
+                        FileUtils.createOrExistsDir(dstFile.getParentFile());
+                        FileOutputStream fos = new FileOutputStream(dstFile);
+                        byte[] buffer = new byte[1024 * 1024];
+                        while ((count = is.read(buffer, 0, buffer.length)) != -1) {
+                            fos.write(buffer, 0, count);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Thread.sleep(1000);
+                AppUtils.relaunchApp(true);
+                return null;
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+
+            }
+        });
+    }
+
+    public void downloadVoiceFile(String[] urls) {
+        ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
+            @Override
+            public String doInBackground() throws Throwable {
+                for (String url : urls) {
+                    if (!url.startsWith("http")) {
+                        url = ToolSP.getDIYString(IConfigs.SP_HOST) + url;
+                    }
+                    OkGo.<File>get(url).tag(this).execute(new FileCallback(IConfigs.PATH_TTS, null) {
+                        @Override
+                        public void onSuccess(Response<File> response) {
+
+                        }
+                    });
+                }
+                return null;
+            }
+
+            @Override
+            public void onSuccess(String result) {
+
+            }
+        });
+    }
 
     /**
      * 上传日志

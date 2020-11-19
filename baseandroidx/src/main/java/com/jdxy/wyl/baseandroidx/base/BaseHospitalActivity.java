@@ -27,6 +27,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
+import com.jdxy.wyl.baseandroidx.bean.BProgram;
 import com.jdxy.wyl.baseandroidx.bean.BPulse;
 import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
@@ -221,7 +222,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     protected void onResume() {
         super.onResume();
         ToolDisplay.hideBottomUIMenu(this);
-        if (ToolSP.getDIYBoolean(IConfigs.SP_ShowLog)) {
+        if (ToolSP.getDIYBoolean(IConfigs.SP_SHOWLOG)) {
             showLogsDialog();
         } else {
             if (mDialogLogs != null) {
@@ -414,6 +415,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     }
                     ToolLog.e(TAG, "handleMessage: socket  " + obj);
                     switch (mType) {
+                        case "program"://接收到推送的节目包
+                            if (ToolLog.showLog) {
+                                showInfo("收到节目");
+                            }
+                            BProgram mProgram = JSON.parseObject(msg.obj.toString(), BProgram.class);
+                            mPresenter.downProgram(mProgram.getData());
+
+                            break;
                         case "timing"://定时开关机
                             BPower mPowerBean = JSON.parseObject(obj, BPower.class);
                             if (mPowerBean != null) {

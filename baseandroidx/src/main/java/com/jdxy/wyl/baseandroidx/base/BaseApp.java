@@ -57,7 +57,7 @@ public class BaseApp extends Application {
                 .apply();
         ToolSP.Init(this, getPackageName());
 
-        ToolSP.putDIYBoolean(IConfigs.SP_ShowLog, false);
+        ToolSP.putDIYBoolean(IConfigs.SP_SHOWLOG, false);
 
         Utils.init(this);
 
