@@ -255,6 +255,7 @@ public class ToolRegister {
                             //永久
                             mResult.setRegistered(true);
                             mResult.setRegisterCode(2);
+                            mRegister.setResidue(2);
                         } else if (mInt > 0) {
                             mResult.setRegistered(true);
                             mResult.setRegisterCode(2);
@@ -324,10 +325,11 @@ public class ToolRegister {
                     String mLimit = this.mRegister.getLimit();
                     if (mLimit != null && mLimit.length() > 0) {
                         int mInt = Integer.parseInt(mLimit);
-                        if (mInt <= -1) {
+                        if (mInt == -1) {
                             //永久
                             mResult.setRegistered(true);
                             mResult.setRegisterCode(1);
+                            mRegister.setResidue(-1);
                         } else if (mInt > 0) {
                             mResult.setRegistered(true);
                             mResult.setRegisterCode(1);
