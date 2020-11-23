@@ -243,7 +243,7 @@ public class ToolVoice {
             String format = mVoiceSetting.getVoFormat();
             final String txt = format.replace("name", ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
                     .replace("line", mNext.getPatientNum() + "")
-                    .replace("department", mNext.getPatientName())
+                    .replace("department", mNext.getDepartmentName())
                     .replace("room", mNext.getClinicName())
                     .replace("doctor", mNext.getDoctorName())
                     .replace("type", mNext.getType())
