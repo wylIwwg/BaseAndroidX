@@ -67,51 +67,6 @@ public class ToolTts {
     public static final String secret = "bbe919b0d4234c4b0f13ebfeb4e7173f";
 
 
-    public void copyFile() {
-        ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
-            @Override
-            public String doInBackground() throws Throwable {
-                ToolLog.e(TAG, "run: 复制语音文件：");
-                File dir = new File(defaultDir);
-                if (!dir.exists())
-                    dir.mkdirs();
-
-                File mFileFont = new File(defaultDir + frontName);
-                File mFileBack = new File(defaultDir + backName);
-
-                LogUtils.file("复制语音文件: " + mFileFont.getAbsolutePath());
-                LogUtils.file("复制语音文件: " + mFileBack.getAbsolutePath());
-                try {
-                    InputStream is = mContext.getAssets().open(frontName);
-
-                    FileIOUtils.writeFileFromIS(mFileFont, is);
-
-                    is = mContext.getAssets().open(backName);
-
-                    FileIOUtils.writeFileFromIS(mFileBack, is);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    LogUtils.file(IConfigs.LOG_ERROR, e.toString());
-                    return null;
-                }
-
-                File mFile = new File(defaultDir + "tts.txt");
-
-                FileIOUtils.writeFileFromString(mFile, backName + ":" + FileUtils.getSize(mFileBack) + "\n" + frontName + ":" + FileUtils.getSize(mFileFont));
-
-                return "null";
-            }
-
-            @Override
-            public void onSuccess(String result) {
-                if (!TextUtils.isEmpty(result)) {
-                    InitTts();
-                }
-            }
-        });
-    }
-
     public boolean existsTTsFile() {
         return existsTTsFile(defaultDir);
     }
@@ -129,15 +84,7 @@ public class ToolTts {
         } else {
             defaultDir = dir.endsWith("/") ? dir : dir + "/";
         }
-        File back = new File(defaultDir + backName);
-        File front = new File(defaultDir + frontName);
-
-        File txt = new File(defaultDir + "tts.txt");
-
-        if (back.isFile() && back.exists() && front.isFile() && front.exists() && txt.exists()) {
-            return true;
-        }
-        return false;
+        return FileUtils.isFileExists(defaultDir + backName) && FileUtils.isFileExists(defaultDir + frontName);
     }
 
 
@@ -161,7 +108,7 @@ public class ToolTts {
             mTTSPlayer.setOption(SpeechConstants.TTS_KEY_VOICE_VOLUME, 100);
             // 初始化合成引擎
             int mInit = mTTSPlayer.init("");
-            ToolLog.e(TAG, "语音初始化 initTts: " + mInit);
+            ToolLog.efile(TAG, "语音初始化 initTts: " + mInit);
             if (mSynthesizerListener != null)
                 mTTSPlayer.setTTSListener(mSynthesizerListener);
 
@@ -172,9 +119,7 @@ public class ToolTts {
 
     public ToolTts InitTtsSetting() {
 
-        if (!existsTTsFile()) {
-            copyFile();
-        } else {
+        if (existsTTsFile()) {
             InitTts();
         }
         return this;
@@ -198,9 +143,7 @@ public class ToolTts {
 
     public ToolTts InitTtsSetting(int speed) {
         this.speed = speed;
-        if (!existsTTsFile()) {
-            copyFile();
-        } else {
+        if (existsTTsFile()) {
             InitTts();
         }
         //  mTTSPlayer.setOption(SpeechConstants.TTS_KEY_BACKEND_MODEL_PATH, TTSManager.getInstance(mContext).defaultDir + TTSManager.getInstance(mContext).backName);
@@ -210,7 +153,7 @@ public class ToolTts {
     public void TtsSpeak(String txt) {
         if (mTTSPlayer != null) {
             mTTSPlayer.playText(txt);
-            ToolLog.e(TAG, "TtsSpeak: " + txt);
+            ToolLog.efile(TAG, "TtsSpeak: " + txt);
         }
     }
 

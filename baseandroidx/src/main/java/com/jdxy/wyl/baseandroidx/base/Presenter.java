@@ -274,18 +274,32 @@ public class Presenter {
         });
     }
 
-    public void downloadVoiceFile(String[] urls) {
+    public void downloadVoiceFiles(List<String> urls) {
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {
                 for (String url : urls) {
+                    //如果包含项目名
+
+                    if (url.contains(ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME))) {
+                        url = url.replace(ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME), "");
+                        ToolLog.efile(TAG, "下载声音文件2: " + url);
+                    }
                     if (!url.startsWith("http")) {
                         url = ToolSP.getDIYString(IConfigs.SP_HOST) + url;
+                        ToolLog.efile(TAG, "下载声音文件3: " + url);
                     }
+                    ToolLog.efile(TAG, "下载声音文件: " + url);
                     OkGo.<File>get(url).tag(this).execute(new FileCallback(IConfigs.PATH_TTS, null) {
                         @Override
                         public void onSuccess(Response<File> response) {
 
+                        }
+
+                        @Override
+                        public void onError(Response<File> response) {
+                            super.onError(response);
+                            ToolLog.efile(TAG, "onError:声音文件下载失败： " + (response.getException() == null ? "" : response.getException().toString()));
                         }
                     });
                 }

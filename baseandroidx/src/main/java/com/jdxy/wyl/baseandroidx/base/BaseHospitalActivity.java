@@ -188,26 +188,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
 
-    /**
-     * 开启开关机线程
-     */
-   /* public void startRebootThread() {
-        mRestartThread = new RestartThread(mContext, mDataHandler);
-        mRestartThread.sleep_time = 10 * 1000;
-        //重启设备线程 固定时间
-        String power = ToolSP.getDIYString(IConfigs.SP_POWER);
-        if (power.length() > 0) {
-            BPower.Data pbd = JSON.parseObject(power, BPower.Data.class);
-            if (pbd != null) {
-                mRebootStarTime = pbd.getStarTime();
-                mRebootEndTime = pbd.getEndTime();
-                if (mRebootEndTime.length() > 0) {//关机时间
-                    mRestartThread.setRebootTime(mRebootEndTime);
-                }
-            }
-        }
-        mRestartThread.start();
-    }*/
     public void hasPermission() {
         //6.0以上申请权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -415,6 +395,11 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     }
                     ToolLog.e(TAG, "handleMessage: socket  " + obj);
                     switch (mType) {
+                        case "voiceFile"://下载声音文件
+                            List<String> urls = JSON.parseArray(mObject.getString("data"), String.class);
+                            mPresenter.downloadVoiceFiles(urls);
+
+                            break;
                         case "program"://接收到推送的节目包
                             if (ToolLog.showLog) {
                                 showInfo("收到节目");
