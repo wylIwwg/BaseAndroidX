@@ -25,6 +25,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.fragments.BasePagerAdapter;
 import com.jdxy.wyl.baseandroidx.fragments.DeviceFragment;
+import com.jdxy.wyl.baseandroidx.fragments.LzFragment;
 import com.jdxy.wyl.baseandroidx.fragments.PingFragment;
 import com.jdxy.wyl.baseandroidx.fragments.SettingFragment;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
@@ -136,14 +137,22 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
         mTitleList.add("区域设置");
         mTitleList.add("网络诊断");
         mTitleList.add("设备信息");
+
+        mFragments.add(SettingFragment.newInstance(mApi));
+        mFragments.add(PingFragment.newInstance(mApi));
+        mFragments.add(new DeviceFragment());
+
+        // if (ToolLZ.Instance().isLZDevice()) {
+        mTitleList.add("亮钻设备");
+        mFragments.add(new LzFragment());
+        // }
+
+
         Intent mIntent = getIntent();
         if (mIntent != null) {
             mApi = mIntent.getStringExtra("api");
             ToolLog.e(TAG, "initTabLayout: " + mApi);
         }
-        mFragments.add(SettingFragment.newInstance(mApi));
-        mFragments.add(PingFragment.newInstance(mApi));
-        mFragments.add(new DeviceFragment());
 
 
         /*

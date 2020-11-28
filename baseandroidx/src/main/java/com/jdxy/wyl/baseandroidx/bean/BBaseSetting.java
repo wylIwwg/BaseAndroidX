@@ -52,6 +52,16 @@ public class BBaseSetting {
     @IDescription("注册文件目录:")
     private String pathRegister;
 
+    @IDescription("项目名称")
+    private String defaultProjectName;
+
+    public String getDefaultProjectName() {
+        return defaultProjectName == null ? "" : defaultProjectName;
+    }
+
+    public void setDefaultProjectName(String defaultProjectName) {
+        this.defaultProjectName = defaultProjectName == null ? "" : defaultProjectName;
+    }
 
     public String getIp() {
         return ip == null ? "" : ip;

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llLzSetting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbarAlwaysDrawHorizontalTrack="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="测试开关机："
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="输入时间（分钟）："
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_base_et"
+                    android:inputType="number"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnTestAlarm"
+                    style="@style/baseBtn"
+                    android:background="@drawable/bg_base_btn"
+                    android:text="测试" />
+
+                <Button
+                    android:id="@+id/btnEnableAlarm"
+                    style="@style/baseBtn"
+                    android:background="@drawable/bg_base_btn"
+                    android:text="启用" />
+            </LinearLayout>
+
+
+            <com.jdxy.wyl.baseandroidx.view.WrapLinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:grivate="left"
+                app:horizontal_Space="10dp"
+                app:vertical_Space="5dp">
+
+                <Button
+
+                    android:id="@+id/btnVoiceSystemAdd"
+                    style="@style/baseBtn"
+                    android:text="(system)+" />
+
+                <Button
+                    android:id="@+id/btnVoiceSystemMinus"
+                    style="@style/baseBtn"
+                    android:text="(system)-" />
+
+                <Button
+                    android:id="@+id/btnVoiceMusicAdd"
+                    style="@style/baseBtn"
+                    android:text="(music)+" />
+
+                <Button
+                    android:id="@+id/btnVoiceMusicMinus"
+                    style="@style/baseBtn"
+                    android:text="(music)-" />
+
+                <Button
+                    android:id="@+id/btnVoiceRingAdd"
+                    style="@style/baseBtn"
+                    android:text="(ring)+" />
+
+                <Button
+                    android:id="@+id/btnVoiceRingmMinus"
+                    style="@style/baseBtn"
+                    android:text="(ring)-" />
+
+
+                <Button
+                    android:id="@+id/btnVoiceAlarmAdd"
+                    style="@style/baseBtn"
+                    android:text="(alarm)+" />
+
+                <Button
+                    android:id="@+id/btnVoiceAlarmMinus"
+                    style="@style/baseBtn"
+                    android:text="(alarm)-" />
+            </com.jdxy.wyl.baseandroidx.view.WrapLinearLayout>
+
+            <com.jdxy.wyl.baseandroidx.view.WrapLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:grivate="left"
+                app:horizontal_Space="10dp"
+                app:vertical_Space="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:text="测试语音："
+                    android:textSize="13sp" />
+
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:background="@drawable/bg_base_et"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="请A002号张三到301诊室黄李医生处就诊"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:background="@drawable/bg_base_et"
+                    android:hint="语速(1-100)"
+                    android:inputType="number"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnTestTts"
+                    style="@style/baseBtn"
+                    android:background="@drawable/bg_base_btn"
+                    android:text="播放" />
+
+                <Button
+                    android:id="@+id/btnEnableTts"
+                    style="@style/baseBtn"
+                    android:background="@drawable/bg_base_btn"
+                    android:text="启用语速" />
+            </com.jdxy.wyl.baseandroidx.view.WrapLinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

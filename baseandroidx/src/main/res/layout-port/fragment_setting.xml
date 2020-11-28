@@ -33,7 +33,20 @@
                 style="@style/baseBtn"
                 android:layout_marginLeft="20dp"
                 android:text="查看日志" />
+
+            <Button
+                android:id="@+id/btnShowSetting"
+                style="@style/baseBtn"
+                android:layout_marginLeft="20dp"
+                android:text="查看设置" />
         </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rlvSetting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:visibility="gone" />
 
         <TextView
 

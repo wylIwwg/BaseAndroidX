@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Process;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +27,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.ReflectUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.R2;
 import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
 import com.jdxy.wyl.baseandroidx.adapter.ViewHolder;
+import com.jdxy.wyl.baseandroidx.base.IDescription;
+import com.jdxy.wyl.baseandroidx.bean.BBaseSetting;
 import com.jdxy.wyl.baseandroidx.bean.BHosSetting;
+import com.jdxy.wyl.baseandroidx.bean.ConfigSetting;
 import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
@@ -39,8 +45,10 @@ import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -54,6 +62,8 @@ import es.dmoral.toasty.Toasty;
  */
 public class SettingFragment extends Fragment {
 
+
+    private static final String TAG = " SettingFragment ";
 
     public SettingFragment() {
         // Required empty public constructor
@@ -95,6 +105,88 @@ public class SettingFragment extends Fragment {
             showSetting();
         }
         return mInflate;
+    }
+
+    public BBaseSetting mSetting;
+    public List<ConfigSetting> datas = new ArrayList<>();
+
+
+    public CommonAdapter<ConfigSetting> mAdapter;
+
+    /**
+     * 获取本地所有配置
+     */
+    public void getLocalSettings() {
+
+        if (mHolder.mRlvSetting.getVisibility() == View.VISIBLE) {
+            mHolder.mRlvSetting.setVisibility(View.GONE);
+            mHolder.mBtnShowSetting.setText("查看设置");
+            return;
+        }
+        mHolder.mRlvSetting.setVisibility(View.VISIBLE);
+        mHolder.mBtnShowSetting.setText("隐藏设置");
+        //获取本地所有配置
+        Map<String, ?> mAll = ToolSP.getAll();
+        if (mSetting == null) {
+            mSetting = new BBaseSetting();
+        }
+        //生成对应的设置对象
+        datas.clear();
+        Field[] mDeclaredFields = mSetting.getClass().getDeclaredFields();
+        for (Field f : mDeclaredFields) {
+            IDescription mAnnotation = f.getAnnotation(IDescription.class);
+            f.setAccessible(true);
+            try {
+                if (mAll.containsKey(f.getName())) {
+                    ConfigSetting c = new ConfigSetting();
+                    c.setDescription(mAnnotation.value());
+                    c.setName(f.getName());
+                    c.setValue(mAll.get(f.getName()).toString());
+                    ToolLog.e(TAG, "getLocalSettings: " + c.getName() + " = " + c.getValue());
+                    datas.add(c);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        mAdapter = new CommonAdapter<ConfigSetting>(getActivity(), R.layout.base_item_setting, datas) {
+            @Override
+            protected void convert(ViewHolder holder, ConfigSetting configSetting, int position) {
+                holder.setText(R.id.tvDesc, configSetting.getDescription());
+                EditText mView = (EditText) holder.getView(R.id.etContent);
+                holder.setText(R.id.etContent, configSetting.getValue());
+                if (!configSetting.getDescription().contains(":")) {
+                    mView.setEnabled(false);
+                }
+                if (mView.getTag() != null && mView.getTag() instanceof TextWatcher) {
+                    mView.removeTextChangedListener((TextWatcher) mView.getTag());
+                }
+
+                TextWatcher intervalTextWatcher = new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        // datas.get(position).setValue(s.toString());
+                        ReflectUtils.reflect(mSetting).field(configSetting.getName(), s.toString());
+
+                    }
+                };
+
+                mView.addTextChangedListener(intervalTextWatcher);
+                mView.setTag(intervalTextWatcher);
+
+            }
+        };
+
+        mHolder.mRlvSetting.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mHolder.mRlvSetting.setAdapter(mAdapter);
     }
 
     CommonAdapter<BHosSetting.Data> mDepartAdapter;
@@ -198,6 +290,14 @@ public class SettingFragment extends Fragment {
 
             }
         });
+
+        mHolder.mBtnShowSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getLocalSettings();
+            }
+        });
+
         mHolder.mBtnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -346,6 +446,8 @@ public class SettingFragment extends Fragment {
         Button mBtnConfirm;
         @BindView(R2.id.btnShowLog)
         Button mBtnShowLog;
+        @BindView(R2.id.btnShowSetting)
+        Button mBtnShowSetting;
         @BindView(R2.id.btnClose)
         Button mBtnClose;
         @BindView(R2.id.llArea)
@@ -361,6 +463,9 @@ public class SettingFragment extends Fragment {
         RadioButton mRbYaofang;
         @BindView(R2.id.rbYiji)
         RadioButton mRbYiji;
+
+        @BindView(R2.id.rlvSetting)
+        RecyclerView mRlvSetting;
 
         Holder(View view) {
             ButterKnife.bind(this, view);

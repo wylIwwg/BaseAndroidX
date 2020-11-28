@@ -2,6 +2,8 @@ package com.jdxy.wyl.baseandroidx.tools;
 
 import android.os.Environment;
 
+import com.jdxy.wyl.baseandroidx.base.IDescription;
+
 /**
  * Created by wyl on 2019/5/29.
  */
@@ -71,9 +73,10 @@ public interface IConfigs {
     String SP_SETTING_END_TIME = "end_time";
 
     /*配置相关*/
-    String SP_MODIFIED_PROJECT_NAME = "m_project_name";//修改后的项目
-    String SP_DEFAULT_PROJECT_NAME = "d_project_name";//默认项目
+    String SP_MODIFIED_PROJECT_NAME = "modifyProjectName";//修改后的项目
+    String SP_DEFAULT_PROJECT_NAME = "defaultProjectName";//默认项目
 
+    String SP_HIDE_PATIENTNAME = "hidename";//隐藏病人姓名
     String SP_IP = "ip";
     String SP_PORT_HTTP = "portHttp";
     String SP_PORT_SOCKET = "portSocket";//
@@ -86,25 +89,37 @@ public interface IConfigs {
     String SP_POWER = "power";//开关机
     String SP_SHOWLOG = "showlog";//是否显示日志
     /*区域*/
-    String SP_WINDOW_NUM = "win_num";//窗口号
-    String SP_WINDOW_ID = "win_id";//窗口id
-    String SP_ROOM_NUM = "room_num";//房间号
-    String SP_ROOM_ID = "room_id";//房间id
 
-    String SP_APP_TYPE = "app_type";//软件类型
 
-    String SP_SYNTHESIS_TYPE = "synthesis_type";//综合屏类型
+
+    String SP_APP_TYPE = "appType";//软件类型
+
+    String SP_SYNTHESIS_TYPE = "synthesisType";//综合屏类型
 
     int SYNTHESIS_TYPE_YaoFang = 1;//药房
     int SYNTHESIS_TYPE_YiJi = 2;//医技
     int SYNTHESIS_TYPE_MenZhen = 3;//门诊
 
-    String SP_UNITID = "unitid";
-    String SP_FLOOR = "floor";
-    String SP_AREA = "area";
+
+    String SP_PATH_REGISER = "pathRegister";
+    String SP_PATH_MAX = "pathMac";
+    String SP_PATH_LOG = "pathLog";
+    String SP_DEV_UPTIME = "devUpTime";
+    String SP_DEV_DOWNTIME = "devDownTime";
+    String SP_VOICE_FORMAT = "voiceFormat";
+    String SP_VOICE_SWITCH = "voiceSwitch";
+
+
+    String SP_UNIT_ID = "unitId";
+
+    String SP_UNIT_NAME = "unitName";
+    String SP_FLOOR_NAME = "floorName";
+    String SP_FLOOR_ID = "floorId";
+    String SP_AREA_ID = "areaId";
+    String SP_AREA_NAME = "areaName";
+    String SP_WINDOW_NAME = "windowName";
 
     String SP_VOICE_SWICH = "flag";
-    String SP_VOICE_FORMAT = "voiceFormat";
 
     String SP_DEPART_NAME = "deptName";//科室名
     String SP_DEPART_ID = "deptId";//科室id
@@ -112,6 +127,11 @@ public interface IConfigs {
     String SP_CLINIC_NAME = "clinicName";//诊室名
     String SP_CLINIC_ID = "clinicId";//诊室id
 
+    String SP_WINDOW_NUM = "windowNum";//窗口号
+    String SP_WINDOW_ID = "windowId";//窗口id
+    String SP_ROOM_NUM = "roomNum";//房间号
+    String SP_ROOM_NAME = "roomName";//房间号
+    String SP_ROOM_ID = "roomId";//房间id
     String SP_SETTING_SCROLL_TIME = "scroll";//轮播滚动时间
     String SP_SETTING_DELAY_TIME = "delay";//延迟滚动时间
     String SP_SETTING_BACK_TIME = "back";//界面操作返回时间
