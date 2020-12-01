@@ -33,6 +33,7 @@ import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
+import com.jdxy.wyl.baseandroidx.media.MediaActivity;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolCommon;
@@ -57,6 +58,7 @@ import com.xuhao.didi.socket.client.sdk.client.connection.IConnectionManager;
 
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,6 +110,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     // public RestartThread mRestartThread;
     public String mRebootStarTime = "";//开关机 开机时间
     public String mRebootEndTime = "";//开关机 关机时间
+
+    public String mProStarTime = "";//节目 开始时间
+    public String mProEndTime = "";//节目 结束时间
+
 
     public String mVoiceSwitch = "1";//语音播报开关
     public BVoiceSetting mVoiceSetting;//语音设置
@@ -257,6 +263,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     ToolLog.efile(TAG, "开关机时间设置完成: " + " 开机时间：" + mRebootStarTime + "  关机时间：" + mRebootEndTime);
                 }
             }
+
+            //节目开始结束时间
+            mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
+            mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
 
 
             if (mIP.length() < 6) {
@@ -423,9 +433,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
                             break;
                         case "program"://接收到推送的节目包
-                            if (ToolLog.showLog) {
-                                showInfo("收到节目");
-                            }
+                            showInfo("收到节目");
                             BProgram mProgram = JSON.parseObject(msg.obj.toString(), BProgram.class);
                             mPresenter.downProgram(mProgram.getData());
 
@@ -672,7 +680,39 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      * @param week
      */
     public void showTime(String dateStr, String timeStr, String week) {
-        ToolLog.efile(TAG, "每隔整点打印一次时间：当前：" + timeStr + " 开机：" + mRebootStarTime + " 关机：" + mRebootEndTime);
+        if (timeStr.endsWith("00")) {
+            ToolLog.efile(TAG, "每隔整点打印一次时间：当前：" + timeStr + " 开机：" + mRebootStarTime + " 关机：" + mRebootEndTime);
+        }
+
+        //判断是否启用节目
+        //时间刚到
+        if (timeStr.equals(mProStarTime)) {
+
+        }
+        //时间已经到了
+        try {
+
+            String startTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
+            String endTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
+            //开始时间和结束时间不为空才进入
+            if (!TextUtils.isEmpty(startTime) && !TextUtils.isEmpty(endTime)) {
+                Date mParse = mTimeFormat.parse(timeStr);// 15:00  15:10  15:20
+                ToolLog.e(TAG, "userHandler:  " + " 当前时间： " + timeStr + "  节目开始时间： " + startTime + " 节目结束时间： " + endTime);
+                Date startDate = mTimeFormat.parse(startTime);
+                Date endDate = mTimeFormat.parse(endTime);
+                //到了播放时间
+                ToolLog.e(TAG, (mParse.getTime() - startDate.getTime()) + "  " + (endDate.getTime() - mParse.getTime()));
+                if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
+                    ToolLog.efile(TAG, "userHandler:  " + " 当前时间： " + timeStr + "  节目开始时间： " + startTime + " 节目结束时间： " + endTime);
+                    startActivity(new Intent(mContext, MediaActivity.class));
+                }
+            }
+
+        } catch (ParseException e) {
+            ToolLog.e(TAG, e.toString());
+            // e.printStackTrace();
+        }
+
         if (timeStr.equals(mRebootEndTime)) {
             ToolLog.efile("【关机时间到了】: " + mRebootEndTime);
             if (mDataHandler != null) {

@@ -25,6 +25,8 @@ public interface IConfigs {
     String PATH_PROGRAM = PATH_ROOT + "program/";//项目节目
     String PATH_ZIP = PATH_ROOT + "zip/";//项目节目
 
+    String URL_ADD_TERMINAL = "/baseConsultaioninfo/addfacility";
+
     /**
      * 网络请求相关
      */

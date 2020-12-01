@@ -208,12 +208,9 @@ public class Presenter {
 
     void operationProgram(File mFile, String dir) {
         //
-
         //通知更新
-        String port = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
-        String ip = ToolSP.getDIYString(IConfigs.SP_IP);
         //读取默认配置信息
-        String host = String.format(IConfigs.HOST, ip, port);
+        String host = ToolSP.getDIYString(IConfigs.SP_HOST);
         //通知后台更新
         OkGo.<String>post(host + IConfigs.URL_ADD_PUSH)
                 .params("pushTem", ToolSP.getDIYString(IConfigs.SP_PROGRAM_ID))
@@ -233,8 +230,8 @@ public class Presenter {
                 //新节目文件夹
                 String cur = IConfigs.PATH_PROGRAM + "/" + dir + "/";
                 FileUtils.createOrExistsDir(cur);
-                ToolLog.e(TAG, "【PATH_PROGRAM】: " + cur);
                 ToolSP.putDIYString(IConfigs.SP_PATH_DATA, cur);
+                ToolLog.efile(TAG, "【Program】:媒体地址： " + cur);
 
                 try {
                     ZipFile zipFile = new ZipFile(mFile);
@@ -244,7 +241,7 @@ public class Presenter {
                     while (e.hasMoreElements()) {
                         ZipEntry entry = (ZipEntry) e.nextElement();
                         File dstFile = new File(cur + "/" + entry.getName());
-                        ToolLog.e(TAG, "operationProgram: " + dstFile.getAbsolutePath());
+                        ToolLog.efile(TAG, "【Program】: " + dstFile.getAbsolutePath());
                         if (entry.isDirectory()) {
                             FileUtils.createOrExistsDir(dstFile);
                             continue;
@@ -261,8 +258,8 @@ public class Presenter {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                Thread.sleep(1000);
+                ToolLog.efile(TAG, "【Program】: 解压完成 重启..");
+                Thread.sleep(2000);
                 AppUtils.relaunchApp(true);
                 return null;
             }

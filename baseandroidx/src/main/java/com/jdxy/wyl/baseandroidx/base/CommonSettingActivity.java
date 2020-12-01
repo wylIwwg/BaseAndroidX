@@ -138,22 +138,20 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
         mTitleList.add("网络诊断");
         mTitleList.add("设备信息");
 
-        mFragments.add(SettingFragment.newInstance(mApi));
-        mFragments.add(PingFragment.newInstance(mApi));
-        mFragments.add(new DeviceFragment());
-
-        // if (ToolLZ.Instance().isLZDevice()) {
-        mTitleList.add("亮钻设备");
-        mFragments.add(new LzFragment());
-        // }
-
-
         Intent mIntent = getIntent();
         if (mIntent != null) {
             mApi = mIntent.getStringExtra("api");
             ToolLog.e(TAG, "initTabLayout: " + mApi);
         }
 
+        mFragments.add(SettingFragment.newInstance(mApi));
+        mFragments.add(PingFragment.newInstance(mApi));
+        mFragments.add(new DeviceFragment());
+
+        if (ToolLZ.Instance().isLZDevice()) {
+            mTitleList.add("亮钻设备");
+            mFragments.add(new LzFragment());
+        }
 
         /*
          * 注意使用的是：getChildFragmentManager，

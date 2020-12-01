@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.lzy.net:okgo:3.0.4'
 
     implementation 'com.yanzhenjie:permission:2.0.3'
-
+    implementation 'cn.jzvd:jiaozivideoplayer:7.0.5'
     implementation 'com.tonystark.android:socket:4.2.3'
    // implementation files('libs/usc.jar')
    // implementation files('libs/sdkapi.jar')
