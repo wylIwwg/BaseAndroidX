@@ -231,12 +231,6 @@ public class SettingFragment extends Fragment {
                 ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString().trim());
                 if (!TextUtils.isEmpty(ip) && !TextUtils.isEmpty(port)) {
                     String api = mApi;
-                    if (!api.contains(ip)) {
-                        String mp = mHolder.mEtProjectName.getText().toString();
-                        ToolLog.efile("SETTING", "onClick: " + mp);
-                        api = String.format(IConfigs.HOST, ip, port) +
-                                (TextUtils.isEmpty(mp) ? ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME) : ("/" + mp)) + api;
-                    }
                     ToolLog.efile("SETTING", "onClick: " + api);
                     OkGo.<BHosSetting>get(api).execute(new JsonCallBack<BHosSetting>(BHosSetting.class) {
                         @Override
