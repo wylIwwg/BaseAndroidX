@@ -217,39 +217,61 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
     public void initSetting() {
-        mIP = ToolSP.getDIYString(IConfigs.SP_IP);
-        mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
-        mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
 
-        mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWICH);
-        if (mVoiceSwitch.length() < 1) {
-            mVoiceSwitch = "1";
-        }
-        String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
-        if (mVoice != null && mVoice.length() > 0) {
-            mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
-        } else {
-            mVoiceSetting = new BVoiceSetting();
-            mVoiceSetting.setVoFormat(voiceFormat);
-            mVoiceSetting.setVoNumber("1");
-            mVoiceSetting.setVoSex("1");
-            mVoiceSetting.setVoSpeed("3");
-        }
+        try {
+            Map<String, ?> mAll = ToolSP.getAll();
+            ToolLog.efile("【本地配置信息】：");
+            for (String str : mAll.keySet()) {
+                ToolLog.efile("【key= " + str + " value= " + mAll.get(str) + "】");
+            }
 
 
-        Map<String, ?> mAll = ToolSP.getAll();
-        ToolLog.efile("【本地配置信息】：");
-        for (String str : mAll.keySet()) {
-            ToolLog.efile("【key= " + str + " value= " + mAll.get(str) + "】");
+            mIP = ToolSP.getDIYString(IConfigs.SP_IP);
+            mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
+            mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
+
+            mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWICH);
+            if (mVoiceSwitch.length() < 1) {
+                mVoiceSwitch = "1";
+            }
+            //获取声音配置
+            String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
+            if (mVoice != null && mVoice.length() > 0) {
+                mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
+            } else {
+                mVoiceSetting = new BVoiceSetting();
+                mVoiceSetting.setVoFormat(voiceFormat);
+                mVoiceSetting.setVoNumber("1");
+                mVoiceSetting.setVoSex("1");
+                mVoiceSetting.setVoSpeed("3");
+            }
+
+            //读取到开关机设置
+            String power = ToolSP.getDIYString(IConfigs.SP_POWER);
+            if (!TextUtils.isEmpty(power)) {
+                ToolLog.efile(TAG, "读取到开关机设置: " + power);
+                JSONObject mPowerBean = JSON.parseObject(power);
+                if (mPowerBean != null) {
+                    mRebootStarTime = mPowerBean.getString("starTime");
+                    mRebootEndTime = mPowerBean.getString("endTime");
+                    ToolLog.efile(TAG, "开关机时间设置完成: " + " 开机时间：" + mRebootStarTime + "  关机时间：" + mRebootEndTime);
+                }
+            }
+
+
+            if (mIP.length() < 6) {
+                return;
+            }
+            if (mHttpPort.length() < 1) {
+                mHttpPort = "8080";
+            }
+            mBaseHost = String.format(IConfigs.HOST, mIP, mHttpPort);
+        } catch (Exception error) {
+
+            ToolLog.efile(TAG, "initSetting: " + error.toString());
         }
 
-        if (mIP.length() < 6) {
-            return;
-        }
-        if (mHttpPort.length() < 1) {
-            mHttpPort = "8080";
-        }
-        mBaseHost = String.format(IConfigs.HOST, mIP, mHttpPort);
+
     }
 
 
@@ -650,6 +672,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      * @param week
      */
     public void showTime(String dateStr, String timeStr, String week) {
+        ToolLog.efile(TAG, "每隔整点打印一次时间：当前：" + timeStr + " 开机：" + mRebootStarTime + " 关机：" + mRebootEndTime);
         if (timeStr.equals(mRebootEndTime)) {
             ToolLog.efile("【关机时间到了】: " + mRebootEndTime);
             if (mDataHandler != null) {

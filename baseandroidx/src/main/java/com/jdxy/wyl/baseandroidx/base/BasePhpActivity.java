@@ -207,6 +207,17 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
             mVoiceSetting.setVoSpeed("3");
         }
 
+        //读取到开关机设置
+        String power = ToolSP.getDIYString(IConfigs.SP_POWER);
+        if (!TextUtils.isEmpty(power)) {
+            ToolLog.efile(TAG, "读取到开关机设置: " + power);
+            JSONObject mPowerBean = JSON.parseObject(power);
+            if (mPowerBean != null) {
+                mRebootStarTime = mPowerBean.getString("starTime");
+                mRebootEndTime = mPowerBean.getString("endTime");
+                ToolLog.efile(TAG, "开关机时间设置完成: " + " 开机时间：" + mRebootStarTime + "  关机时间：" + mRebootEndTime);
+            }
+        }
 
         Map<String, ?> mAll = ToolSP.getAll();
         LogUtils.file("【本地配置信息】：");
