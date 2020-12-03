@@ -230,6 +230,9 @@ public class Presenter {
                 //新节目文件夹
                 String cur = IConfigs.PATH_PROGRAM + "/" + dir + "/";
                 FileUtils.createOrExistsDir(cur);
+                //记录上一次资源目录
+                ToolSP.putDIYString(IConfigs.SP_PATH_DATA_BACKUP, ToolSP.getDIYString(IConfigs.SP_PATH_DATA));
+                //设置当前资源目录
                 ToolSP.putDIYString(IConfigs.SP_PATH_DATA, cur);
                 ToolLog.efile(TAG, "【Program】:媒体地址： " + cur);
 
@@ -258,9 +261,9 @@ public class Presenter {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                ToolLog.efile(TAG, "【Program】: 解压完成 重启..");
-                Thread.sleep(2000);
-                AppUtils.relaunchApp(true);
+                 ToolLog.efile(TAG, "【Program】: 解压完成 ..");
+                // Thread.sleep(2000);
+                // AppUtils.relaunchApp(true);
                 return null;
             }
 

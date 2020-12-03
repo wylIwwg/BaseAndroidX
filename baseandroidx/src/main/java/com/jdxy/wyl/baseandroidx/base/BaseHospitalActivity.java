@@ -1,14 +1,11 @@
 package com.jdxy.wyl.baseandroidx.base;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Process;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +15,19 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.DeviceUtils;
-import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.bumptech.glide.Glide;
 import com.jdxy.wyl.baseandroidx.R;
+import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
+import com.jdxy.wyl.baseandroidx.adapter.ViewHolder;
+import com.jdxy.wyl.baseandroidx.bean.BBanner;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
 import com.jdxy.wyl.baseandroidx.bean.BPulse;
@@ -33,7 +35,7 @@ import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
-import com.jdxy.wyl.baseandroidx.media.MediaActivity;
+import com.jdxy.wyl.baseandroidx.media.player.SimpleJZPlayer;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolCommon;
@@ -46,6 +48,8 @@ import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
 import com.jdxy.wyl.baseandroidx.view.DialogLogs;
+import com.jdxy.wyl.baseandroidx.view.ItemScrollLayoutManager;
+import com.jdxy.wyl.baseandroidx.view.SuperBanner;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
 import com.xuhao.didi.core.iocore.interfaces.ISendable;
 import com.xuhao.didi.core.pojo.OriginalData;
@@ -56,6 +60,8 @@ import com.xuhao.didi.socket.client.sdk.client.OkSocketOptions;
 import com.xuhao.didi.socket.client.sdk.client.action.SocketActionAdapter;
 import com.xuhao.didi.socket.client.sdk.client.connection.IConnectionManager;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -64,13 +70,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import cn.jzvd.Jzvd;
 import es.dmoral.toasty.Toasty;
 
 public class BaseHospitalActivity extends AppCompatActivity implements BaseDataHandler.MessageListener, IView {
@@ -126,12 +130,19 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public boolean localTimeSeted = false;//是否设置过本地时间
 
 
+    public RelativeLayout mRlvBanner;
+    public SuperBanner mSuperBanner;
+    public TextView mTvCover;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_base);
         mContext = this;
         mBaseRlRoot = findViewById(R.id.baseRlRoot);
+        mRlvBanner = findViewById(R.id.rlvBanner);
+        mTvCover = findViewById(R.id.tvCover);
+        mSuperBanner = findViewById(R.id.banner);
 
         mPresenter = new Presenter(mContext, this);
         mDataHandler = new BaseDataHandler(this);
@@ -291,6 +302,144 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
+    List<BBanner> mBanners;
+    public int scrollTime;//图片滚动时间
+    public int delayTime;//间隔多少时间滚动
+    public String PathData = "";
+    CommonAdapter<BBanner> mBannerAdapter;
+
+    public void InitProgram() {
+        mBanners = new ArrayList<>();
+        Jzvd.WIFI_TIP_DIALOG_SHOWED = true;
+        //读取默认配置信息
+        String scroll = ToolSP.getDIYString(IConfigs.SP_SETTING_SCROLL_TIME);
+        if (scroll.length() > 0) {
+            scrollTime = Integer.parseInt(scroll);
+
+        }
+        String delay = ToolSP.getDIYString(IConfigs.SP_SETTING_DELAY_TIME);
+        if (delay.length() > 0) {
+            delayTime = Integer.parseInt(delay);
+
+        }
+
+        scrollTime = Math.max(scrollTime, 5);
+        delayTime = Math.max(delayTime, 10);
+        mBannerAdapter = new CommonAdapter<BBanner>(mContext, R.layout.item_video, mBanners) {
+            @Override
+            protected void convert(ViewHolder holder, BBanner banner, int position) {
+                SimpleJZPlayer mPlayer = holder.getView(R.id.videoplayer);
+                if ("0".equals(banner.getType())) {
+                    Glide.with(mContext).load(banner.getUrl()).into(mPlayer.thumbImageView);
+
+                } else {
+                    mPlayer.setUp(banner.getUrl(), "", Jzvd.SCREEN_FULLSCREEN);
+                }
+            }
+        };
+
+        mSuperBanner.setTypeTime(SuperBanner.ROLL_ITEM, delayTime * 1000);
+        ItemScrollLayoutManager mLayoutManager = new ItemScrollLayoutManager(mContext, LinearLayoutManager.HORIZONTAL);
+        mLayoutManager.setScrollTime(scrollTime);
+        mSuperBanner.setLayoutManager(mLayoutManager);
+        mSuperBanner.setAdapter(mBannerAdapter);
+        mSuperBanner.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                // 当不滚动时
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    //获取最后一个完全显示的ItemPosition
+                    int mVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
+                    int index = mVisibleItemPosition % mBanners.size();
+                    if (index < mBanners.size() && index > 0) {
+                        BBanner mBanner = mBanners.get(index);
+                        if ("1".equals(mBanner.getType())) {
+                            View mView = mSuperBanner.getChildAt(0);
+                            if (mView != null) {
+                                SimpleJZPlayer mPlayer = mView.findViewById(R.id.videoplayer);
+                                mPlayer.startButton.performClick();
+                                mSuperBanner.stop();
+                                mPlayer.setOnCompleteListener(new SimpleJZPlayer.CompleteListener() {
+                                    @Override
+                                    public void complete(SimpleJZPlayer player, String url, int screen) {
+                                        mSuperBanner.start(true);
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        });
+
+        mTvCover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        //获取文件数据
+        PathData = ToolSP.getDIYString(IConfigs.SP_PATH_DATA);
+        if (FileUtils.listFilesInDir(PathData).size() > 0) {
+            //主目录有数据
+            listProgramFiles(PathData);
+
+        } else {
+            //否则尝试获取备份
+            PathData = ToolSP.getDIYString(IConfigs.SP_PATH_DATA_BACKUP);
+            if (FileUtils.listFilesInDir(PathData).size() > 0) {
+                listProgramFiles(PathData);
+            } else {
+                showError("未获取到资源");
+            }
+        }
+    }
+
+    void listProgramFiles(String dir) {
+        ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<Object>() {
+            @Override
+            public Object doInBackground() throws Throwable {
+                FileUtils.listFilesInDirWithFilter(dir, new FileFilter() {
+                    @Override
+                    public boolean accept(File pathname) {
+                        String mPath = pathname.getAbsolutePath();
+                        if (mPath.endsWith("jpg") || mPath.endsWith("jpeg") || mPath.endsWith("png")) {
+                            BBanner mBanner = new BBanner();
+                            mBanner.setUrl(mPath);
+                            mBanner.setType("0");
+                            mBanners.add(mBanner);
+                        } else if (mPath.endsWith("mp4") || mPath.endsWith("avi") || mPath.endsWith("flv")) {
+                            BBanner mBanner = new BBanner();
+                            mBanner.setUrl(mPath);
+                            mBanner.setType("1");
+                            mBanners.add(mBanner);
+
+                        }
+                        return false;
+                    }
+                });
+                if (mBanners.size() > 0) {
+                    mDataHandler.sendEmptyMessage(IConfigs.MSG_MEDIA_INIT);
+                } else {
+                    showError("资源文件不支持");
+                }
+
+                return null;
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+
+            }
+        });
+    }
+
     @Override
     public void setContentView(int layoutResID) {
         setContentView(View.inflate(this, layoutResID, null));
@@ -379,6 +528,17 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public void userHandler(Message msg) {
 
         switch (msg.what) {
+            case IConfigs.MSG_MEDIA_INIT:
+                //控制轮播
+                if (mBanners.size() > 1) {
+                    mBannerAdapter.setLoop(true);
+                    mSuperBanner.start();
+                } else {
+                    mBannerAdapter.setLoop(false);
+                    mSuperBanner.stop();
+                }
+
+                break;
             case IConfigs.MSG_REBOOT_LISTENER://设备关机 重启
                 int mins;
                 if (mRebootStarTime != null && mRebootStarTime.contains(":")) {
@@ -683,35 +843,62 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         if (timeStr.endsWith("00")) {
             ToolLog.efile(TAG, "每隔整点打印一次时间：当前：" + timeStr + " 开机：" + mRebootStarTime + " 关机：" + mRebootEndTime);
         }
-
-        //判断是否启用节目
-        //时间刚到
-        if (timeStr.equals(mProStarTime)) {
-
-        }
-        //时间已经到了
         try {
 
-            String startTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
-            String endTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
+            mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
+            mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
             //开始时间和结束时间不为空才进入
-            if (!TextUtils.isEmpty(startTime) && !TextUtils.isEmpty(endTime)) {
-                Date mParse = mTimeFormat.parse(timeStr);// 15:00  15:10  15:20
-                ToolLog.e(TAG, "userHandler:  " + " 当前时间： " + timeStr + "  节目开始时间： " + startTime + " 节目结束时间： " + endTime);
-                Date startDate = mTimeFormat.parse(startTime);
-                Date endDate = mTimeFormat.parse(endTime);
-                //到了播放时间
-                ToolLog.e(TAG, (mParse.getTime() - startDate.getTime()) + "  " + (endDate.getTime() - mParse.getTime()));
-                if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
-                    ToolLog.efile(TAG, "userHandler:  " + " 当前时间： " + timeStr + "  节目开始时间： " + startTime + " 节目结束时间： " + endTime);
-                    startActivity(new Intent(mContext, MediaActivity.class));
+            if (!TextUtils.isEmpty(mProEndTime) && !TextUtils.isEmpty(mProStarTime)) {
+                Date mParse = mTimeFormat.parse(timeStr);// 15:00  15:10  15:20 15:21
+                ToolLog.efile(TAG, "showTime:  " + " 当前时间： " + timeStr + "  节目开始时间： " + mProStarTime + " 节目结束时间： " + mProEndTime);
+                Date startDate = mTimeFormat.parse(mProStarTime);
+                Date endDate = mTimeFormat.parse(mProEndTime);
+                //结束时间 小于 开始时间  表示跨天   15:00 —— 08：00
+                if (endDate.getTime() - startDate.getTime() < 0) {
+                    // 15:00  19:00   8：00
+                    if (mParse.getTime() - startDate.getTime() >= 0) {
+                        //当天  展示
+                        //展示信息
+                        if (mRlvBanner.getVisibility() == View.GONE) {
+                            ToolLog.efile(TAG, "onCreate: 当天  展示");
+                            mRlvBanner.setVisibility(View.VISIBLE);
+                            InitProgram();
+                        }
+                    } else if (mParse.getTime() - endDate.getTime() <= 0) {
+                        //第二天  展示
+                        //展示信息
+                        if (mRlvBanner.getVisibility() == View.GONE) {
+                            ToolLog.efile(TAG, "onCreate: 第二天  展示");
+                            mRlvBanner.setVisibility(View.VISIBLE);
+                            InitProgram();
+                        }
+                    } else {
+                        //时间不合
+                        mRlvBanner.setVisibility(View.GONE);
+                        mSuperBanner.stop();
+                    }
+
+                } else if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
+                    //展示信息
+                    if (mRlvBanner.getVisibility() == View.GONE) {
+                        ToolLog.efile(TAG, "onCreate: 当天且同一天  展示");
+                        mRlvBanner.setVisibility(View.VISIBLE);
+                        InitProgram();
+                    }
+
+                } else {
+                    //时间不合
+                    mRlvBanner.setVisibility(View.GONE);
+                    mSuperBanner.stop();
                 }
+
             }
 
         } catch (ParseException e) {
             ToolLog.e(TAG, e.toString());
             // e.printStackTrace();
         }
+
 
         if (timeStr.equals(mRebootEndTime)) {
             ToolLog.efile("【关机时间到了】: " + mRebootEndTime);

@@ -8,4 +8,20 @@
     android:orientation="vertical"
     tools:context=".base.BaseActivity">
 
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/rlvBanner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.jdxy.wyl.baseandroidx.view.SuperBanner
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/tvCover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
 </RelativeLayout>
