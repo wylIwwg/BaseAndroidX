@@ -56,7 +56,8 @@ public interface IConfigs {
 
     int MSG_REBOOT_LISTENER = 2003;//设备关机重启
 
-    int MSG_MEDIA_INIT = 17853;
+    int MSG_MEDIA_INIT = 17853;//媒体数据准备完成
+
     ///设备注册
     int REGISTER_FORBIDDEN = 0;//禁止注册
     int REGISTER_FOREVER = -1;//永久注册
@@ -65,14 +66,14 @@ public interface IConfigs {
     String APK_VERSION_CODE = "versionCode";
 
     /*节目配置相关*/
-    String SP_PROGRAM_ID = "proid";//节目id
+    String SP_PROGRAM_ID = "proId";//节目id
     String SP_APK_ID = "apkid";//
-    String SP_TARGET_APP = "target";//需要跳转的app报名
-    String SP_PATH_DATA = "source";//节目资源目录
-    String SP_PATH_DATA_BACKUP = "sourceBackup";//节目资源备份
-    String SP_SETTING_TRY_TIME = "try";
-    String SP_SETTING_START_TIME = "start_time";
-    String SP_SETTING_END_TIME = "end_time";
+    String SP_TARGET_APP = "targetApp";//需要跳转的app报名
+    String SP_PATH_DATA = "proSource";//节目资源目录
+    String SP_PATH_DATA_BACKUP = "proSourceBackup";//节目资源备份
+    String SP_SETTING_TRY_TIME = "tryTime";//失败尝试次数
+    String SP_SETTING_START_TIME = "proStartTime";//节目开始播放时间
+    String SP_SETTING_END_TIME = "proEndTime";//节目结束时间
 
     /*配置相关*/
     String SP_MODIFIED_PROJECT_NAME = "modifyProjectName";//修改后的项目
@@ -91,7 +92,6 @@ public interface IConfigs {
     String SP_POWER = "power";//开关机
     String SP_SHOWLOG = "showlog";//是否显示日志
     /*区域*/
-
 
 
     String SP_APP_TYPE = "appType";//软件类型

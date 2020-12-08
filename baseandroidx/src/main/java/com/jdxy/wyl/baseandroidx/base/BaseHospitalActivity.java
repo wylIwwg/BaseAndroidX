@@ -130,9 +130,13 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public boolean localTimeSeted = false;//是否设置过本地时间
 
 
+    //展示节目
     public RelativeLayout mRlvBanner;
     public SuperBanner mSuperBanner;
     public TextView mTvCover;
+
+    //主内容
+    public View mViewContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,8 +178,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
-    View viewRegister;
 
+    //展示未注册view
+    View viewRegister;
 
     /**
      * @param msg
@@ -309,6 +314,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     CommonAdapter<BBanner> mBannerAdapter;
 
     public void InitProgram() {
+        if (mViewContent != null) {
+            mViewContent.setVisibility(View.GONE);
+        }
         mBanners = new ArrayList<>();
         Jzvd.WIFI_TIP_DIALOG_SHOWED = true;
         //读取默认配置信息
@@ -323,7 +331,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
         }
 
-        scrollTime = Math.max(scrollTime, 5);
+        scrollTime = Math.max(scrollTime, 1) * 100;
         delayTime = Math.max(delayTime, 10);
         mBannerAdapter = new CommonAdapter<BBanner>(mContext, R.layout.item_video, mBanners) {
             @Override
@@ -341,6 +349,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         mSuperBanner.setTypeTime(SuperBanner.ROLL_ITEM, delayTime * 1000);
         ItemScrollLayoutManager mLayoutManager = new ItemScrollLayoutManager(mContext, LinearLayoutManager.HORIZONTAL);
         mLayoutManager.setScrollTime(scrollTime);
+
         mSuperBanner.setLayoutManager(mLayoutManager);
         mSuperBanner.setAdapter(mBannerAdapter);
         mSuperBanner.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -440,6 +449,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         });
     }
 
+
     @Override
     public void setContentView(int layoutResID) {
         setContentView(View.inflate(this, layoutResID, null));
@@ -447,7 +457,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     @Override
     public void setContentView(View view) {
-
+        mViewContent = view;
         if (mBaseRlRoot == null) return;
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mBaseRlRoot.addView(view, lp);
@@ -526,7 +536,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      */
     @Override
     public void userHandler(Message msg) {
-
         switch (msg.what) {
             case IConfigs.MSG_MEDIA_INIT:
                 //控制轮播
@@ -605,9 +614,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                                 if (pbd != null) {
                                     mRebootStarTime = pbd.getStarTime();
                                     mRebootEndTime = pbd.getEndTime();
-                                    // if (mRebootEndTime.length() > 0 && mRestartThread != null) {//关机时间
-                                    //     mRestartThread.setRebootTime(mRebootEndTime);
-                                    // }
                                     ToolSP.putDIYString(IConfigs.SP_POWER, JSON.toJSONString(pbd));
                                 }
                             }
@@ -627,6 +633,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                                 long mTime = mObject.getLong("date");
                                 if (mTime > 0) {
                                     mDate = new Date(mTime);
+                                    //以服务器时间来控制开关机重启
                                     if (!localTimeSeted)
                                         setSystemTime(mTime);
                                 } else {
@@ -644,10 +651,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             //星期
                             String week = mWeekFormat.format(mDate);
 
-                            //以服务器时间来控制开关机重启
-                            // if (mRestartThread != null) {
-                            //     mRestartThread.setNetTime(timeStr);
-                            // }
                             showTime(dateStr, timeStr, week);
                             break;
                         case "voiceSwitch"://flag
@@ -655,7 +658,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             ToolSP.putDIYString(IConfigs.SP_VOICE_SWICH, mVoiceSwitch);
 
                             break;
-
+                        case "logs":
+                            String sessionId2 = mObject.getString("sessionId");
+                            mPresenter.uploadLogs(URL_UPLOAD_LOGS, sessionId2, mMac);
+                            break;
                         case "screen"://截屏请求
                             String sessionId = mObject.getString("sessionId");
                             if (TextUtils.isEmpty(URL_UPLOAD_SCREEN)) {
@@ -752,10 +758,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             }
 
                             break;
-                        case "logs":
-                            String sessionId2 = mObject.getString("sessionId");
-                            mPresenter.uploadLogs(URL_UPLOAD_LOGS, sessionId2, mMac);
-                            break;
+
 
                     }
                 } catch (Exception e) {
@@ -850,7 +853,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             //开始时间和结束时间不为空才进入
             if (!TextUtils.isEmpty(mProEndTime) && !TextUtils.isEmpty(mProStarTime)) {
                 Date mParse = mTimeFormat.parse(timeStr);// 15:00  15:10  15:20 15:21
-                ToolLog.efile(TAG, "showTime:  " + " 当前时间： " + timeStr + "  节目开始时间： " + mProStarTime + " 节目结束时间： " + mProEndTime);
+                ToolLog.e(TAG, "showTime:  " + " 当前时间： " + timeStr + "  节目开始时间： " + mProStarTime + " 节目结束时间： " + mProEndTime);
                 Date startDate = mTimeFormat.parse(mProStarTime);
                 Date endDate = mTimeFormat.parse(mProEndTime);
                 //结束时间 小于 开始时间  表示跨天   15:00 —— 08：00
@@ -860,7 +863,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         //当天  展示
                         //展示信息
                         if (mRlvBanner.getVisibility() == View.GONE) {
-                            ToolLog.efile(TAG, "onCreate: 当天  展示");
+                            ToolLog.efile(TAG, "showTime: 当天  展示");
                             mRlvBanner.setVisibility(View.VISIBLE);
                             InitProgram();
                         }
@@ -868,7 +871,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         //第二天  展示
                         //展示信息
                         if (mRlvBanner.getVisibility() == View.GONE) {
-                            ToolLog.efile(TAG, "onCreate: 第二天  展示");
+                            ToolLog.efile(TAG, "showTime: 第二天  展示");
                             mRlvBanner.setVisibility(View.VISIBLE);
                             InitProgram();
                         }
@@ -876,12 +879,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         //时间不合
                         mRlvBanner.setVisibility(View.GONE);
                         mSuperBanner.stop();
+                        if (mViewContent != null)
+                            mViewContent.setVisibility(View.VISIBLE);
                     }
 
                 } else if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
                     //展示信息
                     if (mRlvBanner.getVisibility() == View.GONE) {
-                        ToolLog.efile(TAG, "onCreate: 当天且同一天  展示");
+                        ToolLog.efile(TAG, "showTime: 当天且同一天  展示");
                         mRlvBanner.setVisibility(View.VISIBLE);
                         InitProgram();
                     }
@@ -890,6 +895,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     //时间不合
                     mRlvBanner.setVisibility(View.GONE);
                     mSuperBanner.stop();
+                    if (mViewContent != null)
+                        mViewContent.setVisibility(View.VISIBLE);
                 }
 
             }
