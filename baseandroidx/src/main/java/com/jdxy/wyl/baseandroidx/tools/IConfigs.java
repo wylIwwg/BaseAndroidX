@@ -96,11 +96,11 @@ public interface IConfigs {
 
     String SP_APP_TYPE = "appType";//软件类型
 
-    String SP_SYNTHESIS_TYPE = "synthesisType";//综合屏类型
+   // String SP_SYNTHESIS_TYPE = "synthesisType";//综合屏类型
 
-    int SYNTHESIS_TYPE_YaoFang = 1;//药房
-    int SYNTHESIS_TYPE_YiJi = 2;//医技
-    int SYNTHESIS_TYPE_MenZhen = 3;//门诊
+    int APP_TYPE_YaoFang = 1;//药房
+    int APP_TYPE_YiJi = 2;//医技
+    int APP_TYPE_MenZhen = 3;//门诊
 
 
     String SP_PATH_REGISER = "pathRegister";

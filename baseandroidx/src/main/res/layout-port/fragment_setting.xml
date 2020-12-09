@@ -222,7 +222,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:visibility="invisible">
+                    android:visibility="visible">
 
                     <RadioButton
                         android:id="@+id/rbMenzhen"
@@ -230,7 +230,7 @@
                         android:layout_height="25dp"
                         android:button="@drawable/bg_cb"
                         android:paddingHorizontal="2dp"
-                        android:text="门诊综合"
+                        android:text="门诊"
                         android:textColor="@color/txt"
                         android:textSize="14sp" />
 
@@ -240,7 +240,7 @@
                         android:layout_height="25dp"
                         android:button="@drawable/bg_cb"
                         android:paddingHorizontal="2dp"
-                        android:text="药房综合"
+                        android:text="药房"
                         android:textColor="@color/txt" />
 
 
@@ -250,7 +250,7 @@
                         android:layout_height="25dp"
                         android:button="@drawable/bg_cb"
                         android:paddingHorizontal="2dp"
-                        android:text="医技综合"
+                        android:text="医技"
                         android:textColor="@color/txt" />
 
                 </RadioGroup>

@@ -202,12 +202,6 @@ public class SettingFragment extends Fragment {
         mHolder.mEtPort.setText(ToolSP.getDIYString(IConfigs.SP_PORT_HTTP));
         mHolder.mEtSocketPort.setText(ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET));
 
-        //如果是综合屏
-        if (ToolSP.getDIYString(IConfigs.SP_APP_TYPE).equals("4")) {
-            mHolder.mRgSynthesisType.setVisibility(View.VISIBLE);
-
-        }
-
 
         //设置项目名  获取系统项目名称
         if (!TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME))) {
@@ -323,16 +317,16 @@ public class SettingFragment extends Fragment {
             }
         });
 
-        int type = ToolSP.getDIYInt(IConfigs.SP_SYNTHESIS_TYPE);
+        int type = ToolSP.getDIYInt(IConfigs.SP_APP_TYPE);
 
         switch (type) {
-            case IConfigs.SYNTHESIS_TYPE_YaoFang://药房
+            case IConfigs.APP_TYPE_YaoFang://药房
                 mHolder.mRbYaofang.setChecked(true);
                 break;
-            case IConfigs.SYNTHESIS_TYPE_YiJi://医技
+            case IConfigs.APP_TYPE_YiJi://医技
                 mHolder.mRbYiji.setChecked(true);
                 break;
-            case IConfigs.SYNTHESIS_TYPE_MenZhen://门诊
+            case IConfigs.APP_TYPE_MenZhen://门诊
                 mHolder.mRbMenzhen.setChecked(true);
                 break;
         }
@@ -342,21 +336,21 @@ public class SettingFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
-                    ToolSP.putDIYInt(IConfigs.SP_SYNTHESIS_TYPE, IConfigs.SYNTHESIS_TYPE_YiJi);
+                    ToolSP.putDIYInt(IConfigs.SP_APP_TYPE, IConfigs.APP_TYPE_YiJi);
             }
         });
         mHolder.mRbYaofang.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
-                    ToolSP.putDIYInt(IConfigs.SP_SYNTHESIS_TYPE, IConfigs.SYNTHESIS_TYPE_YaoFang);
+                    ToolSP.putDIYInt(IConfigs.SP_APP_TYPE, IConfigs.APP_TYPE_YaoFang);
             }
         });
         mHolder.mRbMenzhen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
-                    ToolSP.putDIYInt(IConfigs.SP_SYNTHESIS_TYPE, IConfigs.SYNTHESIS_TYPE_MenZhen);
+                    ToolSP.putDIYInt(IConfigs.SP_APP_TYPE, IConfigs.APP_TYPE_MenZhen);
             }
         });
 
