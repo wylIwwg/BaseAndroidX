@@ -21,18 +21,32 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<ViewHolder> 
     protected List<T> mDatas;
     protected LayoutInflater mInflater;
     private boolean isLoop;
-    private int perCount;
 
+    /**
+     * 更新数据源
+     *
+     * @param datas
+     */
+    public void setDatas(List<T> datas) {
+        mDatas = datas;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 设置重复循环
+     *
+     * @param loop
+     */
     public void setLoop(boolean loop) {
         isLoop = loop;
         notifyDataSetChanged();
     }
 
-    public CommonAdapter(final Context context, final int layoutId, List<T> datas) {
+    public CommonAdapter(final Context context, final int layoutId, List<T> data) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mLayoutId = layoutId;
-        mDatas = datas;
+        mDatas = data;
 
 
     }
