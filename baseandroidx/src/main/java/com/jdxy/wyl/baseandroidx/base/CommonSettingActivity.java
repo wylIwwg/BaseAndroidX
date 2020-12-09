@@ -2,7 +2,10 @@ package com.jdxy.wyl.baseandroidx.base;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
@@ -44,6 +47,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import me.jessyan.autosize.AutoSize;
+import me.jessyan.autosize.AutoSizeCompat;
+import me.jessyan.autosize.AutoSizeConfig;
 
 
 public class CommonSettingActivity extends AppCompatActivity implements IView {
@@ -169,7 +176,20 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
+    @Override
+    public Resources getResources() {
+        if (Looper.getMainLooper().getThread() == Thread.currentThread())
+            AutoSizeCompat.autoConvertDensity(super.getResources(), 960f, AutoSizeConfig.getInstance().getScreenWidth() > AutoSizeConfig.getInstance().getScreenHeight());
+        return super.getResources();
+    }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            AutoSize.autoConvertDensity(this, 960f, true);
+
+    }
     @Override
     public void showSuccess(String success) {
 

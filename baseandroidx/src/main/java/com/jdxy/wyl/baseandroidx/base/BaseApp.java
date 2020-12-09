@@ -38,6 +38,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import es.dmoral.toasty.Toasty;
+import me.jessyan.autosize.AutoSizeConfig;
+import me.jessyan.autosize.onAdaptListener;
+import me.jessyan.autosize.utils.ScreenUtils;
 import okhttp3.OkHttpClient;
 
 /**
@@ -65,12 +68,31 @@ public class BaseApp extends Application {
             ToolLZ.Init(this);
         }
         LogUtils.getConfig().setDir(IConfigs.PATH_LOG).setFilePrefix("log");
+        AutoSizeConfig.getInstance()
+                .setCustomFragment(true)
 
+                //屏幕适配监听器
+                .setOnAdaptListener(new onAdaptListener() {
+                    @Override
+                    public void onAdaptBefore(Object target, Activity activity) {
+                        //使用以下代码, 可以解决横竖屏切换时的屏幕适配问题
+                        //使用以下代码, 可支持 Android 的分屏或缩放模式, 但前提是在分屏或缩放模式下当用户改变您 App 的窗口大小时
+                        //系统会重绘当前的页面, 经测试在某些机型, 某些情况下系统不会重绘当前页面, ScreenUtils.getScreenSize(activity) 的参数一定要不要传 Application!!!
+                        AutoSizeConfig.getInstance().setScreenWidth(ScreenUtils.getScreenSize(activity)[0]);
+                        AutoSizeConfig.getInstance().setScreenHeight(ScreenUtils.getScreenSize(activity)[1]);
+                    }
+
+                    @Override
+                    public void onAdaptAfter(Object target, Activity activity) {
+                    }
+                })
+                .setLog(false);
 
     }
 
     /**
      * 设置项目名
+     *
      * @param pn
      */
     public void setProjectName(String pn) {

@@ -56,4 +56,6 @@ dependencies {
    // implementation files('libs/sdkapi.jar')
     implementation 'me.weishu:free_reflection:1.2.0'
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+
+    implementation 'me.jessyan:autosize:1.2.1'
 }
