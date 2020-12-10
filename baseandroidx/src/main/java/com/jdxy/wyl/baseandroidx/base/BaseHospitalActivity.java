@@ -74,6 +74,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import cn.jzvd.JZUtils;
 import cn.jzvd.Jzvd;
 import es.dmoral.toasty.Toasty;
 
@@ -410,6 +411,16 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             } else {
                 showError("未获取到资源");
             }
+        }
+    }
+
+    public void releaseProgram() {
+        if (mBanners != null) {
+            mBanners.clear();
+        }
+        if (mSuperBanner != null) {
+            mSuperBanner.stop();
+            Jzvd.releaseAllVideos();
         }
     }
 
