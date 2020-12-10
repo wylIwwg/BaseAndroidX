@@ -94,9 +94,9 @@ public interface IConfigs {
     /*区域*/
 
 
-    String SP_APP_TYPE = "appType";//软件类型
+    String SP_SOFT_TYPE = "softType";//软件类型 门牌 综合 呼叫器等
 
-   // String SP_SYNTHESIS_TYPE = "synthesisType";//综合屏类型
+    String SP_APP_TYPE = "appType";//门牌综合屏应用类型
 
     int APP_TYPE_YaoFang = 1;//药房
     int APP_TYPE_YiJi = 2;//医技

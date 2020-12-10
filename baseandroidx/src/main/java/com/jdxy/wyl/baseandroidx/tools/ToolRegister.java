@@ -307,7 +307,7 @@ public class ToolRegister {
         BRegisterResult mResult = new BRegisterResult();
         mResult.setRegisterCode(0);
         mResult.setRegistered(false);
-        mResult.setRegisterStr(this.register2Base64(false, ToolSP.getDIYString("app_type")));
+        mResult.setRegisterStr(this.register2Base64(false, ToolSP.getDIYString(IConfigs.SP_SOFT_TYPE)));
         try {
             this.mRegister = this.getRegisterText();
             if (this.mRegister != null) {

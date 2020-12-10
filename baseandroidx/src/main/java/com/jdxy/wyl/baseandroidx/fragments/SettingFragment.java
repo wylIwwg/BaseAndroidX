@@ -225,7 +225,16 @@ public class SettingFragment extends Fragment {
                 ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString().trim());
                 if (!TextUtils.isEmpty(ip) && !TextUtils.isEmpty(port)) {
                     String api = mApi;
+                    //onClick: /baseConsultaioninfo/departAlls
                     ToolLog.efile("SETTING", "onClick: " + api);
+                    if (!mApi.startsWith("http")) {//说明第一次
+                        String mHost = String.format(IConfigs.HOST, ip, port);
+                        //设置项目名  修改后设置的
+                        mHost += mHolder.mEtProjectName.getText().toString();
+                        ToolSP.putDIYString(IConfigs.SP_HOST, mHost);
+                        mApi = mHost + mApi;
+                        api = mApi;
+                    }
                     OkGo.<BHosSetting>get(api).execute(new JsonCallBack<BHosSetting>(BHosSetting.class) {
                         @Override
                         public void onSuccess(Response<BHosSetting> response) {

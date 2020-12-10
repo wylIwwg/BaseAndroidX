@@ -134,6 +134,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public RelativeLayout mRlvBanner;
     public SuperBanner mSuperBanner;
     public TextView mTvCover;
+    public TextView mTvProSetting;//节目界面设置
 
     //主内容
     public View mViewContent;
@@ -147,6 +148,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         mRlvBanner = findViewById(R.id.rlvBanner);
         mTvCover = findViewById(R.id.tvCover);
         mSuperBanner = findViewById(R.id.banner);
+        mTvProSetting = findViewById(R.id.tvProSetting);
 
         mPresenter = new Presenter(mContext, this);
         mDataHandler = new BaseDataHandler(this);
@@ -180,7 +182,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
 
     //展示未注册view
-    View viewRegister;
+    public View viewRegister;
 
     /**
      * @param msg
@@ -307,13 +309,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
-    List<BBanner> mBanners;
+    public List<BBanner> mBanners;
     public int scrollTime;//图片滚动时间
     public int delayTime;//间隔多少时间滚动
     public String PathData = "";
-    CommonAdapter<BBanner> mBannerAdapter;
+    public CommonAdapter<BBanner> mBannerAdapter;
 
     public void InitProgram() {
+        mRlvBanner.setVisibility(View.VISIBLE);
         if (mViewContent != null) {
             mViewContent.setVisibility(View.GONE);
         }
@@ -864,7 +867,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         //展示信息
                         if (mRlvBanner.getVisibility() == View.GONE) {
                             ToolLog.efile(TAG, "showTime: 当天  展示");
-                            mRlvBanner.setVisibility(View.VISIBLE);
                             InitProgram();
                         }
                     } else if (mParse.getTime() - endDate.getTime() <= 0) {
@@ -872,7 +874,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         //展示信息
                         if (mRlvBanner.getVisibility() == View.GONE) {
                             ToolLog.efile(TAG, "showTime: 第二天  展示");
-                            mRlvBanner.setVisibility(View.VISIBLE);
                             InitProgram();
                         }
                     } else {
@@ -887,7 +888,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     //展示信息
                     if (mRlvBanner.getVisibility() == View.GONE) {
                         ToolLog.efile(TAG, "showTime: 当天且同一天  展示");
-                        mRlvBanner.setVisibility(View.VISIBLE);
                         InitProgram();
                     }
 
