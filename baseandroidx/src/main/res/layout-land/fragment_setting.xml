@@ -210,7 +210,7 @@
             android:orientation="vertical"
             android:padding="25dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical">
@@ -220,47 +220,21 @@
                     android:id="@+id/rgSynthesisType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:orientation="horizontal"
                     android:visibility="visible">
 
-                    <RadioButton
-                        android:id="@+id/rbMenzhen"
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:button="@drawable/bg_cb"
-                        android:paddingHorizontal="2dp"
-                        android:text="门诊"
-                        android:textColor="@color/txt"
-                        android:textSize="14sp" />
-
-                    <RadioButton
-                        android:id="@+id/rbYaofang"
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:button="@drawable/bg_cb"
-                        android:paddingHorizontal="2dp"
-                        android:text="药房"
-                        android:textColor="@color/txt" />
 
 
-                    <RadioButton
-                        android:id="@+id/rbYiji"
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:button="@drawable/bg_cb"
-                        android:paddingHorizontal="2dp"
-                        android:text="医技"
-                        android:textColor="@color/txt" />
 
                 </RadioGroup>
 
                 <Button
                     android:id="@+id/btnGetArea"
                     style="@style/baseBtn"
+                    android:layout_alignParentRight="true"
                     android:layout_margin="0dp"
                     android:text="获取位置" />
-            </LinearLayout>
+            </RelativeLayout>
 
 
             <LinearLayout

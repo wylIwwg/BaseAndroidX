@@ -98,6 +98,9 @@ public interface IConfigs {
 
     String SP_APP_TYPE = "appType";//门牌综合屏应用类型
 
+    String INTENT_APP_TYPE = "intent_apptype";//应用类型
+
+
     int APP_TYPE_YaoFang = 1;//药房
     int APP_TYPE_YiJi = 2;//医技
     int APP_TYPE_MenZhen = 3;//门诊

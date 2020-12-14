@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
 import com.jdxy.wyl.baseandroidx.adapter.ViewHolder;
+import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BBanner;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
@@ -969,6 +970,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public void showSetting(String api) {
         Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
         mIntent.putExtra(IConfigs.SP_API, api);
+        startActivity(mIntent);
+
+    }
+
+    public void showSetting(String api, List<BAppType> appTypes) {
+        Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
+        mIntent.putExtra(IConfigs.SP_API, api);
+        mIntent.putExtra(IConfigs.INTENT_APP_TYPE, JSON.toJSONString(appTypes));
         startActivity(mIntent);
 
     }

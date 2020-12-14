@@ -26,7 +26,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.ReflectUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
@@ -34,6 +36,7 @@ import com.jdxy.wyl.baseandroidx.R2;
 import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
 import com.jdxy.wyl.baseandroidx.adapter.ViewHolder;
 import com.jdxy.wyl.baseandroidx.base.IDescription;
+import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BBaseSetting;
 import com.jdxy.wyl.baseandroidx.bean.BHosSetting;
 import com.jdxy.wyl.baseandroidx.bean.ConfigSetting;
@@ -76,10 +79,11 @@ public class SettingFragment extends Fragment {
      * @return A new instance of fragment SettingFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SettingFragment newInstance(String api) {
+    public static SettingFragment newInstance(String api, String apps) {
         SettingFragment fragment = new SettingFragment();
         Bundle args = new Bundle();
         args.putString(IConfigs.SP_API, api);
+        args.putString(IConfigs.INTENT_APP_TYPE, apps);
         fragment.setArguments(args);
         return fragment;
     }
@@ -92,6 +96,7 @@ public class SettingFragment extends Fragment {
     }
 
     String mApi;
+    String apps;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,6 +107,7 @@ public class SettingFragment extends Fragment {
         mHolder = new Holder(mInflate);
         if (getArguments() != null) {
             mApi = getArguments().getString(IConfigs.SP_API);
+            apps = getArguments().getString(IConfigs.INTENT_APP_TYPE);
             showSetting();
         }
         return mInflate;
@@ -193,6 +199,7 @@ public class SettingFragment extends Fragment {
     CommonAdapter<BHosSetting.Sublevel> mClinicAdapter;
     TextView tvDepart = null;
     TextView tvClinic = null;
+    RadioButton rblast;
 
     public void showSetting() {
         final List<BHosSetting.Data> mDepartsList = new ArrayList<>();
@@ -213,6 +220,43 @@ public class SettingFragment extends Fragment {
             mHolder.mEtProjectName.setText(ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME));
         }
 
+        int type = ToolSP.getDIYInt(IConfigs.SP_APP_TYPE);
+        List<BAppType> mBaseAppTypes = new ArrayList<>();
+        mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_MenZhen, "门诊"));
+        mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_YiJi, "医技"));
+        mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_YaoFang, "药房"));
+        ToolLog.efile(TAG, "showSetting: " + apps);
+        //如果不为空的话
+
+        if (!TextUtils.isEmpty(apps)) {
+            List<BAppType> mAppTypes = JSON.parseArray(apps, BAppType.class);
+            mBaseAppTypes.addAll(mAppTypes);
+        }
+        for (BAppType app : mBaseAppTypes) {
+            RadioButton rb = new RadioButton(getActivity());
+            rb.setLayoutParams(new RadioGroup.LayoutParams(-2, ToolDisplay.dip2px(getActivity(), 25)));
+            rb.setText(app.getAppTypeName());
+            rb.setTag(app.getAppType());
+            rb.setButtonDrawable(getResources().getDrawable(R.drawable.bg_cb));
+            rb.setTextColor(getResources().getColor(R.color.txt));
+            if (type == app.getAppType()) {
+                rblast = rb;
+                rb.setChecked(true);
+            } else rb.setChecked(false);
+
+            rb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked && buttonView.getTag() != null) {
+                        if (rblast != null)
+                            rblast.setChecked(false);
+                        rblast = (RadioButton) buttonView;
+                        ToolSP.putDIYInt(IConfigs.SP_APP_TYPE, Integer.parseInt(buttonView.getTag().toString()));
+                    }
+                }
+            });
+            mHolder.mRgSynthesisType.addView(rb);
+        }
 
         mHolder.mBtnGetArea.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -326,43 +370,6 @@ public class SettingFragment extends Fragment {
             }
         });
 
-        int type = ToolSP.getDIYInt(IConfigs.SP_APP_TYPE);
-
-        switch (type) {
-            case IConfigs.APP_TYPE_YaoFang://药房
-                mHolder.mRbYaofang.setChecked(true);
-                break;
-            case IConfigs.APP_TYPE_YiJi://医技
-                mHolder.mRbYiji.setChecked(true);
-                break;
-            case IConfigs.APP_TYPE_MenZhen://门诊
-                mHolder.mRbMenzhen.setChecked(true);
-                break;
-        }
-
-
-        mHolder.mRbYiji.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                    ToolSP.putDIYInt(IConfigs.SP_APP_TYPE, IConfigs.APP_TYPE_YiJi);
-            }
-        });
-        mHolder.mRbYaofang.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                    ToolSP.putDIYInt(IConfigs.SP_APP_TYPE, IConfigs.APP_TYPE_YaoFang);
-            }
-        });
-        mHolder.mRbMenzhen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                    ToolSP.putDIYInt(IConfigs.SP_APP_TYPE, IConfigs.APP_TYPE_MenZhen);
-            }
-        });
-
 
         mDepartAdapter = new CommonAdapter<BHosSetting.Data>(getActivity(), R.layout.item_area, mDepartsList) {
             @Override
@@ -454,12 +461,6 @@ public class SettingFragment extends Fragment {
         @BindView(R2.id.rgSynthesisType)
         RadioGroup mRgSynthesisType;
 
-        @BindView(R2.id.rbMenzhen)
-        RadioButton mRbMenzhen;
-        @BindView(R2.id.rbYaofang)
-        RadioButton mRbYaofang;
-        @BindView(R2.id.rbYiji)
-        RadioButton mRbYiji;
 
         @BindView(R2.id.rlvSetting)
         RecyclerView mRlvSetting;

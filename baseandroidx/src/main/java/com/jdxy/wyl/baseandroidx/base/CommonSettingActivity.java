@@ -23,9 +23,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.jdxy.wyl.baseandroidx.R;
+import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.fragments.BasePagerAdapter;
 import com.jdxy.wyl.baseandroidx.fragments.DeviceFragment;
 import com.jdxy.wyl.baseandroidx.fragments.LzFragment;
@@ -33,6 +35,7 @@ import com.jdxy.wyl.baseandroidx.fragments.PingFragment;
 import com.jdxy.wyl.baseandroidx.fragments.SettingFragment;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
+import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 
@@ -46,6 +49,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import me.jessyan.autosize.AutoSize;
@@ -146,12 +150,15 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
         mTitleList.add("设备信息");
 
         Intent mIntent = getIntent();
+        String apps="";
         if (mIntent != null) {
-            mApi = mIntent.getStringExtra("api");
+            mApi = mIntent.getStringExtra(IConfigs.SP_API);
+            apps = mIntent.getStringExtra(IConfigs.INTENT_APP_TYPE);
             ToolLog.e(TAG, "initTabLayout: " + mApi);
+            ToolLog.e(TAG, "initTabLayout: " + apps);
         }
 
-        mFragments.add(SettingFragment.newInstance(mApi));
+        mFragments.add(SettingFragment.newInstance(mApi, apps));
         mFragments.add(PingFragment.newInstance(mApi));
         mFragments.add(new DeviceFragment());
 
@@ -190,6 +197,7 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
             AutoSize.autoConvertDensity(this, 960f, true);
 
     }
+
     @Override
     public void showSuccess(String success) {
 
