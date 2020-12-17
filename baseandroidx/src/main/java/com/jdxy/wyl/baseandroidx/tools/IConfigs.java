@@ -112,7 +112,8 @@ public interface IConfigs {
     String SP_DEV_UPTIME = "devUpTime";
     String SP_DEV_DOWNTIME = "devDownTime";
     String SP_VOICE_FORMAT = "voiceFormat";
-    String SP_VOICE_SWITCH = "voiceSwitch";
+    String SP_VOICE_SWITCH = "voiceSwitch";//
+    String SP_CONTENT_SWITCH = "contentSwitch";//节目内容 与 数据切换
 
 
     String SP_UNIT_ID = "unitId";
@@ -123,8 +124,6 @@ public interface IConfigs {
     String SP_AREA_ID = "areaId";
     String SP_AREA_NAME = "areaName";
     String SP_WINDOW_NAME = "windowName";
-
-    String SP_VOICE_SWICH = "flag";
 
     String SP_DEPART_NAME = "deptName";//科室名
     String SP_DEPART_ID = "deptId";//科室id

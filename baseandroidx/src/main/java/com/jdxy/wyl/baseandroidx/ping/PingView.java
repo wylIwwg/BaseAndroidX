@@ -39,11 +39,18 @@ public class PingView extends ScrollView implements NetDiagnoListener {
         addView(textView);
     }
 
+    public void pingHost(String host,int time) {
+        showInfo = "";
+        setText(showInfo);
+        _netDiagnoService = new NetDiagnoService(getContext(), getContext().getPackageName()
+                , versionName, time, host, this);
+        _netDiagnoService.execute();
+    }
     public void pingHost(String host) {
         showInfo = "";
         setText(showInfo);
         _netDiagnoService = new NetDiagnoService(getContext(), getContext().getPackageName()
-                , versionName, userId, deviceId, host, this);
+                , versionName, 4, host, this);
         _netDiagnoService.execute();
     }
 

@@ -192,7 +192,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
         mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
 
-        mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWICH);
+        mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWITCH);
         if (mVoiceSwitch.length() < 1) {
             mVoiceSwitch = "1";
         }
@@ -406,7 +406,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                             break;
                         case "voiceSwitch"://flag
                             mVoiceSwitch = mObject.getString("flag");
-                            ToolSP.putDIYString(IConfigs.SP_VOICE_SWICH, mVoiceSwitch);
+                            ToolSP.putDIYString(IConfigs.SP_VOICE_SWITCH, mVoiceSwitch);
 
                             break;
                         case "upgrade":

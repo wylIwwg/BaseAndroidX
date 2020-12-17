@@ -122,6 +122,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
 
     public String mVoiceSwitch = "1";//语音播报开关
+    public boolean isContent = false;//内容切换开关
     public BVoiceSetting mVoiceSetting;//语音设置
 
     public String URL_UPLOAD_SCREEN;//上传截图链接http
@@ -131,6 +132,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public String ProjectName = "";
     public boolean localTimeSeted = false;//是否设置过本地时间
 
+    public String ClientId = "";
 
     //展示节目
     public RelativeLayout mRlvBanner;
@@ -251,15 +253,17 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                 ToolLog.efile("【key= " + str + " value= " + mAll.get(str) + "】");
             }
 
-
             mIP = ToolSP.getDIYString(IConfigs.SP_IP);
             mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
             mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
 
-            mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWICH);
+            mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWITCH);
             if (mVoiceSwitch.length() < 1) {
                 mVoiceSwitch = "1";
             }
+
+            isContent = "1".equals(ToolSP.getDIYString(IConfigs.SP_CONTENT_SWITCH));
+
             //获取声音配置
             String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
             if (mVoice != null && mVoice.length() > 0) {
@@ -309,6 +313,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         initSetting();
         initListener();
 
+
     }
 
     public List<BBanner> mBanners;
@@ -318,6 +323,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public CommonAdapter<BBanner> mBannerAdapter;
 
     public void InitProgram() {
+        isContent = false;
+
         mRlvBanner.setVisibility(View.VISIBLE);
         if (mViewContent != null) {
             mViewContent.setVisibility(View.GONE);
@@ -413,6 +420,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                 showError("未获取到资源");
             }
         }
+
+        addDevice(ClientId);
+
     }
 
     public void releaseProgram() {
@@ -423,6 +433,12 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             mSuperBanner.stop();
             Jzvd.releaseAllVideos();
         }
+
+        mRlvBanner.setVisibility(View.GONE);
+        if (mViewContent != null) {
+            mViewContent.setVisibility(View.VISIBLE);
+        }
+
     }
 
     void listProgramFiles(String dir) {
@@ -611,6 +627,17 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     }
                     ToolLog.e(TAG, "handleMessage: socket  " + obj);
                     switch (mType) {
+                        case "change"://节目 数据切换
+                            isContent = "1".equals(mObject.getString("data"));
+                            //0:显示节目；1 显示数据
+                            ToolSP.putDIYBoolean(IConfigs.SP_CONTENT_SWITCH, isContent);
+                            if (!isContent) {
+                                InitProgram();
+                            } else {
+                                releaseProgram();
+                            }
+                            break;
+
                         case "voiceFile"://下载声音文件
                             List<String> urls = JSON.parseArray(mObject.getString("data"), String.class);
                             mPresenter.downloadVoiceFiles(urls);
@@ -670,7 +697,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             break;
                         case "voiceSwitch"://flag
                             mVoiceSwitch = mObject.getString("flag");
-                            ToolSP.putDIYString(IConfigs.SP_VOICE_SWICH, mVoiceSwitch);
+                            ToolSP.putDIYString(IConfigs.SP_VOICE_SWITCH, mVoiceSwitch);
 
                             break;
                         case "logs":
@@ -752,15 +779,15 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
                             break;
                         case "init": //socket连接成功之后 做初始化操作
-                            String clientId = mObject.getString("id");
-                            String ping = "{\"type\":\"ping\",\"id\":\"" + clientId + "\"}";
+                            ClientId = mObject.getString("id");
+                            String ping = "{\"type\":\"ping\",\"id\":\"" + ClientId + "\"}";
                             mPulseData.setPing(ping);
                             mSocketManager.getPulseManager().setPulseSendable(mPulseData);
                             if (mTimeThread != null) {
                                 mTimeThread.onDestroy();
                                 mTimeThread = null;
                             }
-                            addDevice(clientId); //添加设备
+                            addDevice(ClientId); //添加设备
                             break;
 
                         case "voiceFormat"://语音格式
@@ -861,33 +888,59 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         if (timeStr.endsWith("00")) {
             ToolLog.efile(TAG, "每隔整点打印一次时间：当前：" + timeStr + " 开机：" + mRebootStarTime + " 关机：" + mRebootEndTime);
         }
-        try {
 
-            mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
-            mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
-            //开始时间和结束时间不为空才进入
-            if (!TextUtils.isEmpty(mProEndTime) && !TextUtils.isEmpty(mProStarTime)) {
-                Date mParse = mTimeFormat.parse(timeStr);// 15:00  15:10  15:20 15:21
-                ToolLog.e(TAG, "showTime:  " + " 当前时间： " + timeStr + "  节目开始时间： " + mProStarTime + " 节目结束时间： " + mProEndTime);
-                Date startDate = mTimeFormat.parse(mProStarTime);
-                Date endDate = mTimeFormat.parse(mProEndTime);
-                //结束时间 小于 开始时间  表示跨天   15:00 —— 08：00
-                if (endDate.getTime() - startDate.getTime() < 0) {
-                    // 15:00  19:00   8：00
-                    if (mParse.getTime() - startDate.getTime() >= 0) {
-                        //当天  展示
+        if (timeStr.equals(mRebootEndTime)) {
+            ToolLog.efile("【关机时间到了】: " + mRebootEndTime);
+            if (mDataHandler != null) {
+                mDataHandler.sendEmptyMessage(IConfigs.MSG_REBOOT_LISTENER);
+            }
+        }
+        try {
+            //已经处于节目显示情况
+            if (!isContent) {
+
+            } else {
+                mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
+                mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
+                //开始时间和结束时间不为空才进入
+                if (!TextUtils.isEmpty(mProEndTime) && !TextUtils.isEmpty(mProStarTime)) {
+                    Date mParse = mTimeFormat.parse(timeStr);// 15:00  15:10  15:20 15:21
+                    ToolLog.e(TAG, "showTime:  " + " 当前时间： " + timeStr + "  节目开始时间： " + mProStarTime + " 节目结束时间： " + mProEndTime);
+                    Date startDate = mTimeFormat.parse(mProStarTime);
+                    Date endDate = mTimeFormat.parse(mProEndTime);
+                    //结束时间 小于 开始时间  表示跨天   15:00 —— 08：00
+                    if (endDate.getTime() - startDate.getTime() < 0) {
+                        // 15:00  19:00   8：00
+                        if (mParse.getTime() - startDate.getTime() >= 0) {
+                            //当天  展示
+                            //展示信息
+                            if (mRlvBanner.getVisibility() == View.GONE) {
+                                ToolLog.efile(TAG, "showTime: 当天  展示");
+
+                                InitProgram();
+                            }
+                        } else if (mParse.getTime() - endDate.getTime() <= 0) {
+                            //第二天  展示
+                            //展示信息
+                            if (mRlvBanner.getVisibility() == View.GONE) {
+                                ToolLog.efile(TAG, "showTime: 第二天  展示");
+                                InitProgram();
+                            }
+                        } else {
+                            //时间不合
+                            mRlvBanner.setVisibility(View.GONE);
+                            mSuperBanner.stop();
+                            if (mViewContent != null)
+                                mViewContent.setVisibility(View.VISIBLE);
+                        }
+
+                    } else if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
                         //展示信息
                         if (mRlvBanner.getVisibility() == View.GONE) {
-                            ToolLog.efile(TAG, "showTime: 当天  展示");
+                            ToolLog.efile(TAG, "showTime: 当天且同一天  展示");
                             InitProgram();
                         }
-                    } else if (mParse.getTime() - endDate.getTime() <= 0) {
-                        //第二天  展示
-                        //展示信息
-                        if (mRlvBanner.getVisibility() == View.GONE) {
-                            ToolLog.efile(TAG, "showTime: 第二天  展示");
-                            InitProgram();
-                        }
+
                     } else {
                         //时间不合
                         mRlvBanner.setVisibility(View.GONE);
@@ -896,22 +949,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             mViewContent.setVisibility(View.VISIBLE);
                     }
 
-                } else if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
-                    //展示信息
-                    if (mRlvBanner.getVisibility() == View.GONE) {
-                        ToolLog.efile(TAG, "showTime: 当天且同一天  展示");
-                        InitProgram();
-                    }
-
-                } else {
-                    //时间不合
-                    mRlvBanner.setVisibility(View.GONE);
-                    mSuperBanner.stop();
-                    if (mViewContent != null)
-                        mViewContent.setVisibility(View.VISIBLE);
                 }
-
             }
+
 
         } catch (ParseException e) {
             ToolLog.e(TAG, e.toString());
@@ -919,12 +959,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         }
 
 
-        if (timeStr.equals(mRebootEndTime)) {
-            ToolLog.efile("【关机时间到了】: " + mRebootEndTime);
-            if (mDataHandler != null) {
-                mDataHandler.sendEmptyMessage(IConfigs.MSG_REBOOT_LISTENER);
-            }
-        }
     }
 
     public void close() {

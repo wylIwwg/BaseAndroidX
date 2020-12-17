@@ -18,7 +18,11 @@ public class NetPing {
     // 回传ping的结果
     LDNetPingListener listener;
     // 每次ping发送数据包的个数
-    private final int _sendCount;
+    private int _sendCount;
+
+    public void set_sendCount(int _sendCount) {
+        this._sendCount = _sendCount;
+    }
 
     public NetPing(LDNetPingListener listener, int theSendCount) {
         super();
@@ -40,7 +44,7 @@ public class NetPing {
     /**
      * 执行ping命令，返回ping命令的全部控制台输出
      *
-     * @param ping                              ping
+     * @param ping ping
      * @return
      */
     private String execPing(PingTask ping, boolean isNeedL) {
@@ -53,7 +57,7 @@ public class NetPing {
         BufferedReader reader = null;
         try {
             String pingCmd = cmd + this._sendCount + " " + ping.getHost();
-            ToolLog.e("NetPing--------pingCmd---"+pingCmd);
+            ToolLog.e("NetPing--------pingCmd---" + pingCmd);
             //比如 ping -c 4 10.3.140.254
             Runtime runtime = Runtime.getRuntime();
             process = runtime.exec(pingCmd);
@@ -86,7 +90,7 @@ public class NetPing {
     /**
      * 执行指定host的traceroute
      *
-     * @param host                              host
+     * @param host host
      * @return
      */
     public void exec(String host, boolean isNeedL) {
@@ -94,7 +98,7 @@ public class NetPing {
         StringBuilder log = new StringBuilder(256);
         String status = execPing(pingTask, isNeedL);
         if (Pattern.compile(MATCH_PING_IP).matcher(status).find()) {
-            ToolLog.e("NetPing--------status---"+status);
+            ToolLog.e("NetPing--------status---" + status);
             log.append("\t").append(status);
         } else {
             if (status.length() == 0) {
@@ -103,9 +107,9 @@ public class NetPing {
                 log.append("timeout");
             }
         }
-        ToolLog.e("NetPing--------exec---"+host);
+        ToolLog.e("NetPing--------exec---" + host);
         String logStr = PingParseTool.getFormattingStr(host, log.toString());
-        ToolLog.e("NetPing--------logStr---"+logStr);
+        ToolLog.e("NetPing--------logStr---" + logStr);
         this.listener.OnNetPingFinished(logStr);
     }
 

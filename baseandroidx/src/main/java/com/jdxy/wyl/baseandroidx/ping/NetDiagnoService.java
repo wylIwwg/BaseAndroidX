@@ -4,6 +4,11 @@ import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.ShellUtils;
+import com.jdxy.wyl.baseandroidx.tools.ToolLog;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -29,10 +34,6 @@ public class NetDiagnoService extends NetAsyncTaskEx<String, String, String>
 
     private String _appName;
     private String _appVersion;
-    // 用户ID
-    private String _UID;
-    // 客户端机器ID，如果不传入会默认取API提供的机器ID
-    private String _deviceID;
     // 接口域名
     private String _dormain;
     private String _ISOCountryCode;
@@ -56,7 +57,7 @@ public class NetDiagnoService extends NetAsyncTaskEx<String, String, String>
     private NetPing _netPinger; // 监控ping命令的执行时间
     private PingNetTraceRoute _traceRouter; // 监控ping模拟traceroute的执行过程
     private boolean _isRunning;
-
+    private int Times = 4;
     private NetDiagnoListener _netDiagnolistener; // 将监控日志上报到前段页面
     private TelephonyManager _telManager = null; // 用于获取网络基本信息
 
@@ -68,17 +69,16 @@ public class NetDiagnoService extends NetAsyncTaskEx<String, String, String>
      * 初始化网络诊断服务
      */
     public NetDiagnoService(Context context,
-                            String theAppName, String theAppVersion, String theUID,
-                            String theDeviceID, String theDormain, NetDiagnoListener theListener) {
+                            String theAppName, String theAppVersion,
+                            int times, String theDormain, NetDiagnoListener theListener) {
         super();
         this._context = context;
         this._appName = theAppName;
         this._appVersion = theAppVersion;
-        this._UID = theUID;
-        this._deviceID = theDeviceID;
         this._dormain = theDormain;
         this._netDiagnolistener = theListener;
         this._isRunning = false;
+        this.Times = times;
         _remoteIpList = new ArrayList<>();
         _telManager = (TelephonyManager) context
                 .getSystemService(Context.TELEPHONY_SERVICE);
@@ -158,47 +158,75 @@ public class NetDiagnoService extends NetAsyncTaskEx<String, String, String>
         //开始诊断...
         recordStepInfo("开始诊断...");
         //输出关于应用、机器、网络诊断的基本信息
-        recordCurrentAppVersion();
+        // recordCurrentAppVersion();
         //输出本地网络环境信息
         recordLocalNetEnvironmentInfo();
 
         if (_isNetConnected) {
             // TCP三次握手时间测试
-            recordStepInfo("\n开始TCP连接测试...");
-            _netSocker = NetSocket.getInstance();
-            _netSocker._remoteInet = _remoteInet;
-            _netSocker._remoteIpList = _remoteIpList;
-            _netSocker.initListener(this);
-            _isSocketConnected = _netSocker.exec(_dormain);
+            ToolLog.e("startNetDiagnosis", "startNetDiagnosis: " + _dormain);
+            if (_dormain.contains(":")) {
+                // ping IP + 端口
+                _netSocker = NetSocket.getInstance();
+                recordStepInfo("\n开始TCP连接测试...");
+                _netSocker._remoteInet = _remoteInet;
+                _netSocker._remoteIpList = _remoteIpList;
+                _netSocker.initListener(this);
+                _isSocketConnected = _netSocker.exec(_dormain);
+            } else {
+                //ping IP
 
-            // 诊断ping信息, 同步过程
-            recordStepInfo("\n开始ping...");
-            _netPinger = new NetPing(this, 4);
-            recordStepInfo("ping...127.0.0.1");
-            _netPinger.exec("127.0.0.1", false);
+                // 诊断ping信息, 同步过程
+                recordStepInfo("\n开始ping...");
 
-            //ping 本机ip地址
-            recordStepInfo("");
-            recordStepInfo("ping本机IP..." + _localIp);
-            _netPinger.exec(_localIp, false);
-            if (PingNetUtils.NETWORKTYPE_WIFI.equals(_netType)) {
-                // 在wifi下ping网关
+                if (_netPinger == null) {
+                    _netPinger = new NetPing(this, 4);
+                }
+                recordStepInfo("ping...ip地址..." + _dormain);
+
+                // _netPinger.set_sendCount(Times);
+                // _netPinger.exec(_dormain, false);
+                while (Times > 0) {
+                    ShellUtils.CommandResult result = ShellUtils.execCmd(String.format("ping -c 1 -w 5 %s", _dormain), AppUtils.isAppRoot());
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    recordStepInfo("");
+                    recordStepInfo("-- " + (result.result == 0 ? PingParseTool.getFormattingStr(_dormain, result.successMsg) : result.errorMsg));
+                    Times--;
+
+                }
+
                 recordStepInfo("");
-                recordStepInfo("ping本地网关..." + _gateWay);
-                _netPinger.exec(_gateWay, false);
+
+              /*  _netPinger.set_sendCount(4);
+                recordStepInfo("ping...127.0.0.1");
+                _netPinger.exec("127.0.0.1", false);
+
+                //ping 本机ip地址
+                recordStepInfo("");
+                recordStepInfo("ping本机IP..." + _localIp);
+                _netPinger.exec(_localIp, false);
+                if (PingNetUtils.NETWORKTYPE_WIFI.equals(_netType)) {
+                    // 在wifi下ping网关
+                    recordStepInfo("");
+                    recordStepInfo("ping本地网关..." + _gateWay);
+                    _netPinger.exec(_gateWay, false);
+                }
+
+                //ping 本地dns
+                recordStepInfo("");
+                recordStepInfo("ping本地DNS1..." + _dns1);
+                _netPinger.exec(_dns1, false);
+                recordStepInfo("");
+                recordStepInfo("ping本地DNS2..." + _dns2);
+                _netPinger.exec(_dns2, false);
+*/
+
             }
 
-            //ping 本地dns
-            recordStepInfo("");
-            recordStepInfo("ping本地DNS1..." + _dns1);
-            _netPinger.exec(_dns1, false);
-            recordStepInfo("");
-            recordStepInfo("ping本地DNS2..." + _dns2);
-            _netPinger.exec(_dns2, false);
-
-            if (_netPinger == null) {
-                _netPinger = new NetPing(this, 4);
-            }
 
             // 开始诊断traceRoute
            /* recordStepInfo("\n开始traceroute...");
@@ -297,6 +325,7 @@ public class NetDiagnoService extends NetAsyncTaskEx<String, String, String>
     @Override
     public void OnNetSocketUpdated(String log) {
         _logInfo.append(log);
+        ToolLog.e("TAG", "OnNetSocketUpdated: " + log);
         publishProgress(log);
     }
 
@@ -312,10 +341,9 @@ public class NetDiagnoService extends NetAsyncTaskEx<String, String, String>
         recordStepInfo("机器类型:\t" + android.os.Build.MANUFACTURER + ":"
                 + android.os.Build.BRAND + ":" + android.os.Build.MODEL);
         recordStepInfo("系统版本:\t" + android.os.Build.VERSION.RELEASE);
-        if (_telManager != null && TextUtils.isEmpty(_deviceID)) {
-            _deviceID = _telManager.getDeviceId();
+        if (_telManager != null) {
+            recordStepInfo("机器ID:\t" + _telManager.getDeviceId());
         }
-        recordStepInfo("机器ID:\t" + _deviceID);
 
         // 运营商信息
         if (TextUtils.isEmpty(_carrierName)) {
@@ -370,8 +398,8 @@ public class NetDiagnoService extends NetAsyncTaskEx<String, String, String>
 
         // 获取远端域名的DNS解析地址
         if (_isNetConnected) {
-            recordStepInfo("远端域名:\t" + this._dormain);
-            _isDomainParseOk = parseDomain(this._dormain);// 域名解析
+            //recordStepInfo("远端域名:\t" + this._dormain);
+            // _isDomainParseOk = parseDomain(this._dormain);// 域名解析
         }
     }
 

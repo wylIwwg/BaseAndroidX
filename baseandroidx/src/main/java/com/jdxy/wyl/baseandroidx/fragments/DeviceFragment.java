@@ -191,7 +191,7 @@ public class DeviceFragment extends Fragment {
         StringBuilder sb = new StringBuilder();
         if (NetworkUtils.getNetworkType() == NetworkUtils.NetworkType.NETWORK_WIFI) {
             sb.append("wifi网络");
-            sb.append("wifi信号强度:").append(NetDeviceUtils.getWifiState(application));
+            sb.append("\nwifi信号强度:").append(NetDeviceUtils.getWifiState(application));
             sb.append("\nAndroidID:").append(NetDeviceUtils.getAndroidID(application));
             sb.append("\nMac地址:").append(NetDeviceUtils.getMacAddress(application).toUpperCase());
             sb.append("\nWifi名称:").append(NetDeviceUtils.getWifiName(application));

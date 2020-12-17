@@ -1,9 +1,13 @@
 package com.jdxy.wyl.baseandroidx.ping;
 
 
+import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.ShellUtils;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -12,7 +16,9 @@ import java.util.List;
 
 public class NetSocket {
 
+    private static final String TAG = " NetSocket  ";
     private static int PORT = 80;
+    private static String HOST = "80";
     private static final int CONN_TIMES = 4;
     private static final String TIMEOUT = "DNS解析正常,连接超时,TCP建立失败";
     private static final String IOERR = "DNS解析正常,IO异常,TCP建立失败";
@@ -52,113 +58,23 @@ public class NetSocket {
     }
 
 
-
     /**
      * 使用java执行connected
      */
     private boolean execUseJava(String host) {
         if (host.contains(":")) {
             String[] mSplit = host.split(":");
-            InetSocketAddress mAddress = new InetSocketAddress(mSplit[0], Integer.parseInt(mSplit[1]));
+            PORT = Integer.parseInt(mSplit[1]);
+            HOST = mSplit[0];
+            ToolLog.e("execUseJava", "execUseJava: " + host);
+            InetSocketAddress mAddress = new InetSocketAddress(HOST, PORT);
             execSocket(mAddress, timeOut, 0);
             return true;
-        } else {
-            if (_remoteInet != null && _remoteIpList != null) {
-                //获取长度
-                int len = _remoteInet.length;
-                isConnnected = new boolean[len];
-                ToolLog.e("NetSocket----------isConnnected---" + isConnnected.length);
-                for (int i = 0; i < len; i++) {
-                    if (i != 0) {
-                        this.listener.OnNetSocketUpdated("\n");
-                    }
-                    InetAddress inetAddresses = _remoteInet[i];
-                    //www.jianshu.com/47.92.108.93
-                    String ip = _remoteIpList.get(i);
-                    //47.92.108.93
-                    ToolLog.e("NetSocket--------execIP---" + inetAddresses + "----" + ip);
-                    isConnnected[i] = execIP(inetAddresses, ip);
-                }
-                for (Boolean i : isConnnected) {
-                    if (i == true) {
-                        // 一个连接成功即认为成功
-                        this.listener.OnNetSocketFinished("\n");
-                        return true;
-                    }
-                }
-            } else {
-                this.listener.OnNetSocketFinished(HOSTERR + "\n");
-            }
-            return false;
         }
+        return false;
 
     }
 
-
-    /**
-     * 返回某个IP进行5次connect的最终结果
-     */
-    private boolean execIP(InetAddress inetAddress, String ip) {
-        boolean isConnected = true;
-        StringBuilder log = new StringBuilder();
-        InetSocketAddress socketAddress = null;
-        if (inetAddress != null && ip != null) {
-            if (ip.contains(":")) {
-                PORT = Integer.parseInt(ip.split(":")[1]);
-            }
-            socketAddress = new InetSocketAddress(inetAddress, PORT);
-            int flag = 0;
-            this.listener.OnNetSocketUpdated("Connect to host: " + ip + "..." + "\n");
-            for (int i = 0; i < CONN_TIMES; i++) {
-                execSocket(socketAddress, timeOut, i);
-                if (RttTimes[i] == -1) {
-                    // 一旦发生timeOut,则尝试加长连接时间
-                    this.listener.OnNetSocketUpdated((i + 1) + "'s time=" + "TimeOut" + ",  " + "\n");
-                    this.listener.OnNetSocketUpdated(TIMEOUT + "\n");
-                    timeOut += 4000;
-                    if (i > 0 && RttTimes[i - 1] == -1) {
-                        // 连续两次连接超时,停止后续测试
-                        flag = -1;
-                        break;
-                    }
-                } else if (RttTimes[i] == -2) {
-                    this.listener.OnNetSocketUpdated((i + 1) + "'s time=" + "IOException" + "\n");
-                    this.listener.OnNetSocketUpdated(IOERR + "\n");
-                    if (i > 0 && RttTimes[i - 1] == -2) {
-                        // 连续两次出现IO异常,停止后续测试
-                        flag = -2;
-                        break;
-                    }
-                } else {
-                    this.listener.OnNetSocketUpdated((i + 1) + "'s time=" + RttTimes[i] + "ms,  " + "\n");
-                }
-            }
-            long time = 0;
-            int count = 0;
-            if (flag == -1) {
-                // log.append(TIMEOUT);
-                isConnected = false;
-            } else if (flag == -2) {
-                // log.append(IOERR);
-                isConnected = false;
-            } else {
-                for (int i = 0; i < CONN_TIMES; i++) {
-                    if (RttTimes[i] > 0) {
-                        time += RttTimes[i];
-                        count++;
-                    }
-                }
-                if (count > 0) {
-                    time = time / count;
-                    log.append("average=").append(time).append("ms" + "\n");
-                }
-            }
-        } else {
-            isConnected = false;
-        }
-        this.listener.OnNetSocketUpdated(log.toString());
-        return isConnected;
-    }
 
     /**
      * 针对某个IP第index次connect
@@ -170,19 +86,41 @@ public class NetSocket {
         try {
             socket = new Socket();
             start = System.currentTimeMillis();
+            listener.OnNetSocketFinished("\n");
             socket.connect(socketAddress, timeOut);
+
             end = System.currentTimeMillis();
+
+            ShellUtils.CommandResult mResult = ShellUtils.execCmd(String.format("ping -c 1 %s", HOST), false);
+            ToolLog.e(TAG, "execSocket: " + mResult.errorMsg);
+            ToolLog.e(TAG, "execSocket: " + mResult.successMsg);
+
+            if (socket.isConnected()) {
+                InputStream mOutputStream = socket.getInputStream();
+                byte[] b = new byte[1024];
+                int len = mOutputStream.read(b);
+                String str = new String(b, 0, len);
+
+                listener.OnNetSocketFinished("【socket连接成功】" + str);
+
+            } else {
+                listener.OnNetSocketFinished("【socket连接失败】");
+            }
+            listener.OnNetSocketFinished("");
             RttTimes[index] = end - start;
+            ToolLog.e("TAG", "execSocket: " + RttTimes[index]);
         } catch (SocketTimeoutException e) {
             // 超时
             RttTimes[index] = -1;
             // 作为TIMEOUT标识
             e.printStackTrace();
+            listener.OnNetSocketFinished("【socket连接失败】" + e.getMessage());
         } catch (IOException e) {
             // 异常
             RttTimes[index] = -2;
             // 作为IO异常标识
             e.printStackTrace();
+            listener.OnNetSocketFinished("【socket连接失败】" + e.getMessage());
         } finally {
             if (socket != null) {
                 try {
@@ -191,6 +129,7 @@ public class NetSocket {
                     e.printStackTrace();
                 }
             }
+            listener.OnNetSocketFinished("\n");
         }
     }
 

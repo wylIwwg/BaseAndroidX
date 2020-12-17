@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import butterknife.BindView;
+import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -60,6 +61,7 @@ public class PingFragment extends Fragment {
     EditText mEtApi;
     Button mBtnPingApi;
     EditText mEtSocketPort;
+    EditText mEtPingTimes;
     Button mBtnPingSocket;
     PingView mPingResult;
     TextView mTvContent;
@@ -111,6 +113,7 @@ public class PingFragment extends Fragment {
         mTvBody = inflate.findViewById(R.id.tv_body);
         mApiResult = inflate.findViewById(R.id.apiResult);
         mPingResult = inflate.findViewById(R.id.pingResult);
+        mEtPingTimes = inflate.findViewById(R.id.etTimes);
 
         mTvUrlContent = inflate.findViewById(R.id.tv_url_content);
 
@@ -151,7 +154,7 @@ public class PingFragment extends Fragment {
             if (!TextUtils.isEmpty(mEtHttpIP.getText().toString()) && !TextUtils.isEmpty(mEtSocketPort.getText().toString())) {
                 mApiResult.setVisibility(View.GONE);
                 mPingResult.setVisibility(View.VISIBLE);
-                mPingResult.pingHost(mEtHttpIP.getText().toString());
+                // mPingResult.pingHost(mEtHttpIP.getText().toString());
                 pingSocket(mEtHttpIP.getText().toString(), mEtSocketPort.getText().toString());
 
             }
@@ -159,7 +162,14 @@ public class PingFragment extends Fragment {
             if (!TextUtils.isEmpty(mEtHttpIP.getText().toString())) {
                 mApiResult.setVisibility(View.GONE);
                 mPingResult.setVisibility(View.VISIBLE);
-                mPingResult.pingHost(mEtHttpIP.getText().toString());
+                String times = mEtPingTimes.getText().toString();
+                int t = 1;
+                if (!TextUtils.isEmpty(times)) {
+                    t = Integer.parseInt(times);
+                } else {
+                    t = 1;
+                }
+                mPingResult.pingHost(mEtHttpIP.getText().toString(), t);
             }
         } else if (mId == R.id.btnPingApi) {
             if (!TextUtils.isEmpty(mEtApi.getText().toString())) {
@@ -179,11 +189,15 @@ public class PingFragment extends Fragment {
 
     void showApiResult() {
 
+        ToolLog.efile(TAG, "【showApiResult】: " + mEtApi.getText().toString());
+
         OkGo.<String>get(mEtApi.getText().toString())
                 .tag(this)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(com.lzy.okgo.model.Response<String> response) {
+                        ToolLog.efile(TAG, "【测试结果onSuccess】: " + response.body());
+                        Toasty.success(getActivity(), response.body()).show();
                         mNetworkFeedModel = new NetworkFeedBean();
                         mNetworkFeedModel.setBody(response.body());
                         mNetworkFeedModel.setCreateTime(response.getRawResponse().sentRequestAtMillis());
@@ -206,6 +220,7 @@ public class PingFragment extends Fragment {
                     @Override
                     public void onError(Response<String> response) {
                         super.onError(response);
+                        ToolLog.efile(TAG, "【测试结果onError】: " + (response.getException() == null ? response.body() : response.getException().toString()));
                         mNetworkFeedModel = new NetworkFeedBean();
                         mNetworkFeedModel.setBody(response.body());
                         if (response.getRawResponse() != null) {
@@ -223,9 +238,8 @@ public class PingFragment extends Fragment {
                         }
 
                         setCURLContent();
-
-
                         mTvBody.setText(response.body());
+                        Toasty.error(getActivity(), response.body()).show();
                     }
                 });
 /*
