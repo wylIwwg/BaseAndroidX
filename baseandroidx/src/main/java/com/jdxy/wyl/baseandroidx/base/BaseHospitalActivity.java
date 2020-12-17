@@ -75,7 +75,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import cn.jzvd.JZUtils;
 import cn.jzvd.Jzvd;
 import es.dmoral.toasty.Toasty;
 
@@ -245,6 +244,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
     public void initSetting() {
+
 
         try {
             Map<String, ?> mAll = ToolSP.getAll();

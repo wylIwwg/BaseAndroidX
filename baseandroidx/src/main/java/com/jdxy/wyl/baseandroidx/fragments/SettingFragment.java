@@ -30,6 +30,7 @@ import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.ReflectUtils;
+import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.R2;
@@ -258,15 +259,20 @@ public class SettingFragment extends Fragment {
             mHolder.mRgSynthesisType.addView(rb);
         }
 
+
         mHolder.mBtnGetArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String ip = mHolder.mEtIp.getText().toString().trim();
-                String port = mHolder.mEtPort.getText().toString().trim();
+                final String ip = mHolder.mEtIp.getText().toString();
+                if (!RegexUtils.isIP(ip)) {
+                    Toasty.error(getActivity(), "请输入合法的ip地址：" + ip).show();
+                    return;
+                }
+                String port = mHolder.mEtPort.getText().toString();
 
-                ToolSP.putDIYString(IConfigs.SP_IP, mHolder.mEtIp.getText().toString().trim());
-                ToolSP.putDIYString(IConfigs.SP_PORT_HTTP, mHolder.mEtPort.getText().toString().trim());
-                ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString().trim());
+                ToolSP.putDIYString(IConfigs.SP_IP, ip);
+                ToolSP.putDIYString(IConfigs.SP_PORT_HTTP, mHolder.mEtPort.getText().toString());
+                ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString());
                 if (!TextUtils.isEmpty(ip) && !TextUtils.isEmpty(port)) {
                     String api = mApi;
                     //onClick: /baseConsultaioninfo/departAlls
@@ -301,7 +307,7 @@ public class SettingFragment extends Fragment {
                         @Override
                         public void onError(Response<BHosSetting> response) {
                             super.onError(response);
-                            Toasty.error(getActivity(), "获取失败：" + response.getException().getMessage(), Toast.LENGTH_LONG, true).show();
+                            Toasty.error(getActivity(), "获取失败：" + (response.getException() == null ? response.body() : response.getException().toString()), Toast.LENGTH_LONG, true).show();
                         }
                     });
 
@@ -342,11 +348,15 @@ public class SettingFragment extends Fragment {
         mHolder.mBtnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                final String ip = mHolder.mEtIp.getText().toString();
+                if (!RegexUtils.isIP(ip)) {
+                    Toasty.error(getActivity(), "请输入合法的ip地址：" + ip).show();
+                    return;
+                }
                 //重新启动应用
-                ToolSP.putDIYString(IConfigs.SP_IP, mHolder.mEtIp.getText().toString().trim());
-                ToolSP.putDIYString(IConfigs.SP_PORT_HTTP, mHolder.mEtPort.getText().toString().trim());
-                ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString().trim());
+                ToolSP.putDIYString(IConfigs.SP_IP, ip);
+                ToolSP.putDIYString(IConfigs.SP_PORT_HTTP, mHolder.mEtPort.getText().toString());
+                ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString());
                 if (tvDepart != null) {
                     BHosSetting.Data depart = (BHosSetting.Data) tvDepart.getTag();
                     ToolSP.putDIYString(IConfigs.SP_DEPART_ID, depart.getId() + "");

@@ -16,6 +16,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.alibaba.fastjson.JSON;
+import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.R2;
@@ -169,6 +170,10 @@ public class PingFragment extends Fragment {
                 } else {
                     t = 1;
                 }
+                if (!RegexUtils.isIP(mEtHttpIP.getText().toString())) {
+                    Toasty.error(getActivity(), "请输入合法的ip地址：" + mEtHttpIP.getText().toString()).show();
+                    return;
+                }
                 mPingResult.pingHost(mEtHttpIP.getText().toString(), t);
             }
         } else if (mId == R.id.btnPingApi) {
@@ -239,7 +244,7 @@ public class PingFragment extends Fragment {
 
                         setCURLContent();
                         mTvBody.setText(response.body());
-                        Toasty.error(getActivity(), response.body()).show();
+                        Toasty.error(getActivity(), (response.getException() == null ? response.body() : response.getException().toString())).show();
                     }
                 });
 /*

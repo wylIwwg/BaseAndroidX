@@ -8,7 +8,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.DhcpInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -27,10 +26,10 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.RegexUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.base.NetworkFeedBean;
 import com.jdxy.wyl.baseandroidx.network.NetDeviceUtils;
-import com.jdxy.wyl.baseandroidx.network.NetWorkUtils;
 import com.jdxy.wyl.baseandroidx.network.NetworkTool;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
@@ -39,11 +38,6 @@ import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -140,12 +134,7 @@ public class DeviceFragment extends Fragment {
                 .append("x").append(NetDeviceUtils.getRealHeightPixels(application));
         sb.append("\n屏幕尺寸:").append(NetDeviceUtils.getScreenInch(activity));
         tvPhoneContent.setText(sb.toString());
-        tvPhoneContent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NetWorkUtils.copyToClipBoard(activity, sb.toString());
-            }
-        });
+
     }
 
 

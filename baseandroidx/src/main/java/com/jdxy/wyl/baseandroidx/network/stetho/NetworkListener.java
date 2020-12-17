@@ -1,9 +1,6 @@
 package com.jdxy.wyl.baseandroidx.network.stetho;
 
-import android.os.SystemClock;
 
-
-import com.jdxy.wyl.baseandroidx.network.NetWorkUtils;
 import com.jdxy.wyl.baseandroidx.network.NetworkTraceBean;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 
@@ -15,7 +12,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.Call;
