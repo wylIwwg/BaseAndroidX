@@ -69,7 +69,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     public String TAG = "【" + this.getClass().getSimpleName() + "】";
     public static final String SOCKET = "【socket】";
     public static final String HTTP = "【http】";
-    public static final String ERROR = "【error】";
+    public static final String ERROR = "【icon_error】";
     public Context mContext;
     public RelativeLayout mBaseRlRoot;//根布局
     public BaseDataHandler mDataHandler;

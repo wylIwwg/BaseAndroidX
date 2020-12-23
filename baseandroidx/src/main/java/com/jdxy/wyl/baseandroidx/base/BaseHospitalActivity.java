@@ -46,6 +46,7 @@ import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
+import com.jdxy.wyl.baseandroidx.tools.ToolSocket;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
 import com.jdxy.wyl.baseandroidx.view.DialogLogs;
@@ -75,14 +76,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import cn.jzvd.JZUtils;
 import cn.jzvd.Jzvd;
+import cn.jzvd.JzvdStd;
 import es.dmoral.toasty.Toasty;
 
 public class BaseHospitalActivity extends AppCompatActivity implements BaseDataHandler.MessageListener, IView {
     public String TAG = "【" + this.getClass().getSimpleName() + "】";
     public static final String SOCKET = "【socket】";
     public static final String HTTP = "【http】";
-    public static final String ERROR = "【error】";
+    public static final String ERROR = "【icon_error】";
     public static final String SUCCESS = "【success】";
     public Context mContext;
     public RelativeLayout mBaseRlRoot;//根布局
@@ -312,7 +315,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public void initData() {
         initSetting();
         initListener();
-
+        ToolSocket.getInstance().setDataHandler(mDataHandler);
 
     }
 
@@ -349,11 +352,25 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             @Override
             protected void convert(ViewHolder holder, BBanner banner, int position) {
                 SimpleJZPlayer mPlayer = holder.getView(R.id.videoplayer);
+
                 if ("0".equals(banner.getType())) {
                     Glide.with(mContext).load(banner.getUrl()).into(mPlayer.thumbImageView);
 
                 } else {
                     mPlayer.setUp(banner.getUrl(), "", Jzvd.SCREEN_FULLSCREEN);
+
+                    //有且只有一个视频
+                    if (position == 0 && mBanners.size() == 1) {
+                        mPlayer.startButton.performClick();
+                        mSuperBanner.stop();
+                        mPlayer.setOnCompleteListener(new SimpleJZPlayer.CompleteListener() {
+                            @Override
+                            public void complete(SimpleJZPlayer player, String url, int screen) {
+                                //mSuperBanner.start(true);
+                                player.startButton.performClick();
+                            }
+                        });
+                    }
                 }
             }
         };
@@ -375,9 +392,11 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     //获取最后一个完全显示的ItemPosition
                     int mVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
                     int index = mVisibleItemPosition % mBanners.size();
+                    ToolLog.e(TAG, "onScrollStateChanged: " + index + "  " + mVisibleItemPosition);
                     if (index < mBanners.size() && index > 0) {
                         BBanner mBanner = mBanners.get(index);
                         if ("1".equals(mBanner.getType())) {
+                            ToolLog.e(TAG, "onScrollStateChanged: " + index);
                             View mView = mSuperBanner.getChildAt(0);
                             if (mView != null) {
                                 SimpleJZPlayer mPlayer = mView.findViewById(R.id.videoplayer);
@@ -568,6 +587,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     @Override
     public void userHandler(Message msg) {
         switch (msg.what) {
+            case IConfigs.MSG_SOCKET_DISCONNECT:
+                startLocalTime();
+                showError(msg.obj.toString());
+                break;
+            case IConfigs.MSG_CREATE_TCP_ERROR:
+                showError(msg.obj.toString());
+                break;
+
             case IConfigs.MSG_MEDIA_INIT:
                 //控制轮播
                 if (mBanners.size() > 1) {
@@ -670,7 +697,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             break;
                         case "pong"://心跳处理
                             Date mDate;
-                            feed();
+                            //feed();
+                            ToolSocket.getInstance().feed();
                             if (obj.contains("date")) {
                                 long mTime = mObject.getLong("date");
                                 if (mTime > 0) {
@@ -781,8 +809,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         case "init": //socket连接成功之后 做初始化操作
                             ClientId = mObject.getString("id");
                             String ping = "{\"type\":\"ping\",\"id\":\"" + ClientId + "\"}";
-                            mPulseData.setPing(ping);
-                            mSocketManager.getPulseManager().setPulseSendable(mPulseData);
+                           /* mPulseData.setPing(ping);
+                            mSocketManager.getPulseManager().setPulseSendable(mPulseData);*/
+                            ToolSocket.getInstance().setPing(ping);
                             if (mTimeThread != null) {
                                 mTimeThread.onDestroy();
                                 mTimeThread = null;
@@ -833,10 +862,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             mDataHandler.removeCallbacksAndMessages(null);
             mDataHandler = null;
         }*/
-        if (mSocketManager != null) {
-            mSocketManager.disconnect();
-            mSocketManager = null;
-        }
+
+        // ToolSocket.getInstance().stopConnect();
     }
 
 
@@ -1020,159 +1047,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
         startActivity(mIntent);
 
-    }
-
-    public IConnectionManager mSocketManager;
-
-    public void feed() {
-        if (mSocketManager != null && mSocketManager.getPulseManager() != null) {
-            mSocketManager.getPulseManager().feed();
-        }
-    }
-
-    public void initSocket() {
-        if (mIP.length() < 6) {
-            showError("请设置ip与端口号");
-            return;
-        }
-        initSocket(mIP, mSocketPort);
-    }
-
-    public void initSocket(String ip, String port) {
-        //连接参数设置(IP,端口号),这也是一个连接的唯一标识,不同连接,该参数中的两个值至少有其一不一样
-        ConnectionInfo info = new ConnectionInfo(ip, Integer.parseInt(port));
-        //调用OkSocket,开启这次连接的通道,拿到通道Manager
-        mSocketManager = OkSocket.open(info);
-        //获得当前连接通道的参配对象
-        OkSocketOptions options = mSocketManager.getOption();
-        //基于当前参配对象构建一个参配建造者类
-        //  OkSocketOptions.Builder builder = new OkSocketOptions.Builder(options);
-        //修改参配设置(其他参配请参阅类文档)
-        //builder.setSinglePackageBytes(size);
-
-        //设置自定义解析头
-        OkSocketOptions.Builder okOptionsBuilder = new OkSocketOptions.Builder(options);
-        okOptionsBuilder.setPulseFrequency(5000);
-        okOptionsBuilder.setReaderProtocol(new IReaderProtocol() {
-            @Override
-            public int getHeaderLength() {
-                /*
-                 * 返回不能为零或负数的报文头长度(字节数)。
-                 * 您返回的值应符合服务器文档中的报文头的固定长度值(字节数),可能需要与后台同学商定
-                 */
-                //  return /*固定报文头的长度(字节数)*/;
-                return 8;
-            }
-
-            @Override
-            public int getBodyLength(byte[] header, ByteOrder byteOrder) {
-     /*
-         * 体长也称为有效载荷长度，
-         * 该值应从作为函数输入参数的header中读取。
-         * 从报文头数据header中解析有效负载长度时，最好注意参数中的byteOrder。
-         * 我们强烈建议您使用java.nio.ByteBuffer来做到这一点。
-         * 你需要返回有效载荷的长度,并且返回的长度中不应该包含报文头的固定长度
-                        * /
-                return /*有效负载长度(字节数)，固定报文头长度(字节数)除外*/
-                ;
-                // ToolLog.e("getBodyLengthheader: " + header.length);
-                byte[] buffer = new byte[4];
-                System.arraycopy(header, 0, buffer, 0, 4);
-                int len = bytesToInt(buffer, 0);
-                // ToolLog.e(TAG, "getBodyLength: " + (len - 8));
-                return len - 8;
-            }
-
-        });
-
-        //建造一个新的参配对象并且付给通道
-        mSocketManager.option(okOptionsBuilder.build());
-        //调用通道进行连接
-        mSocketManager.registerReceiver(adapter);
-        mSocketManager.connect();
-
-
-    }
-
-    public BPulse mPulseData = new BPulse();
-    private SocketActionAdapter adapter = new SocketActionAdapter() {
-
-        @Override
-        public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
-            ToolLog.efile(TAG, "onSocketConnectionSuccess: " + " 【socket 连接成功】");
-            //连接成功其他操作...
-            //链式编程调用,给心跳管理器设置心跳数据,一个连接只有一个心跳管理器,因此数据只用设置一次,如果断开请再次设置.
-           /* OkSocket.open(info)
-                    .getPulseManager()
-                    .setPulseSendable(mPulseData)//只需要设置一次,下一次可以直接调用pulse()
-                    .pulse();//开始心跳,开始心跳后,心跳管理器会自动进行心跳触发*/
-            mSocketManager.getPulseManager().setPulseSendable(mPulseData).pulse();
-
-        }
-
-        @Override
-        public void onSocketDisconnection(ConnectionInfo info, String action, Exception e) {
-            showError("【socket断开连接】" + e.getMessage());
-            startLocalTime();
-        }
-
-        @Override
-        public void onSocketConnectionFailed(ConnectionInfo info, String action, Exception e) {
-            showError("【socket连接失败】" + e.getMessage());
-        }
-
-        @Override
-        public void onSocketReadResponse(ConnectionInfo info, String action, OriginalData data) {
-            byte[] b = data.getBodyBytes();
-            String str = new String(b, Charset.forName("utf-8"));
-            ToolLog.e(TAG, "onSocketReadResponse: " + action + "     " + b.length + "  " + str);
-            //  JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
-            // String type = jsonObject.get("type").getAsString();
-            //处理socket消息
-            Message msg = Message.obtain();
-            msg.what = IConfigs.MSG_SOCKET_RECEIVED;
-            msg.obj = str;
-            if (mDataHandler != null) {
-                mDataHandler.sendMessage(msg);
-            } else {
-                // showError("handler 为空");
-            }
-
-        }
-
-        @Override
-        public void onSocketWriteResponse(ConnectionInfo info, String action, ISendable data) {
-        /*    byte[] bytes = data.parse();
-            bytes = Arrays.copyOfRange(bytes, 4, bytes.length);
-            String str = new String(bytes, Charset.forName("utf-8"));
-            ToolLog.e(TAG, "onSocketWriteResponse: " + action + "     " + str);*/
-
-        }
-
-        @Override
-        public void onPulseSend(ConnectionInfo info, IPulseSendable data) {
-            byte[] bytes = data.parse();
-            bytes = Arrays.copyOfRange(bytes, 8, bytes.length);
-            String str = new String(bytes, Charset.forName("utf-8"));
-            // JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
-            ToolLog.e(TAG, "发送心跳包：" + str);
-        }
-    };
-
-    /**
-     * byte数组中取int数值，本方法适用于(低位在前，高位在后)的顺序，和和intToBytes（）配套使用
-     *
-     * @param src    byte数组
-     * @param offset 从数组的第offset位开始
-     * @return int数值
-     */
-    public int bytesToInt(byte[] src, int offset) {
-        int value;
-        value = (int) ((src[offset] & 0xFF)
-                | ((src[offset + 1] & 0xFF) << 8)
-                | ((src[offset + 2] & 0xFF) << 16)
-                | ((src[offset + 3] & 0xFF) << 24));
-        return value;
     }
 
 

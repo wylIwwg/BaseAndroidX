@@ -3,8 +3,13 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseAndroidX.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseAndroidX.iml" group="BaseAndroidX" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseDemo/BaseDemo.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseDemo/BaseDemo.iml" group="BaseAndroidX/BaseDemo" />
       <module fileurl="file://$PROJECT_DIR$/baseandroidx/baseandroidx.iml" filepath="$PROJECT_DIR$/baseandroidx/baseandroidx.iml" group="BaseAndroidX/baseandroidx" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docscheduling/docscheduling.iml" filepath="$PROJECT_DIR$/.idea/modules/docscheduling/docscheduling.iml" group="BaseAndroidX/docscheduling" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/doctordesc/doctordesc.iml" filepath="$PROJECT_DIR$/.idea/modules/doctordesc/doctordesc.iml" group="BaseAndroidX/doctordesc" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/doorplate/doorplate.iml" filepath="$PROJECT_DIR$/.idea/modules/doorplate/doorplate.iml" group="BaseAndroidX/doorplate" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/expertdesc/expertdesc.iml" filepath="$PROJECT_DIR$/.idea/modules/expertdesc/expertdesc.iml" group="BaseAndroidX/expertdesc" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/inforelease/inforelease.iml" filepath="$PROJECT_DIR$/.idea/modules/inforelease/inforelease.iml" group="BaseAndroidX/inforelease" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/synthesis/synthesis.iml" filepath="$PROJECT_DIR$/.idea/modules/synthesis/synthesis.iml" group="BaseAndroidX/synthesis" />
     </modules>
   </component>
 </project>

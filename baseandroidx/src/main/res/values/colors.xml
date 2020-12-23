@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="sp_orange">#FF9E3D</color>
+    <color name="sp_main">#1373C1</color>
+    <color name="sp_bg">#E1EDF9</color>
+    <color name="sp_bg_passed">#E1EDF9</color>
+    <color name="sp_gray_dark">#808080</color>
+    <color name="sp_orange_2">#FFFCE7CA</color>
+    <color name="sp_orange_1">#FFF5E0</color>
+
 
     <color name="crash_tool_bar_color">#333333</color>
     <color name="crash_white">#FFFFFF</color>

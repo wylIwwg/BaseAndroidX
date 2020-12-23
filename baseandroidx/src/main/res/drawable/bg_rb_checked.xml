@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:bottom="2dp"
-        android:drawable="@drawable/cb_checked"
+        android:drawable="@drawable/icon_cb_checked"
         android:gravity="center"
         android:left="2dp"
         android:right="2dp"

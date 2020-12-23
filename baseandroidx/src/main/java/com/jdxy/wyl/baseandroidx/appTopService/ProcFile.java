@@ -34,7 +34,7 @@ public class ProcFile extends File implements Parcelable {
    *     the absolute path to the file.
    * @return the contents of the file.
    * @throws IOException
-   *     if an error occurred while reading.
+   *     if an icon_error occurred while reading.
    */
   static String readFile(String path) throws IOException {
     BufferedReader reader = null;

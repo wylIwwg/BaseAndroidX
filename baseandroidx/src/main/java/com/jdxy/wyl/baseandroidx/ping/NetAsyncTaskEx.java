@@ -62,7 +62,7 @@ public abstract class NetAsyncTaskEx<Params, Progress, Result> {
                     android.util.Log.w(this.getClass().getSimpleName(), e);
                 } catch (ExecutionException e) {
                     throw new RuntimeException(
-                            "An error occured while executing doInBackground()",
+                            "An icon_error occured while executing doInBackground()",
                             e.getCause());
                 } catch (CancellationException e) {
                     message = sHandler.obtainMessage(MESSAGE_POST_CANCEL,
@@ -72,7 +72,7 @@ public abstract class NetAsyncTaskEx<Params, Progress, Result> {
                     return;
                 } catch (Throwable t) {
                     throw new RuntimeException(
-                            "An error occured while executing "
+                            "An icon_error occured while executing "
                                     + "doInBackground()", t);
                 }
 

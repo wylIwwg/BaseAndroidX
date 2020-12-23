@@ -38,20 +38,20 @@
                 <EditText
                     android:layout_width="50dp"
                     android:layout_height="30dp"
-                    android:background="@drawable/bg_base_et"
+                    android:background="@drawable/base_et"
                     android:inputType="number"
                     android:textSize="13sp" />
 
                 <Button
                     android:id="@+id/btnTestAlarm"
                     style="@style/baseBtn"
-                    android:background="@drawable/bg_base_btn"
+                    android:background="@drawable/base_btn"
                     android:text="测试" />
 
                 <Button
                     android:id="@+id/btnEnableAlarm"
                     style="@style/baseBtn"
-                    android:background="@drawable/bg_base_btn"
+                    android:background="@drawable/base_btn"
                     android:text="启用" />
             </LinearLayout>
 
@@ -127,7 +127,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
-                    android:background="@drawable/bg_base_et"
+                    android:background="@drawable/base_et"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:text="请A002号张三到301诊室黄李医生处就诊"
@@ -136,7 +136,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
-                    android:background="@drawable/bg_base_et"
+                    android:background="@drawable/base_et"
                     android:hint="语速(1-100)"
                     android:inputType="number"
                     android:textSize="13sp" />
@@ -144,13 +144,13 @@
                 <Button
                     android:id="@+id/btnTestTts"
                     style="@style/baseBtn"
-                    android:background="@drawable/bg_base_btn"
+                    android:background="@drawable/base_btn"
                     android:text="播放" />
 
                 <Button
                     android:id="@+id/btnEnableTts"
                     style="@style/baseBtn"
-                    android:background="@drawable/bg_base_btn"
+                    android:background="@drawable/base_btn"
                     android:text="启用语速" />
             </com.jdxy.wyl.baseandroidx.view.WrapLinearLayout>
 

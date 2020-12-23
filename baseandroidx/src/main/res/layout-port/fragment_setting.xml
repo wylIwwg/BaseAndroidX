@@ -95,12 +95,12 @@
                     android:id="@+id/etProjectName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_base_et"
+                    android:background="@drawable/base_et"
                     android:hint="项目名称仅可修改一次"
                     android:padding="5dp"
                     android:textColor="@color/txt"
                     android:textColorHint="@color/red"
-                    android:textCursorDrawable="@drawable/cursor"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -122,13 +122,13 @@
                     android:id="@+id/etIp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_base_et"
+                    android:background="@drawable/base_et"
                     android:hint="输入正确的ip地址"
                     android:inputType="number|textUri"
                     android:padding="5dp"
                     android:textColor="@color/txt"
                     android:textColorHint="@color/txt"
-                    android:textCursorDrawable="@drawable/cursor"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -151,13 +151,13 @@
                     android:id="@+id/etPort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_base_et"
+                    android:background="@drawable/base_et"
                     android:hint="输入正确的端口号"
                     android:inputType="number"
                     android:padding="5dp"
                     android:textColor="@color/txt"
                     android:textColorHint="@color/txt"
-                    android:textCursorDrawable="@drawable/cursor"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -180,13 +180,13 @@
                     android:id="@+id/etSocketPort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_base_et"
+                    android:background="@drawable/base_et"
                     android:hint="输入正确的端口号"
                     android:inputType="number"
                     android:padding="5dp"
                     android:textColor="@color/txt"
                     android:textColorHint="@color/txt"
-                    android:textCursorDrawable="@drawable/cursor"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
                     android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>

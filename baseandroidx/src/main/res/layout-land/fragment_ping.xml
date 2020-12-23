@@ -25,7 +25,7 @@
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_et_none"
+            android:background="@drawable/base_et_none"
             android:inputType="number|textUri"
             android:textSize="13sp" />
         <EditText
@@ -36,7 +36,7 @@
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_et_none"
+            android:background="@drawable/base_et_none"
             android:inputType="number"
             android:textSize="13sp" />
         <Button
@@ -64,7 +64,7 @@
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_et_none"
+            android:background="@drawable/base_et_none"
             android:inputType="number"
             android:textSize="13sp" />
 
@@ -94,7 +94,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/bg_et_none"
+            android:background="@drawable/base_et_none"
             android:enabled="true"
             android:minHeight="35dp"
             android:textSize="13sp" />
@@ -124,7 +124,7 @@
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_et_none"
+            android:background="@drawable/base_et_none"
             android:inputType="number"
             android:textSize="13sp" />
 

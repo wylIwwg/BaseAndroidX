@@ -42,7 +42,7 @@ public interface ResponseHandler {
   void onEOF();
 
   /**
-   * Signals that an error occurred while reading the response stream.
+   * Signals that an icon_error occurred while reading the response stream.
    */
   void onError(IOException e);
 }

@@ -102,7 +102,7 @@ public class NetPing {
             log.append("\t").append(status);
         } else {
             if (status.length() == 0) {
-                log.append("unknown host or network error");
+                log.append("unknown host or network icon_error");
             } else {
                 log.append("timeout");
             }

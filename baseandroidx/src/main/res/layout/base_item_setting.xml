@@ -17,7 +17,7 @@
         android:id="@+id/etContent"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@drawable/bg_base_et"
+        android:background="@drawable/base_et"
         android:paddingLeft="5dp"
         android:textColor="@color/txt"
         android:textSize="14sp" />

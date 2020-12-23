@@ -196,8 +196,14 @@ public class Presenter {
                                 //2020-11-20-18-11-22_123
                                 //目标解压目录
                                 String dir = sdf.format(new Date(System.currentTimeMillis())) + "_" + mData.getId();
-
+                                ToolLog.efile(TAG, "onSuccess: 节目文件下载完成 ");
                                 operationProgram(response.body(), dir);
+                            }
+
+                            @Override
+                            public void onError(Response<File> response) {
+                                super.onError(response);
+                                ToolLog.efile(TAG, "onError: " + response.getException() == null ? "" : response.getException().toString());
                             }
                         });
 
@@ -208,10 +214,12 @@ public class Presenter {
 
     void operationProgram(File mFile, String dir) {
         //
+        ToolLog.efile(TAG, "operationProgram:节目压缩包路径：  " + mFile.getAbsolutePath());
         //通知更新
         //读取默认配置信息
         String host = ToolSP.getDIYString(IConfigs.SP_HOST);
         //通知后台更新
+        ToolLog.efile(TAG, "operationProgram:通知更新后台： " + host);
         OkGo.<String>post(host + IConfigs.URL_ADD_PUSH)
                 .params("pushTem", ToolSP.getDIYString(IConfigs.SP_PROGRAM_ID))
                 .params("pushMac", ToolDevice.getMac())
@@ -260,11 +268,18 @@ public class Presenter {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    ToolLog.efile(TAG, "doInBackground:解压异常： " + e.toString());
                 }
-                 ToolLog.efile(TAG, "【Program】: 解压完成 ..");
-                // Thread.sleep(2000);
+                ToolLog.efile(TAG, "【Program】: 解压完成 ..");
+                //Thread.sleep(2000);
                 // AppUtils.relaunchApp(true);
                 return null;
+            }
+
+            @Override
+            public void onFail(Throwable t) {
+                super.onFail(t);
+                ToolLog.efile(TAG, "onFail: " + t.toString());
             }
 
             @Override

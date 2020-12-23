@@ -186,7 +186,7 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
     @Override
     public Resources getResources() {
         if (Looper.getMainLooper().getThread() == Thread.currentThread())
-            AutoSizeCompat.autoConvertDensity(super.getResources(), 960f, AutoSizeConfig.getInstance().getScreenWidth() > AutoSizeConfig.getInstance().getScreenHeight());
+            AutoSizeCompat.autoConvertDensity(super.getResources(), 960f, true);
         return super.getResources();
     }
 

@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="14dp"
-            android:src="@drawable/back" />
+            android:src="@drawable/icon_back" />
 
         <TextView
             android:id="@+id/tvBack"
@@ -113,13 +113,13 @@
                 <Button
                     android:id="@+id/btnTestAlarm"
                     style="@style/baseBtn"
-                    android:background="@drawable/bg_base_btn"
+                    android:background="@drawable/base_btn"
                     android:text="测试" />
 
                 <Button
                     android:id="@+id/btnEnableAlarm"
                     style="@style/baseBtn"
-                    android:background="@drawable/bg_base_btn"
+                    android:background="@drawable/base_btn"
                     android:text="启用" />
             </LinearLayout>
 
@@ -208,13 +208,13 @@
                 <Button
                     android:id="@+id/btnTestTts"
                     style="@style/baseBtn"
-                    android:background="@drawable/bg_base_btn"
+                    android:background="@drawable/base_btn"
                     android:text="播放" />
 
                 <Button
                     android:id="@+id/btnEnableTts"
                     style="@style/baseBtn"
-                    android:background="@drawable/bg_base_btn"
+                    android:background="@drawable/base_btn"
                     android:text="启用语速" />
             </com.jdxy.wyl.baseandroidx.view.WrapLinearLayout>
 
@@ -223,7 +223,7 @@
                 android:id="@+id/btnGetSetting"
                 style="@style/baseBtn"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/bg_base_btn"
+                android:background="@drawable/base_btn"
                 android:text="获取配置" />
 
             <androidx.recyclerview.widget.RecyclerView

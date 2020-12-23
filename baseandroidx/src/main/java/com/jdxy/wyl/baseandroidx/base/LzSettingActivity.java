@@ -39,7 +39,7 @@ public class LzSettingActivity extends AppCompatActivity {
     public String TAG = "【" + this.getClass().getSimpleName() + "】";
     public static final String SOCKET = "【socket】";
     public static final String HTTP = "【http】";
-    public static final String ERROR = "【error】";
+    public static final String ERROR = "【icon_error】";
     public Context mContext;
 
     public CommonAdapter<ConfigSetting> mAdapter;

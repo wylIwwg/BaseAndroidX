@@ -289,12 +289,12 @@ public class AndroidProcess implements Parcelable {
    * The format for this field was %lu before Linux 2.6.</li>
    *
    * <li>minflt %lu The number of minor faults the process has made which have not required
-   * loading a memory page from disk.</li>
+   * icon_loading a memory page from disk.</li>
    *
    * <li>cminflt %lu The number of minor faults that the process's waited-for children have
    * made</li>
    *
-   * <li>majflt  %lu The number of major faults the process has made which have required loading a
+   * <li>majflt  %lu The number of major faults the process has made which have required icon_loading a
    * memory page from disk.</li>
    *
    * <li>cmajflt  %lu The number of major faults that the process's waited-for children have

@@ -59,7 +59,7 @@ public final class ErrorActivity extends AppCompatActivity {
         //Close/restart button logic:
         //If a class if set, use restart.
         //Else, use close and just finish the app.
-        //It is recommended that you follow this logic if implementing a custom error activity.
+        //It is recommended that you follow this logic if implementing a custom icon_error activity.
         Button restartButton = findViewById(R.id.error_activity_restart_button);
 
         final CrashConfig config = CustomActivityOnCrash.getConfigFromIntent(getIntent());
@@ -93,7 +93,7 @@ public final class ErrorActivity extends AppCompatActivity {
             moreInfoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //We retrieve all the error data and show it
+                    //We retrieve all the icon_error data and show it
 
                     AlertDialog dialog = new AlertDialog.Builder(ErrorActivity.this)
                             .setTitle(R.string.error_activity_error_details_title)

@@ -192,7 +192,7 @@ public class PingNetTraceRoute {
                     //执行ping命令，返回ping命令的全部控制台输出
                     String status = execPing(pingTask);
                     if (status.length() == 0) {
-                        log.append("unknown host or network error\n");
+                        log.append("unknown host or network icon_error\n");
                         finish = true;
                     } else {
                         Matcher matcherTime = patternTime.matcher(status);
@@ -236,7 +236,7 @@ public class PingNetTraceRoute {
                         finish = true;
                     } else {
                         if (str.length() == 0) {
-                            log.append("unknown host or network error\t");
+                            log.append("unknown host or network icon_error\t");
                             finish = true;
                         } else {
                             log.append(trace.getHop());

@@ -2,7 +2,6 @@ package com.jdxy.wyl.baseandroidx.base;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
@@ -174,9 +173,9 @@ public class BaseApp extends Application {
                 .logErrorOnRestart(true) //default: true
                 .trackActivities(false) //default: false
                 .minTimeBetweenCrashesMs(2000) //default: 3000
-                .errorDrawable(R.drawable.error) //default: bug image
+                .errorDrawable(R.drawable.icon_error) //default: bug image
                 .restartActivity(activity) //default: null (your app's launch activity)
-                .errorActivity(activity) //default: null (default error activity)
+                .errorActivity(activity) //default: null (default icon_error activity)
                 .eventListener(null) //default: null
                 .apply();
     }

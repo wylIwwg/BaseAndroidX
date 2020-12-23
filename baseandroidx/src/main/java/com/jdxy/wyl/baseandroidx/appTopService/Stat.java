@@ -63,10 +63,10 @@ import java.util.Locale;
  * the Linux kernel source file include/linux/sched.h.  Details depend on the kernel version.
  * The format for this field was %lu before Linux 2.6.</li>
  * <li>minflt %lu The number of minor faults the process has made which have not required
- * loading a memory page from disk.</li>
+ * icon_loading a memory page from disk.</li>
  * <li>cminflt %lu The number of minor faults that the process's waited-for children have
  * made</li>
- * <li>majflt  %lu The number of major faults the process has made which have required loading a
+ * <li>majflt  %lu The number of major faults the process has made which have required icon_loading a
  * memory page from disk.</li>
  * <li>cmajflt  %lu The number of major faults that the process's waited-for children have
  * made</li>
@@ -269,7 +269,7 @@ public final class Stat extends ProcFile {
   }
 
   /**
-   * The number of minor faults the process has made which have not required loading a memory
+   * The number of minor faults the process has made which have not required icon_loading a memory
    * page from disk.
    */
   public long minflt() {
@@ -284,7 +284,7 @@ public final class Stat extends ProcFile {
   }
 
   /**
-   * The number of major faults the process has made which have required loading a memory page
+   * The number of major faults the process has made which have required icon_loading a memory page
    * from disk.
    */
   public long majflt() {

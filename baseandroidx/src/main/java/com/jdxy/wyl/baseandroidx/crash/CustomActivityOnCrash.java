@@ -55,7 +55,7 @@ public final class CustomActivityOnCrash {
 
     private final static String TAG = "CustomActivityOnCrash";
 
-    //Extras passed to the error activity
+    //Extras passed to the icon_error activity
     private static final String EXTRA_CONFIG = "cat.ereza.customactivityoncrash.EXTRA_CONFIG";
     private static final String EXTRA_STACK_TRACE = "cat.ereza.customactivityoncrash.EXTRA_STACK_TRACE";
     private static final String EXTRA_ACTIVITY_LOG = "cat.ereza.customactivityoncrash.EXTRA_ACTIVITY_LOG";
@@ -82,7 +82,7 @@ public final class CustomActivityOnCrash {
 
 
     /**
-     * Installs CustomActivityOnCrash on the application using the default error activity.
+     * Installs CustomActivityOnCrash on the application using the default icon_error activity.
      *
      * @param context Context to use for obtaining the ApplicationContext. Must not be null.
      */
@@ -112,7 +112,7 @@ public final class CustomActivityOnCrash {
                                 Log.e(TAG, "App has crashed, executing CustomActivityOnCrash's UncaughtExceptionHandler", throwable);
 
                                 if (hasCrashedInTheLastSeconds(application)) {
-                                    Log.e(TAG, "App already crashed recently, not starting custom error activity because we could enter a restart loop. Are you sure that your app does not crash directly on init?", throwable);
+                                    Log.e(TAG, "App already crashed recently, not starting custom icon_error activity because we could enter a restart loop. Are you sure that your app does not crash directly on init?", throwable);
                                     if (oldHandler != null) {
                                         oldHandler.uncaughtException(thread, throwable);
                                         return;
@@ -127,7 +127,7 @@ public final class CustomActivityOnCrash {
                                     }
 
                                     if (isStackTraceLikelyConflictive(throwable, errorActivityClass)) {
-                                        Log.e(TAG, "Your application class or your error activity have crashed, the custom activity will not be launched!");
+                                        Log.e(TAG, "Your application class or your icon_error activity have crashed, the custom activity will not be launched!");
                                         if (oldHandler != null) {
                                             oldHandler.uncaughtException(thread, throwable);
                                             return;
@@ -255,7 +255,7 @@ public final class CustomActivityOnCrash {
                 Log.i(TAG, "CustomActivityOnCrash has been installed.");
             }
         } catch (Throwable t) {
-            Log.e(TAG, "An unknown error occurred while installing CustomActivityOnCrash, it may not have been properly initialized. Please report this as a bug if needed.", t);
+            Log.e(TAG, "An unknown icon_error occurred while installing CustomActivityOnCrash, it may not have been properly initialized. Please report this as a bug if needed.", t);
         }
     }
 
@@ -301,11 +301,11 @@ public final class CustomActivityOnCrash {
     }
 
     /**
-     * Given an Intent, returns several error details including the stack trace extra from the intent.
+     * Given an Intent, returns several icon_error details including the stack trace extra from the intent.
      *
      * @param context A valid context. Must not be null.
      * @param intent  The Intent. Must not be null.
-     * @return The full error details.
+     * @return The full icon_error details.
      */
     @NonNull
     public static String getAllErrorDetailsFromIntent(@NonNull Context context, @NonNull Intent intent) {
@@ -328,7 +328,7 @@ public final class CustomActivityOnCrash {
         }
         errorDetails += "Current date: " + dateFormat.format(currentDate) + " \n";
         //Added a space between line feeds to fix #18.
-        //Ideally, we should not use this method at all... It is only formatted this way because of coupling with the default error activity.
+        //Ideally, we should not use this method at all... It is only formatted this way because of coupling with the default icon_error activity.
         //We should move it to a method that returns a bean, and let anyone format it as they wish.
         errorDetails += "Device: " + getDeviceModelName() + " \n \n";
         errorDetails += "Stack trace:  \n";
@@ -348,9 +348,9 @@ public final class CustomActivityOnCrash {
      * The flags NEW_TASK and CLEAR_TASK are set if the Intent does not have them, to ensure
      * the app stack is fully cleared.
      * If an event listener is provided, the restart app event is invoked.
-     * Must only be used from your error activity.
+     * Must only be used from your icon_error activity.
      *
-     * @param activity The current error activity. Must not be null.
+     * @param activity The current icon_error activity. Must not be null.
      * @param intent   The Intent. Must not be null.
      * @param config   The config object as obtained by calling getConfigFromIntent.
      */
@@ -358,7 +358,7 @@ public final class CustomActivityOnCrash {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         if (intent.getComponent() != null) {
             //If the class name has been set, we force it to simulate a Launcher launch.
-            //If we don't do this, if you restart from the error activity, then press home,
+            //If we don't do this, if you restart from the icon_error activity, then press home,
             //and then launch the activity from the launcher, the main activity appears twice on the backstack.
             //This will most likely not have any detrimental effect because if you set the Intent component,
             //if will always be launched regardless of the actions specified here.
@@ -381,9 +381,9 @@ public final class CustomActivityOnCrash {
     /**
      * Closes the app.
      * If an event listener is provided, the close app event is invoked.
-     * Must only be used from your error activity.
+     * Must only be used from your icon_error activity.
      *
-     * @param activity The current error activity. Must not be null.
+     * @param activity The current icon_error activity. Must not be null.
      * @param config   The config object as obtained by calling getConfigFromIntent.
      */
     public static void closeApplication(@NonNull Activity activity, @NonNull CrashConfig config) {
@@ -422,7 +422,7 @@ public final class CustomActivityOnCrash {
     /**
      * INTERNAL method that checks if the stack trace that just crashed is conflictive. This is true in the following scenarios:
      * - The application has crashed while initializing (handleBindApplication is in the stack)
-     * - The error activity has crashed (activityClass is in the stack)
+     * - The icon_error activity has crashed (activityClass is in the stack)
      *
      * @param throwable     The throwable from which the stack trace will be checked
      * @param activityClass The activity class to launch when the app crashes
@@ -524,7 +524,7 @@ public final class CustomActivityOnCrash {
     }
 
     /**
-     * INTERNAL method used to guess which activity must be called from the error activity to restart the app.
+     * INTERNAL method used to guess which activity must be called from the icon_error activity to restart the app.
      * It will first get activities from the AndroidManifest with intent filter <action android:name="cat.ereza.customactivityoncrash.RESTART" />,
      * if it cannot find them, then it will get the default launcher.
      * If there is no default launcher, this returns null.
@@ -598,12 +598,12 @@ public final class CustomActivityOnCrash {
     }
 
     /**
-     * INTERNAL method used to guess which error activity must be called when the app crashes.
+     * INTERNAL method used to guess which icon_error activity must be called when the app crashes.
      * It will first get activities from the AndroidManifest with intent filter <action android:name="cat.ereza.customactivityoncrash.ERROR" />,
-     * if it cannot find them, then it will use the default error activity.
+     * if it cannot find them, then it will use the default icon_error activity.
      *
      * @param context A valid context. Must not be null.
-     * @return The guessed error activity class, or the default error activity if not found
+     * @return The guessed icon_error activity class, or the default icon_error activity if not found
      */
     @NonNull
     private static Class<? extends Activity> guessErrorActivityClass(@NonNull Context context) {
@@ -612,7 +612,7 @@ public final class CustomActivityOnCrash {
         //If action is defined, use that
         resolvedActivityClass = getErrorActivityClassWithIntentFilter(context);
 
-        //Else, get the default error activity
+        //Else, get the default icon_error activity
         if (resolvedActivityClass == null) {
             resolvedActivityClass = ErrorActivity.class;
         }
@@ -640,7 +640,7 @@ public final class CustomActivityOnCrash {
                 return (Class<? extends Activity>) Class.forName(resolveInfo.activityInfo.name);
             } catch (ClassNotFoundException e) {
                 //Should not happen, print it to the log!
-                Log.e(TAG, "Failed when resolving the error activity class via intent filter, stack trace follows!", e);
+                Log.e(TAG, "Failed when resolving the icon_error activity class via intent filter, stack trace follows!", e);
             }
         }
 

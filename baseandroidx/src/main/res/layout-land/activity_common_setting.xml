@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="14dp"
-            android:src="@drawable/back" />
+            android:src="@drawable/icon_back" />
 
         <TextView
             android:id="@+id/tvBack"
@@ -105,14 +105,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:background="@drawable/bg_login_et"
+                android:background="@drawable/base_et"
                 android:gravity="center"
                 android:hint="输入密码"
                 android:inputType="textPassword"
                 android:padding="5dp"
                 android:textColor="@color/txt"
                 android:textColorHint="@color/txt"
-                android:textCursorDrawable="@drawable/cursor"
+                android:textCursorDrawable="@drawable/base_et_cursor"
                 android:textSize="14sp" />
         </LinearLayout>
 

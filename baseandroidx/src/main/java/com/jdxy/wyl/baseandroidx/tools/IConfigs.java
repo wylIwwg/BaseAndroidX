@@ -18,7 +18,7 @@ public interface IConfigs {
     String PATH_TTS = PATH_ROOT + "tts/";
     String PATH_LOG = PATH_ROOT + "log/";//数据日志
     String PATH_MAC = PATH_ROOT + "mac/";
-    String PATH_ERROR = PATH_ROOT + "error/";//错误日志
+    String PATH_ERROR = PATH_ROOT + "icon_error/";//错误日志
     String PATH_CAPTURE = PATH_ROOT + "capture/";//截图保存
     String PATH_VIDEO = PATH_ROOT + "video/";//截图保存
 
@@ -51,6 +51,7 @@ public interface IConfigs {
     // 单个CPU线程池大小
     int POOL_SIZE = 5;
     int MSG_SOCKET_RECEIVED = 2000;//接收socket通知
+    int MSG_SOCKET_DISCONNECT = -2000;//socke断开连接
     int MSG_CREATE_TCP_ERROR = 2001;//tcp创建失败
     int MSG_PING_TCP_TIMEOUT = 2002;//tcp连接超时
 
@@ -138,7 +139,7 @@ public interface IConfigs {
     String SP_ROOM_ID = "roomId";//房间id
     String SP_SETTING_SCROLL_TIME = "scroll";//轮播滚动时间
     String SP_SETTING_DELAY_TIME = "delay";//延迟滚动时间
-    String SP_SETTING_BACK_TIME = "back";//界面操作返回时间
+    String SP_SETTING_BACK_TIME = "icon_back";//界面操作返回时间
 
     String SP_FORCED_URL = "forcedurl";
     String SP_FORCED_STATE = "forcedstate";

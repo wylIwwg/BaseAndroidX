@@ -1,14 +1,9 @@
 package com.jdxy.wyl.baseandroidx.fragments;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Process;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +11,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -28,10 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.ReflectUtils;
 import com.blankj.utilcode.util.RegexUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.R2;
 import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
@@ -53,7 +45,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -238,7 +229,7 @@ public class SettingFragment extends Fragment {
             rb.setLayoutParams(new RadioGroup.LayoutParams(-2, ToolDisplay.dip2px(getActivity(), 25)));
             rb.setText(app.getAppTypeName());
             rb.setTag(app.getAppType());
-            rb.setButtonDrawable(getResources().getDrawable(R.drawable.bg_cb));
+            rb.setButtonDrawable(getResources().getDrawable(R.drawable.base_cb));
             rb.setTextColor(getResources().getColor(R.color.txt));
             if (type == app.getAppType()) {
                 rblast = rb;

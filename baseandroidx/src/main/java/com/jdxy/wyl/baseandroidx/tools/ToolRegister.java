@@ -240,7 +240,7 @@ public class ToolRegister {
                 String mac = ToolDevice.getMac();
                 //未获取到mac
                 if (mac == null || mac.equals("02:00:00:00:00:00")) {
-                    //  Toasty.error(mContext, "MAC获取不正确：" + mac, 1, true).show();
+                    //  Toasty.icon_error(mContext, "MAC获取不正确：" + mac, 1, true).show();
                     mResult.setRegisterCode(1);
                     mResult.setRegistered(false);
 
@@ -314,7 +314,7 @@ public class ToolRegister {
                 String mac = ToolDevice.getMac();
                 //未获取到mac
                 if (mac == null || mac.equals("02:00:00:00:00:00")) {
-                    //  Toasty.error(mContext, "MAC获取不正确：" + mac, 1, true).show();
+                    //  Toasty.icon_error(mContext, "MAC获取不正确：" + mac, 1, true).show();
                     mResult.setRegisterCode(0);
                     mResult.setRegistered(false);
 

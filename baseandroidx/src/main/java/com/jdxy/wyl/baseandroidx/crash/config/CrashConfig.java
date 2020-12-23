@@ -176,9 +176,9 @@ public class CrashConfig implements Serializable {
         }
 
         /**
-         * Defines if the error activity must be launched when the app is on background.
-         * BackgroundMode.BACKGROUND_MODE_SHOW_CUSTOM: launch the error activity when the app is in background,
-         * BackgroundMode.BACKGROUND_MODE_CRASH: launch the default system error when the app is in background,
+         * Defines if the icon_error activity must be launched when the app is on background.
+         * BackgroundMode.BACKGROUND_MODE_SHOW_CUSTOM: launch the icon_error activity when the app is in background,
+         * BackgroundMode.BACKGROUND_MODE_CRASH: launch the default system icon_error when the app is in background,
          * BackgroundMode.BACKGROUND_MODE_SILENT: crash silently when the app is in background,
          * The default is BackgroundMode.BACKGROUND_MODE_SHOW_CUSTOM (the app will be brought to front when a crash occurs).
          */
@@ -201,7 +201,7 @@ public class CrashConfig implements Serializable {
         }
 
         /**
-         * Defines if the error activity must shown the error details button.
+         * Defines if the icon_error activity must shown the icon_error details button.
          * Set it to true if you want to show the full stack trace and device info,
          * false if you want it to be hidden.
          * The default is true.
@@ -213,11 +213,11 @@ public class CrashConfig implements Serializable {
         }
 
         /**
-         * Defines if the error activity should show a restart button.
+         * Defines if the icon_error activity should show a restart button.
          * Set it to true if you want to show a restart button,
          * false if you want to show a close button.
          * Note that even if restart is enabled but you app does not have any launcher activities,
-         * a close button will still be used by the default error activity.
+         * a close button will still be used by the default icon_error activity.
          * The default is true.
          */
         @NonNull
@@ -231,7 +231,7 @@ public class CrashConfig implements Serializable {
          * Set it to true if you want to log the stack trace again,
          * false if you don't want the extra logging.
          * This option exists because the default Android Studio logcat view only shows the output
-         * of the current process, and since the error activity runs on a new process,
+         * of the current process, and since the icon_error activity runs on a new process,
          * you can't see the previous output easily.
          * Internally, it's logged when getConfigFromIntent() is called.
          * The default is true.
@@ -244,7 +244,7 @@ public class CrashConfig implements Serializable {
 
         /**
          * Defines if the activities visited by the user should be tracked
-         * so they are reported when an error occurs.
+         * so they are reported when an icon_error occurs.
          * The default is false.
          */
         @NonNull
@@ -256,7 +256,7 @@ public class CrashConfig implements Serializable {
         /**
          * Defines the time that must pass between app crashes to determine that we are not
          * in a crash loop. If a crash has occurred less that this time ago,
-         * the error activity will not be launched and the system crash screen will be invoked.
+         * the icon_error activity will not be launched and the system crash screen will be invoked.
          * The default is 3000.
          */
         @NonNull
@@ -266,7 +266,7 @@ public class CrashConfig implements Serializable {
         }
 
         /**
-         * Defines which drawable to use in the default error activity image.
+         * Defines which drawable to use in the default icon_error activity image.
          * Set this if you want to use an image other than the default one.
          * The default is R.drawable.customactivityoncrash_error_image (a cute upside-down bug).
          */
@@ -277,8 +277,8 @@ public class CrashConfig implements Serializable {
         }
 
         /**
-         * Sets the error activity class to launch when a crash occurs.
-         * If null, the default error activity will be used.
+         * Sets the icon_error activity class to launch when a crash occurs.
+         * If null, the default icon_error activity will be used.
          */
         @NonNull
         public Builder errorActivity(@Nullable Class<? extends Activity> errorActivityClass) {
@@ -287,9 +287,9 @@ public class CrashConfig implements Serializable {
         }
 
         /**
-         * Sets the main activity class that the error activity must launch when a crash occurs.
+         * Sets the main activity class that the icon_error activity must launch when a crash occurs.
          * If not set or set to null, the default launch activity will be used.
-         * If your app has no launch activities and this is not set, the default error activity will close instead.
+         * If your app has no launch activities and this is not set, the default icon_error activity will close instead.
          */
         @NonNull
         public Builder restartActivity(@Nullable Class<? extends Activity> restartActivityClass) {

@@ -85,7 +85,7 @@ public interface NetworkEventReporter {
   * {@link IOException} during reading from the {@link InputStream}.
   *
   * @param requestId Unique identifier for the request as per {@link InspectorRequest#id()}
-  * @param errorText Text to report for the error; using {@link IOException#toString()} is
+  * @param errorText Text to report for the icon_error; using {@link IOException#toString()} is
   *     recommended.
    */
   void httpExchangeFailed(String requestId, String errorText);
@@ -114,7 +114,7 @@ public interface NetworkEventReporter {
    *     If null, no decompression will be used.
    * @param inputStream Response stream if applicable ("HEAD" for instance does not have a body).
    *     {@code null} otherwise.
-   * @param responseHandler Callback to forward stream events back to the relevant event reporter
+   * @param responseHandler Callback to forward stream events icon_back to the relevant event reporter
    *     methods.  Recommend using {@link DefaultResponseHandler} for most callers.
    *
    * @return {@link InputStream} that has been intercepted if WebkitInspector is active and enabled
@@ -134,7 +134,7 @@ public interface NetworkEventReporter {
    * this method will be invoked automatically for you.
    *
    * @param requestId Unique identifier for the request as per {@link InspectorRequest#id()}
-   * @param errorText Text to report for the error; using {@link IOException#toString()} is
+   * @param errorText Text to report for the icon_error; using {@link IOException#toString()} is
    *     recommended.
    */
   void responseReadFailed(String requestId, String errorText);
@@ -214,7 +214,7 @@ public interface NetworkEventReporter {
   void webSocketFrameReceived(InspectorWebSocketFrame frame);
 
   /**
-   * Indicates a web socket (or standard socket) error has occurred though this doesn't
+   * Indicates a web socket (or standard socket) icon_error has occurred though this doesn't
    * explicitly close the socket (see {@link #webSocketClosed}) but it does let the UI
    * know that it should denote the closure as forceful or as a failure in some way.
    */

@@ -15,6 +15,7 @@ public class ToolSP {
     static ToolSP mToolSP = new ToolSP();
     static SharedPreferences sp;
 
+
     public static ToolSP Init(Context context, String pkg) {
         if (sp == null) {
             sp = context.getSharedPreferences(pkg, Context.MODE_PRIVATE);
@@ -39,7 +40,6 @@ public class ToolSP {
     }
 
     public static ToolSP putDIYInt(String key, int value) {
-
         sp.edit().putInt(key, value).apply();
         return mToolSP;
     }
