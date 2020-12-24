@@ -11,6 +11,7 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
+import com.jdxy.wyl.baseandroidx.network.HttpLoggingInterceptor2;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
@@ -185,11 +186,11 @@ public class BaseApp extends Application {
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         //log相关
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor("OkGo");
+        HttpLoggingInterceptor2 loggingInterceptor = new HttpLoggingInterceptor2("【HTTP】");
         //log打印级别，决定了log显示的详细程度
         loggingInterceptor.setPrintLevel(HttpLoggingInterceptor.Level.BODY);
         //log颜色级别，决定了log在控制台显示的颜色
-        loggingInterceptor.setColorLevel(Level.INFO);
+        loggingInterceptor.setColorLevel(Level.ALL);
         //添加OkGo默认debug日志
         builder.addInterceptor(loggingInterceptor);
 

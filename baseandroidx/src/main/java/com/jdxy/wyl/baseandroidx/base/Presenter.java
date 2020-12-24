@@ -18,6 +18,7 @@ import com.jdxy.wyl.baseandroidx.bean.BProgram;
 import com.jdxy.wyl.baseandroidx.listeners.CopyFilesListener;
 import com.jdxy.wyl.baseandroidx.media.zip.DownLoaderTask;
 import com.jdxy.wyl.baseandroidx.media.zip.ZipExtractorTask;
+import com.jdxy.wyl.baseandroidx.network.LogDownloadListener;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
@@ -25,6 +26,7 @@ import com.lztek.toolkit.Lztek;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
 import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.bean.Result;
@@ -34,6 +36,8 @@ import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
+import com.lzy.okgo.request.GetRequest;
+import com.lzy.okserver.OkDownload;
 import com.unisound.client.SpeechSynthesizer;
 import com.unisound.client.SpeechSynthesizerListener;
 import com.yanzhenjie.permission.Action;
@@ -52,6 +56,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -177,7 +182,7 @@ public class Presenter {
             ToolSP.putDIYString(IConfigs.SP_SETTING_BACK_TIME, mData.getTemNoops());
             ToolSP.putDIYString(IConfigs.SP_SETTING_DELAY_TIME, mData.getTemIntime());
             ToolSP.putDIYString(IConfigs.SP_SETTING_SCROLL_TIME, mData.getTemBytime());
-            ToolSP.putDIYString(IConfigs.SP_SETTING_TRY_TIME, mData.getTemTryTime());
+            ToolSP.putDIYString(IConfigs.SP_SETTING_TRY_TIME, mData.getTemTrytime());
 
             ToolSP.putDIYString(IConfigs.SP_SETTING_START_TIME, mData.getStartTime());
             ToolSP.putDIYString(IConfigs.SP_SETTING_END_TIME, mData.getEndTime());
@@ -186,33 +191,35 @@ public class Presenter {
             if (mData.getTemLink() != null && mData.getTemLink().length() > 0) {
 
                 ToolSP.putDIYString(IConfigs.SP_PROGRAM_ID, mData.getId());
-                OkGo.<File>get(mData.getTemLink())
+                ToolLog.efile(TAG, "开始下载节目：downProgram: " + mData.getTemLink());
+                GetRequest<File> mRequest = OkGo.<File>get(mData.getTemLink());
+                OkDownload.request(IConfigs.PATH_ZIP, mRequest)//
+                        .extra1(mData.getId())
+                        .folder(IConfigs.PATH_ZIP)//adui/a3
+                        .save()//
+                        .register(new LogDownloadListener(this))//
+                        .start();
+
+               /* OkGo.<File>get(mData.getTemLink())
                         .tag(this)
                         .execute(new FileCallback(IConfigs.PATH_ZIP, null) {
                             @Override
                             public void onSuccess(Response<File> response) {
-                                //节目包下载完成
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.CHINA);
-                                //2020-11-20-18-11-22_123
-                                //目标解压目录
-                                String dir = sdf.format(new Date(System.currentTimeMillis())) + "_" + mData.getId();
-                                ToolLog.efile(TAG, "onSuccess: 节目文件下载完成 ");
-                                operationProgram(response.body(), dir);
                             }
 
                             @Override
                             public void onError(Response<File> response) {
                                 super.onError(response);
-                                ToolLog.efile(TAG, "onError: " + response.getException() == null ? "" : response.getException().toString());
+                                ToolLog.efile(TAG, "onError: " + (response.getException() == null ? "" : response.getException().toString()));
                             }
-                        });
+                        });*/
 
             }
         }
 
     }
 
-    void operationProgram(File mFile, String dir) {
+    public void operationProgram(File mFile, String dir) {
         //
         ToolLog.efile(TAG, "operationProgram:节目压缩包路径：  " + mFile.getAbsolutePath());
         //通知更新
@@ -220,10 +227,12 @@ public class Presenter {
         String host = ToolSP.getDIYString(IConfigs.SP_HOST);
         //通知后台更新
         ToolLog.efile(TAG, "operationProgram:通知更新后台： " + host);
+        HttpParams hp = new HttpParams();
+        hp.put("pushTem", ToolSP.getDIYString(IConfigs.SP_PROGRAM_ID));
+        hp.put("pushMac", ToolDevice.getMac());
+        hp.put("pushState", "1");
         OkGo.<String>post(host + IConfigs.URL_ADD_PUSH)
-                .params("pushTem", ToolSP.getDIYString(IConfigs.SP_PROGRAM_ID))
-                .params("pushMac", ToolDevice.getMac())
-                .params("pushState", "1")
+                .params(hp)
                 .tag(this)
                 .execute(new StringCallback() {
                     @Override
@@ -271,8 +280,8 @@ public class Presenter {
                     ToolLog.efile(TAG, "doInBackground:解压异常： " + e.toString());
                 }
                 ToolLog.efile(TAG, "【Program】: 解压完成 ..");
-                //Thread.sleep(2000);
-                // AppUtils.relaunchApp(true);
+                Thread.sleep(2000);
+                AppUtils.relaunchApp(true);
                 return null;
             }
 
@@ -334,7 +343,6 @@ public class Presenter {
      * @param url
      */
     private boolean isLoging = false;
-    private List<File> fileList = new ArrayList<>();
 
     /**
      * 上传日志 PHP
@@ -352,41 +360,31 @@ public class Presenter {
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {
-                fileList.clear();
-                if (dir.isDirectory()) {
-                    dir.listFiles(new FileFilter() {
-                        @Override
-                        public boolean accept(File pathname) {
-                            fileList.add(pathname);
-                            return false;
-                        }
-                    });
-                    if (fileList.size() > 0) {
-                        OkGo.<String>post(url)
-                                .params("content", content.toJSONString())
-                                .params("checkinfo", "{\"timestamp\":\"123\",\"token\":\"123\"}")
-                                .params("method", IConfigs.METHOD_UPLOAD_LOG)
-                                // .params("file", files[0])//单个文件
-                                .addFileParams("file[]", fileList)//文件集合
+                List<File> mFiles = FileUtils.listFilesInDir(IConfigs.PATH_LOG);
+                if (mFiles.size() > 0) {
+                    OkGo.<String>post(url)
+                            .params("content", content.toJSONString())
+                            .params("checkinfo", "{\"timestamp\":\"123\",\"token\":\"123\"}")
+                            .params("method", IConfigs.METHOD_UPLOAD_LOG)
+                            // .params("file", files[0])//单个文件
+                            .addFileParams("file[]", mFiles)//文件集合
 
-                                .tag(this)
-                                .execute(new StringCallback() {
-                                    @Override
-                                    public void onSuccess(Response<String> response) {
-                                        isLoging = false;
-                                        LogUtils.file("HTTP 日志上传结果" + response.body());
-                                    }
+                            .tag(this)
+                            .execute(new StringCallback() {
+                                @Override
+                                public void onSuccess(Response<String> response) {
+                                    isLoging = false;
+                                    LogUtils.file("HTTP 日志上传结果" + response.body());
+                                }
 
-                                    @Override
-                                    public void onError(Response<String> response) {
-                                        super.onError(response);
-                                        isLoging = false;
-                                        mView.showError("日志上传失败" + response.getException().toString());
-                                    }
-                                });
-                    }
+                                @Override
+                                public void onError(Response<String> response) {
+                                    super.onError(response);
+                                    isLoging = false;
+                                    mView.showError("日志上传失败" + response.getException().toString());
+                                }
+                            });
                 }
-
                 return null;
             }
 
@@ -407,51 +405,50 @@ public class Presenter {
      */
     public void uploadLogs(String url, String sessionId, String mac) {
         if (isLoging) return;
-
-        ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
+        isLoging = true;
+        ToolLog.mLogger.setLogging(true);
+        ThreadUtils.executeByCachedWithDelay(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {
-                File dir = new File(IConfigs.PATH_LOG);
-                fileList.clear();
-                if (dir.isDirectory()) {
-                    dir.listFiles(new FileFilter() {
-                        @Override
-                        public boolean accept(File pathname) {
-                            fileList.add(pathname);
-                            return false;
-                        }
-                    });
-                    if (fileList.size() > 0) {
-                        isLoging = true;
-                        OkGo.<String>post(url)
-                                .params("macId", mac)
-                                .params("sessionId", sessionId)
-                                .addFileParams("files", fileList)//日志文件集合
-                                .tag(this)
-                                .execute(new JsonCallBack<String>(String.class) {
-                                    @Override
-                                    public void onSuccess(Response<String> response) {
-                                        LogUtils.file("HTTP", "上传日志：" + response.body());
-                                        isLoging = false;
-                                    }
+                isLoging = true;
+                ToolLog.mLogger.setLogging(true);
+                List<File> mFiles = FileUtils.listFilesInDir(IConfigs.PATH_LOG);
+                if (mFiles.size() > 0) {
+                    OkGo.<String>post(url)
+                            .params("macId", mac)
+                            .params("sessionId", sessionId)
+                            .addFileParams("files", mFiles)//日志文件集合
+                            .tag(this)
+                            .execute(new JsonCallBack<String>(String.class) {
+                                @Override
+                                public void onSuccess(Response<String> response) {
+                                    LogUtils.file("HTTP", "上传日志：" + response.body());
+                                    isLoging = false;
+                                    ToolLog.mLogger.setLogging(false);
+                                }
 
-                                    @Override
-                                    public void onError(Response<String> response) {
-                                        super.onError(response);
-                                        isLoging = false;
-                                        mView.showError("日志上传失败" + response.getException().toString());
-                                    }
-                                });
-                    }
+                                @Override
+                                public void onError(Response<String> response) {
+                                    super.onError(response);
+                                    isLoging = false;
+                                    ToolLog.mLogger.setLogging(false);
+                                    mView.showError("日志上传失败" + response.getException().toString());
+                                }
+                            });
+                } else {
+                    ToolLog.mLogger.setLogging(false);
+                    isLoging = false;
                 }
+
                 return null;
             }
 
             @Override
             public void onSuccess(String result) {
-
+                isLoging = false;
+                ToolLog.mLogger.setLogging(false);
             }
-        });
+        }, 1, TimeUnit.SECONDS);
 
 
     }

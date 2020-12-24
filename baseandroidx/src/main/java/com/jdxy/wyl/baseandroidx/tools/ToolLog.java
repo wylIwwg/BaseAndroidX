@@ -3,13 +3,14 @@ package com.jdxy.wyl.baseandroidx.tools;
 import android.util.Log;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.jdxy.wyl.baseandroidx.base.MLogger;
 
 /**
  * Created by wyl on 2018/5/22.
  */
 
 public class ToolLog {
-
+    public static MLogger mLogger = new MLogger();
     public static String TAG = "ToolLog";
     public static boolean showLog = true;//是否打印日志
     static int LOG_MAX_LENGTH = 2000;
@@ -60,11 +61,13 @@ public class ToolLog {
         }
     }
 
-
     public static void efile(String tag, String msg) {
-
+        ToolLog.e(TAG, "efile: " + mLogger.isLogging());
         e(tag, msg);
-        LogUtils.file(tag, msg);
+        if (!mLogger.isLogging()) {
+            e(tag, "写入日志：");
+            LogUtils.file(tag, msg);
+        }
     }
 
     public static void efile(String msg) {

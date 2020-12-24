@@ -1,24 +1,24 @@
 package com.jdxy.wyl.baseandroidx.bean;
 
 public class BProgram {
+    private String id;
     private String type;
-    private String Id;
     private Data data;
+
+    public String getId() {
+        return id == null ? "" : id;
+    }
+
+    public void setId(String id) {
+        this.id = id == null ? "" : id;
+    }
 
     public String getType() {
         return type == null ? "" : type;
     }
 
     public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getId() {
-        return Id == null ? "" : Id;
-    }
-
-    public void setId(String id) {
-        Id = id;
+        this.type = type == null ? "" : type;
     }
 
     public Data getData() {
@@ -29,80 +29,88 @@ public class BProgram {
         this.data = data;
     }
 
-    public static class Data {
+    public class Data {
 
-        private String id;//:节目id
-        private String temBytime;//:轮播时间
-        private String temIntime;//:轮播间隔时间
-        private String temNoops;//:熄屏回调时间
-        private String temTryTime;//:下载超时时间
-        private String temLink;//节目包下载地址
-
-        private String startTime;//开始播放时间
-        private String endTime;//结束播放时间
-
-        public String getStartTime() {
-            return startTime == null ? "" : startTime;
-        }
-
-        public void setStartTime(String startTime) {
-            this.startTime = startTime;
-        }
-
-        public String getEndTime() {
-            return endTime == null ? "" : endTime;
-        }
-
-        public void setEndTime(String endTime) {
-            this.endTime = endTime;
-        }
-
-        public String getId() {
-            return id == null ? "" : id;
-        }
-
-        public void setId(String id) {
-            this.id = id == null ? "" : id;
-        }
+        private String temBytime;   //:轮播时间
+        private String TemIntime;   //:轮播间隔时间
+        private String Id;  //:节目id
+        private String TemNoops;    //:熄屏回调时间
+        private String TemTrytime;      //:下载超时时间
+        private String TemLink;    //节目包下载地址
+        private String TemAppname;
+        private String StartTime;   //开始播放时间
+        private String EndTime; //结束播放时间
 
         public String getTemBytime() {
             return temBytime == null ? "" : temBytime;
         }
 
         public void setTemBytime(String temBytime) {
-            this.temBytime = temBytime;
+            this.temBytime = temBytime == null ? "" : temBytime;
         }
 
         public String getTemIntime() {
-            return temIntime == null ? "" : temIntime;
+            return TemIntime == null ? "" : TemIntime;
         }
 
         public void setTemIntime(String temIntime) {
-            this.temIntime = temIntime;
+            TemIntime = temIntime == null ? "" : temIntime;
+        }
+
+        public String getId() {
+            return Id == null ? "" : Id;
+        }
+
+        public void setId(String id) {
+            Id = id == null ? "" : id;
         }
 
         public String getTemNoops() {
-            return temNoops == null ? "" : temNoops;
+            return TemNoops == null ? "" : TemNoops;
         }
 
         public void setTemNoops(String temNoops) {
-            this.temNoops = temNoops;
+            TemNoops = temNoops == null ? "" : temNoops;
         }
 
-        public String getTemTryTime() {
-            return temTryTime == null ? "" : temTryTime;
+        public String getTemTrytime() {
+            return TemTrytime == null ? "" : TemTrytime;
         }
 
-        public void setTemTryTime(String temTryTime) {
-            this.temTryTime = temTryTime;
+        public void setTemTrytime(String temTrytime) {
+            TemTrytime = temTrytime == null ? "" : temTrytime;
         }
 
         public String getTemLink() {
-            return temLink == null ? "" : temLink;
+            return TemLink == null ? "" : TemLink;
         }
 
         public void setTemLink(String temLink) {
-            this.temLink = temLink;
+            TemLink = temLink == null ? "" : temLink;
+        }
+
+        public String getTemAppname() {
+            return TemAppname == null ? "" : TemAppname;
+        }
+
+        public void setTemAppname(String temAppname) {
+            TemAppname = temAppname == null ? "" : temAppname;
+        }
+
+        public String getStartTime() {
+            return StartTime == null ? "" : StartTime;
+        }
+
+        public void setStartTime(String startTime) {
+            StartTime = startTime == null ? "" : startTime;
+        }
+
+        public String getEndTime() {
+            return EndTime == null ? "" : EndTime;
+        }
+
+        public void setEndTime(String endTime) {
+            EndTime = endTime == null ? "" : endTime;
         }
     }
 }
