@@ -38,6 +38,7 @@ import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
+import com.jdxy.wyl.baseandroidx.view.WrapLinearLayout;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
 
@@ -71,11 +72,12 @@ public class SettingFragment extends Fragment {
      * @return A new instance of fragment SettingFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SettingFragment newInstance(String api, String apps) {
+    public static SettingFragment newInstance(String api, String apps, boolean clear) {
         SettingFragment fragment = new SettingFragment();
         Bundle args = new Bundle();
         args.putString(IConfigs.SP_API, api);
         args.putString(IConfigs.INTENT_APP_TYPE, apps);
+        args.putBoolean(IConfigs.INTENT_CLEAR_APP_TYPE, clear);
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,6 +91,7 @@ public class SettingFragment extends Fragment {
 
     String mApi;
     String apps;
+    boolean clear;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,6 +103,7 @@ public class SettingFragment extends Fragment {
         if (getArguments() != null) {
             mApi = getArguments().getString(IConfigs.SP_API);
             apps = getArguments().getString(IConfigs.INTENT_APP_TYPE);
+            clear = getArguments().getBoolean(IConfigs.INTENT_CLEAR_APP_TYPE);
             showSetting();
         }
         return mInflate;
@@ -214,19 +218,23 @@ public class SettingFragment extends Fragment {
 
         int type = ToolSP.getDIYInt(IConfigs.SP_APP_TYPE);
         List<BAppType> mBaseAppTypes = new ArrayList<>();
-        mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_MenZhen, "门诊"));
-        mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_YiJi, "医技"));
-        mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_YaoFang, "药房"));
+        if (!clear) {
+            mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_MenZhen, "门诊"));
+            mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_YiJi, "医技"));
+            mBaseAppTypes.add(new BAppType(IConfigs.APP_TYPE_YaoFang, "药房"));
+        }
+
         ToolLog.efile(TAG, "showSetting: " + apps);
         //如果不为空的话
-
         if (!TextUtils.isEmpty(apps)) {
             List<BAppType> mAppTypes = JSON.parseArray(apps, BAppType.class);
             mBaseAppTypes.addAll(mAppTypes);
         }
         for (BAppType app : mBaseAppTypes) {
             RadioButton rb = new RadioButton(getActivity());
-            rb.setLayoutParams(new RadioGroup.LayoutParams(-2, ToolDisplay.dip2px(getActivity(), 25)));
+            RadioGroup.LayoutParams mParams = new RadioGroup.LayoutParams(-2, ToolDisplay.dip2px(getActivity(), 25));
+            mParams.setMargins(20, 0, 0, 0);
+            rb.setLayoutParams(mParams);
             rb.setText(app.getAppTypeName());
             rb.setTag(app.getAppType());
             rb.setButtonDrawable(getResources().getDrawable(R.drawable.base_cb));
@@ -460,7 +468,7 @@ public class SettingFragment extends Fragment {
         @BindView(R2.id.popRoot)
         LinearLayout mPopRoot;
         @BindView(R2.id.rgSynthesisType)
-        RadioGroup mRgSynthesisType;
+        WrapLinearLayout mRgSynthesisType;
 
 
         @BindView(R2.id.rlvSetting)

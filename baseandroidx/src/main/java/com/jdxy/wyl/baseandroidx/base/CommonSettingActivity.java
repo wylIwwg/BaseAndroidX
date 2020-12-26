@@ -55,6 +55,7 @@ import java.util.Map;
 import me.jessyan.autosize.AutoSize;
 import me.jessyan.autosize.AutoSizeCompat;
 import me.jessyan.autosize.AutoSizeConfig;
+import me.jessyan.autosize.utils.AutoSizeUtils;
 
 
 public class CommonSettingActivity extends AppCompatActivity implements IView {
@@ -66,7 +67,7 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
     TextView mTvSystemTime;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
-    String mApi = "";
+
 
     Button mBtnLZSetting;
     Button mBtnPsw;
@@ -150,15 +151,18 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
         mTitleList.add("设备信息");
 
         Intent mIntent = getIntent();
-        String apps="";
+        String apps = "";
+        String mApi = "";
+        boolean clear = false;
         if (mIntent != null) {
             mApi = mIntent.getStringExtra(IConfigs.SP_API);
             apps = mIntent.getStringExtra(IConfigs.INTENT_APP_TYPE);
+            clear = mIntent.getBooleanExtra(IConfigs.INTENT_CLEAR_APP_TYPE, false);
             ToolLog.e(TAG, "initTabLayout: " + mApi);
             ToolLog.e(TAG, "initTabLayout: " + apps);
         }
 
-        mFragments.add(SettingFragment.newInstance(mApi, apps));
+        mFragments.add(SettingFragment.newInstance(mApi, apps, clear));
         mFragments.add(PingFragment.newInstance(mApi));
         mFragments.add(new DeviceFragment());
 
@@ -185,8 +189,9 @@ public class CommonSettingActivity extends AppCompatActivity implements IView {
 
     @Override
     public Resources getResources() {
-        if (Looper.getMainLooper().getThread() == Thread.currentThread())
-            AutoSizeCompat.autoConvertDensity(super.getResources(), 960f, true);
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            AutoSizeCompat.autoConvertDensity(super.getResources(), AutoSizeConfig.getInstance().getScreenWidth() > AutoSizeConfig.getInstance().getScreenHeight() ? 960f : 540f, true);
+        }
         return super.getResources();
     }
 

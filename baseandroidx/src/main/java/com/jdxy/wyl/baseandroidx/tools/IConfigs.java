@@ -100,6 +100,7 @@ public interface IConfigs {
     String SP_APP_TYPE = "appType";//门牌综合屏应用类型
 
     String INTENT_APP_TYPE = "intent_apptype";//应用类型
+    String INTENT_CLEAR_APP_TYPE = "clear_intent_apptype";//清除应用类型
 
 
     int APP_TYPE_YaoFang = 1;//药房

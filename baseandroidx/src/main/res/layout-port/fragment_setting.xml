@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -210,30 +211,25 @@
             android:orientation="vertical"
             android:padding="25dp">
 
-            <LinearLayout
+
+            <com.jdxy.wyl.baseandroidx.view.WrapLinearLayout
+                android:id="@+id/rgSynthesisType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical">
+                app:grivate="left"
+                app:horizontal_Space="10dp"
+                app:vertical_Space="5dp">
 
 
-                <RadioGroup
-                    android:id="@+id/rgSynthesisType"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:visibility="visible">
+            </com.jdxy.wyl.baseandroidx.view.WrapLinearLayout>
 
 
-                </RadioGroup>
-
-                <Button
-                    android:id="@+id/btnGetArea"
-                    style="@style/baseBtn"
-                    android:layout_margin="0dp"
-                    android:text="获取位置" />
-            </LinearLayout>
-
+            <Button
+                android:id="@+id/btnGetArea"
+                style="@style/baseBtn"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"
+                android:text="获取位置" />
 
             <LinearLayout
                 android:layout_width="match_parent"

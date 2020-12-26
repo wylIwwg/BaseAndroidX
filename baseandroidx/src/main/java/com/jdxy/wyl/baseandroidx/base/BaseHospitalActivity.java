@@ -655,6 +655,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     ToolLog.e(TAG, "handleMessage: socket  " + obj);
                     switch (mType) {
                         case "change"://节目 数据切换
+                            //记录切换操作的时间
+                            changeTime = currentTime;
+
                             isContent = "1".equals(mObject.getString("data"));
                             //0:显示节目；1 显示数据
                             ToolSP.putDIYBoolean(IConfigs.SP_CONTENT_SWITCH, isContent);
@@ -700,12 +703,12 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             //feed();
                             ToolSocket.getInstance().feed();
                             if (obj.contains("date")) {
-                                long mTime = mObject.getLong("date");
-                                if (mTime > 0) {
-                                    mDate = new Date(mTime);
+                                currentTime = mObject.getLong("date");
+                                if (currentTime > 0) {
+                                    mDate = new Date(currentTime);
                                     //以服务器时间来控制开关机重启
                                     if (!localTimeSeted)
-                                        setSystemTime(mTime);
+                                        setSystemTime(currentTime);
                                 } else {
                                     mDate = new Date(System.currentTimeMillis());
                                 }
@@ -903,6 +906,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
+
+    public long currentTime = 0;
+    public long changeTime = 0;
+
     /**
      * 显示时间
      * 在此基础上判断开关机时间
@@ -923,10 +930,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             }
         }
         try {
-            //已经处于节目显示情况
-            if (!isContent) {
 
-            } else {
+            {
+
+
                 mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
                 mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
                 //开始时间和结束时间不为空才进入
@@ -939,16 +946,23 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                     if (endDate.getTime() - startDate.getTime() < 0) {
                         // 15:00  19:00   8：00
                         if (mParse.getTime() - startDate.getTime() >= 0) {
-                            //当天  展示
-                            //展示信息
-                            if (mRlvBanner.getVisibility() == View.GONE) {
-                                ToolLog.efile(TAG, "showTime: 当天  展示");
 
+                            Date mDateChange = new Date(changeTime);
+                            if (isContent && (endDate.getTime() - mDateChange.getTime() > 0)) {
+                                return;
+                            }
+
+                            if (mRlvBanner.getVisibility() == View.GONE) {
+                                //展示信息 当天  展示
+                                ToolLog.efile(TAG, "showTime: 当天  展示");
                                 InitProgram();
                             }
                         } else if (mParse.getTime() - endDate.getTime() <= 0) {
-                            //第二天  展示
-                            //展示信息
+                            Date mDateChange = new Date(changeTime);
+                            if (isContent && (endDate.getTime() - mDateChange.getTime() > 0)) {
+                                return;
+                            }
+                            //展示信息 第二天  展示
                             if (mRlvBanner.getVisibility() == View.GONE) {
                                 ToolLog.efile(TAG, "showTime: 第二天  展示");
                                 InitProgram();
@@ -962,6 +976,14 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         }
 
                     } else if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
+
+                        String mFormat = mTimeFormat.format(changeTime);
+                        Date mDateChange = mTimeFormat.parse(mFormat);
+                        ToolLog.e(TAG, "showTime: " + mFormat + "  " + (endDate.getTime() - mDateChange.getTime()));
+                        if (isContent && (endDate.getTime() - mDateChange.getTime() > 0)) {
+                            return;
+                        }
+
                         //展示信息
                         if (mRlvBanner.getVisibility() == View.GONE) {
                             ToolLog.efile(TAG, "showTime: 当天且同一天  展示");
@@ -1028,24 +1050,44 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
+    /**
+     * 默认设置
+     *
+     * @param api 获取地址的api
+     */
     public void showSetting(String api) {
-        Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
-        mIntent.putExtra(IConfigs.SP_API, api);
-        startActivity(mIntent);
+        showSetting(api, null, false);
 
     }
 
+    /**
+     * 添加软件类型
+     *
+     * @param api
+     * @param appTypes 软件类型集合
+     */
     public void showSetting(String api, List<BAppType> appTypes) {
+        showSetting(api, appTypes, false);
+    }
+
+    /**
+     * 添加软件类型
+     *
+     * @param api
+     * @param appTypes 软件类型集合
+     * @param clear    是否清除默认集合
+     */
+    public void showSetting(String api, List<BAppType> appTypes, boolean clear) {
         Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
         mIntent.putExtra(IConfigs.SP_API, api);
         mIntent.putExtra(IConfigs.INTENT_APP_TYPE, JSON.toJSONString(appTypes));
+        mIntent.putExtra(IConfigs.INTENT_CLEAR_APP_TYPE, clear);
         startActivity(mIntent);
 
     }
 
     public void showSetting() {
-        Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
-        startActivity(mIntent);
+        showSetting(null, null, false);
 
     }
 
