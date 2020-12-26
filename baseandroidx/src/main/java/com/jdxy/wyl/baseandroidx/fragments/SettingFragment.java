@@ -228,7 +228,8 @@ public class SettingFragment extends Fragment {
         //如果不为空的话
         if (!TextUtils.isEmpty(apps)) {
             List<BAppType> mAppTypes = JSON.parseArray(apps, BAppType.class);
-            mBaseAppTypes.addAll(mAppTypes);
+            if (mAppTypes != null)
+                mBaseAppTypes.addAll(mAppTypes);
         }
         for (BAppType app : mBaseAppTypes) {
             RadioButton rb = new RadioButton(getActivity());
