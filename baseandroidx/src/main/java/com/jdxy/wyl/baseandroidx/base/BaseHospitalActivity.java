@@ -264,9 +264,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             if (mVoiceSwitch.length() < 1) {
                 mVoiceSwitch = "1";
             }
-
-            isContent = "1".equals(ToolSP.getDIYString(IConfigs.SP_CONTENT_SWITCH));
-
             //获取声音配置
             String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
             if (mVoice != null && mVoice.length() > 0) {
@@ -303,6 +300,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                 mHttpPort = "8080";
             }
             mBaseHost = String.format(IConfigs.HOST, mIP, mHttpPort);
+
+            isContent = ToolSP.getDIYBoolean(IConfigs.SP_CONTENT_SWITCH);
+
         } catch (Exception error) {
 
             ToolLog.efile(TAG, "initSetting: " + error.toString());
