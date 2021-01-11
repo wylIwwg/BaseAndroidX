@@ -1,5 +1,6 @@
 package com.jdxy.wyl.baseandroidx.fragments;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -16,6 +17,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -375,7 +377,25 @@ public class SettingFragment extends Fragment {
                         pn = "/" + pn;
                     ToolSP.putDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME, pn);
                 }
-                AppUtils.relaunchApp(true);
+                //延迟启动
+                //验证科室诊室数据 后再启动
+                if (TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_CLINIC_ID)) || TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_DEPART_ID))) {
+                    new AlertDialog.Builder(getActivity()).setMessage("科室或诊室未设置，是否重启？").setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ToolLog.efile(TAG, "【保存诊室】: " + ToolSP.getDIYString(IConfigs.SP_CLINIC_ID));
+                            ToolLog.efile(TAG, "【保存科室】: " + ToolSP.getDIYString(IConfigs.SP_DEPART_ID));
+                            AppUtils.relaunchApp(true);
+                        }
+                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    }).create().show();
+
+                } else
+                    AppUtils.relaunchApp(true);
 
             }
         });

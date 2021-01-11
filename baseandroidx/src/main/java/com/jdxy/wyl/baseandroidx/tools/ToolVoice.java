@@ -89,6 +89,15 @@ public class ToolVoice {
         return this;
     }
 
+    public interface SpeechEndListener {
+        boolean speechEnd(BVoice patient);
+    }
+
+    SpeechEndListener mSpeechEndListener;
+
+    public void setSpeechEndListener(SpeechEndListener synthesizerListener) {
+        mSpeechEndListener = synthesizerListener;
+    }
 
     public void InitTtsListener() {
         SpeechSynthesizerListener mListener = new SpeechSynthesizerListener() {
@@ -113,8 +122,20 @@ public class ToolVoice {
                             // 呼叫成功 通知后台改状态
                             if (mapVoice != null && mapVoice.size() > 0 && mNext != null) {
 
-                                //如果结束播报的连接不为空，就请求结束
-                                if (!TextUtils.isEmpty(urlFinishVoice)) {
+                                //如果设置了
+                                if (mSpeechEndListener != null) {
+                                    boolean mEnd = mSpeechEndListener.speechEnd(mNext);
+                                    if (mEnd) {
+                                        //修改状态成功后再移除
+                                        mapVoice.remove(mNext.getDocid());
+                                        //继续播报下一个
+                                        hasVoiceSpeak();
+                                    } else {
+                                        //重复呼叫
+                                        speakTimes = 0;
+                                        ttsSpeak();
+                                    }
+                                } else if (!TextUtils.isEmpty(urlFinishVoice)) {
                                     HttpParams hp = new HttpParams();
                                     hp.put("pid", mNext.getPatientId());
                                     hp.put("queNum", mNext.getPatientNum());
@@ -170,7 +191,7 @@ public class ToolVoice {
                                 public void onSuccess(Object result) {
 
                                 }
-                            }, 1000, TimeUnit.SECONDS);
+                            }, 1, TimeUnit.SECONDS);
                             if (mDataHandler != null)
                                 mDataHandler.postDelayed(new Runnable() {
                                     @Override

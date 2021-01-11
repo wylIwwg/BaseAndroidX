@@ -97,7 +97,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public int mRegisterCode = 0;
     public String mRegisterViper = "";
 
-    public String mClientID = "";
     public String mIP;
     public String mHttpPort;
     public String mSocketPort;
@@ -749,16 +748,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             if (vdata != null) {
                                 String vsize = vdata.getSize();
                                 vsize = vsize.replace("%", "");
-                                if (vsize.length() > 0) {
-                                    AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                                    if (mAudioManager != null) {
-                                        int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);//最大值
-                                        int value = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);//设置前
-                                        int index = max * Integer.parseInt(vsize) / 100;//需要设置的值
-                                        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index, 0); //音量
-                                        ToolLog.efile(SOCKET, "【音量设置 】 " + vsize + " ，设置前：" + value + "， 设置后：" + mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-                                    }
-                                }
+                                largeVoice(vsize);
                             }
                             break;
                         case "restart":
@@ -844,6 +834,18 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
+    public void largeVoice(String vsize) {
+        if (vsize.length() > 0) {
+            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (mAudioManager != null) {
+                int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);//最大值
+                int value = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);//设置前
+                int index = max * Integer.parseInt(vsize) / 100;//需要设置的值
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index, 0); //音量
+                ToolLog.efile(SOCKET, "【音量设置 】 " + vsize + " ，设置前：" + value + "， 设置后：" + mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+            }
+        }
+    }
 
     /**
      * 添加设备
