@@ -28,6 +28,13 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!--语言角色-->
+    <string-array name="voicer_xtts_values">
+        <item>xiaoyan</item>
+        <item>xiaofeng</item>
+    </string-array>
+
+
 </resources>

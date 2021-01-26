@@ -5,6 +5,8 @@ import android.os.Environment;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.jdxy.wyl.baseandroidx.tools.IConfigs;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,11 +31,11 @@ public class ANRException extends RuntimeException {
             @Override
             public void run() {
 
-                File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/anr/");
+                File dir = new File(IConfigs.PATH_LOG);
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
-                String name = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(new Date(System.currentTimeMillis())) + ".txt";
+                String name = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(new Date(System.currentTimeMillis())) + "_anr.txt";
                 File anr = new File(dir, name);
                 try {
                     OutputStreamWriter write = null;

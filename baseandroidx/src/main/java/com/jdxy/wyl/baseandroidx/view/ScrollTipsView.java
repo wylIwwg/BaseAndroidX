@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatTextView;
 
 /**
- * 描述 TODO
+ * 描述 横向滚动的textview
  * 作者 wyl
  * 日期 2021/1/22 14:15
  */

@@ -1,10 +1,7 @@
 package com.jdxy.wyl.baseandroidx.fragments;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +12,8 @@ import android.widget.TextView;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
-import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.RegexUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.R;
-import com.jdxy.wyl.baseandroidx.R2;
 import com.jdxy.wyl.baseandroidx.base.NetworkFeedBean;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
@@ -33,19 +27,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import butterknife.BindView;
 import es.dmoral.toasty.Toasty;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Headers;
 
-import static com.jdxy.wyl.baseandroidx.base.CommonSettingActivity.JSON_INDENT;
+import static com.jdxy.wyl.baseandroidx.base.BaseSettingActivity.JSON_INDENT;
 
 /**
  * A simple {@link Fragment} subclass.

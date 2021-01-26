@@ -12,7 +12,7 @@
         android:allowBackup="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".base.CommonSettingActivity" />
+        <activity android:name=".base.BaseSettingActivity" />
         <activity android:name=".base.LzSettingActivity" />
         <activity android:name=".base.BaseHospitalActivity" />
         <activity android:name=".base.BasePhpActivity" />

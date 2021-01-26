@@ -15,47 +15,32 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
-import com.jdxy.wyl.baseandroidx.listeners.CopyFilesListener;
-import com.jdxy.wyl.baseandroidx.media.zip.DownLoaderTask;
-import com.jdxy.wyl.baseandroidx.media.zip.ZipExtractorTask;
 import com.jdxy.wyl.baseandroidx.network.LogDownloadListener;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
-import com.lztek.toolkit.Lztek;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
 import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
-import com.jdxy.wyl.baseandroidx.bean.Result;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
-import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.OkDownload;
-import com.unisound.client.SpeechSynthesizer;
-import com.unisound.client.SpeechSynthesizerListener;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -356,7 +341,6 @@ public class Presenter {
         content.put("beaseStr", "");
         content.put("sessionId", "123");
         content.put("mac", ToolDevice.getMac());
-        File dir = new File(IConfigs.PATH_LOG);
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {

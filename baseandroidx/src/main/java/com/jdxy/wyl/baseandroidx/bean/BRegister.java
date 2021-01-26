@@ -9,6 +9,24 @@ public class BRegister {
     private String limit;//注册限制/天数
     private String mark;//标记
     private int residue;//剩余天数
+    private String longitude;//经度
+    private String latitude;//纬度
+
+    public String getLongitude() {
+        return longitude == null ? "" : longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude == null ? "" : longitude;
+    }
+
+    public String getLatitude() {
+        return latitude == null ? "" : latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude == null ? "" : latitude;
+    }
 
     public int getResidue() {
         return residue;

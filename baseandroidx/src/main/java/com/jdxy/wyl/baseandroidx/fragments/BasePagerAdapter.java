@@ -50,8 +50,6 @@ public class BasePagerAdapter extends FragmentPagerAdapter {
     }
 
     /**
-     * 首页显示title，每日推荐等..
-     * 若有问题，移到对应单独页面
      */
     @Override
     public CharSequence getPageTitle(int position) {

@@ -11,6 +11,9 @@ import com.jdxy.wyl.baseandroidx.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 存放控件容器，一行显示不完 换行显示
+ */
 public class WrapLinearLayout extends ViewGroup {
 
     private Type mType;

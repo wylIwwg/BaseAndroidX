@@ -8,10 +8,12 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.iflytek.cloud.SpeechListener;
 import com.jdxy.wyl.baseandroidx.base.BaseDataHandler;
 import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
+import com.jdxy.wyl.baseandroidx.listeners.SpeechStateListener;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.HttpParams;
@@ -89,14 +91,12 @@ public class ToolVoice {
         return this;
     }
 
-    public interface SpeechEndListener {
-        boolean speechEnd(BVoice patient);
-    }
 
-    SpeechEndListener mSpeechEndListener;
+    SpeechStateListener mSpeechStateListener;
 
-    public void setSpeechEndListener(SpeechEndListener synthesizerListener) {
-        mSpeechEndListener = synthesizerListener;
+    public ToolVoice setSpeechStateListener(SpeechStateListener synthesizerListener) {
+        mSpeechStateListener = synthesizerListener;
+        return this;
     }
 
     public void InitTtsListener() {
@@ -107,6 +107,8 @@ public class ToolVoice {
                     case SpeechConstants.TTS_EVENT_PLAYING_START:
                         ToolLog.e(TAG, "onEvent:  TTS_EVENT_PLAYING_START ");
                         isSpeeking = true;
+                        if (mSpeechStateListener != null)
+                            mSpeechStateListener.speechStart(mNext);
                         if (!isSpeakTest)
                             speakTimes++;
                         break;
@@ -123,8 +125,8 @@ public class ToolVoice {
                             if (mapVoice != null && mapVoice.size() > 0 && mNext != null) {
 
                                 //如果设置了
-                                if (mSpeechEndListener != null) {
-                                    boolean mEnd = mSpeechEndListener.speechEnd(mNext);
+                                if (mSpeechStateListener != null) {
+                                    boolean mEnd = mSpeechStateListener.speechEnd(mNext);
                                     if (mEnd) {
                                         //修改状态成功后再移除
                                         mapVoice.remove(mNext.getDocid());

@@ -31,7 +31,6 @@ import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BBanner;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
-import com.jdxy.wyl.baseandroidx.bean.BPulse;
 import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
@@ -47,38 +46,24 @@ import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolSocket;
-import com.jdxy.wyl.baseandroidx.tools.ToolTts;
-import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
+import com.jdxy.wyl.baseandroidx.tools.ToolTtsXF;
+import com.jdxy.wyl.baseandroidx.tools.ToolVoiceXF;
 import com.jdxy.wyl.baseandroidx.view.DialogLogs;
 import com.jdxy.wyl.baseandroidx.view.ItemScrollLayoutManager;
 import com.jdxy.wyl.baseandroidx.view.SuperBanner;
-import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
-import com.xuhao.didi.core.iocore.interfaces.ISendable;
-import com.xuhao.didi.core.pojo.OriginalData;
-import com.xuhao.didi.core.protocol.IReaderProtocol;
-import com.xuhao.didi.socket.client.sdk.OkSocket;
-import com.xuhao.didi.socket.client.sdk.client.ConnectionInfo;
-import com.xuhao.didi.socket.client.sdk.client.OkSocketOptions;
-import com.xuhao.didi.socket.client.sdk.client.action.SocketActionAdapter;
-import com.xuhao.didi.socket.client.sdk.client.connection.IConnectionManager;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import cn.jzvd.JZUtils;
 import cn.jzvd.Jzvd;
-import cn.jzvd.JzvdStd;
 import es.dmoral.toasty.Toasty;
 
 public class BaseHospitalActivity extends AppCompatActivity implements BaseDataHandler.MessageListener, IView {
@@ -193,6 +178,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      * @param msg
      */
     public void showRegister(String msg) {
+        if (viewRegister != null)
+            return;
         viewRegister = View.inflate(mContext, R.layout.item_register, null);
         TextView tv = viewRegister.findViewById(R.id.tvRegister);
         tv.setText(msg);
@@ -246,8 +233,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     }
 
     public void initSetting() {
-
-
         try {
             Map<String, ?> mAll = ToolSP.getAll();
             ToolLog.efile("【本地配置信息】：");
@@ -272,7 +257,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                 mVoiceSetting.setVoFormat(voiceFormat);
                 mVoiceSetting.setVoNumber("1");
                 mVoiceSetting.setVoSex("1");
-                mVoiceSetting.setVoSpeed("3");
+                mVoiceSetting.setVoSpeed("45");
+                mVoiceSetting.setVoPitch("50");
+                mVoiceSetting.setVoVolume("100");
             }
 
             //读取到开关机设置
@@ -816,9 +803,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             mVoiceSetting = JSON.parseObject(mObject.get("data").toString(), BVoiceSetting.class);
                             if (mVoiceSetting != null) {
                                 ToolSP.putDIYString(IConfigs.SP_VOICE_TEMP, JSON.toJSONString(mVoiceSetting));
-
-                                ToolTts.Instance().setSpeed(Integer.parseInt(mVoiceSetting.getVoSpeed()) * 10);
-                                ToolVoice.Instance().setVoiceSetting(mVoiceSetting);
+                                ToolTtsXF.Instance().setSpeed(Integer.parseInt(mVoiceSetting.getVoSpeed()) * 10);
+                                ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
                             }
 
                             break;
@@ -932,10 +918,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             }
         }
         try {
-
             {
-
-
                 mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
                 mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
                 //开始时间和结束时间不为空才进入
@@ -1046,9 +1029,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public void InitTtsSetting() {
 
         //初始化语音sdk
-        ToolTts.Instance(mContext).InitTtsSetting(Integer.parseInt(mVoiceSetting.getVoSpeed()));
+        ToolTtsXF.Instance(mContext).InitTtsSetting(mVoiceSetting);
         //初始化语音控制
-        ToolVoice.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
+        ToolVoiceXF.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
 
     }
 
@@ -1080,7 +1063,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      * @param clear    是否清除默认集合
      */
     public void showSetting(String api, List<BAppType> appTypes, boolean clear) {
-        Intent mIntent = new Intent(mContext, CommonSettingActivity.class);
+        Intent mIntent = new Intent(mContext, BaseSettingActivity.class);
         mIntent.putExtra(IConfigs.SP_API, api);
         mIntent.putExtra(IConfigs.INTENT_APP_TYPE, JSON.toJSONString(appTypes));
         mIntent.putExtra(IConfigs.INTENT_CLEAR_APP_TYPE, clear);

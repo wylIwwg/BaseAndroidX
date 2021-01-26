@@ -5,10 +5,28 @@ package com.jdxy.wyl.baseandroidx.bean;
  */
 public class BVoiceSetting {
 
-    private String voSex;
-    private String voSpeed;
-    private String voFormat;
-    private String voNumber;
+    private String voSex;//发音人性别
+    private String voSpeed;//播放速度 值范围：[0，100]，默认：50
+    private String voFormat;//播放格式
+    private String voNumber;//播放次数
+    private String voPitch;//音调 值范围：[0，100]，默认：50
+    private String voVolume;//音量 值范围：[0，100]，默认：50
+
+    public String getVoPitch() {
+        return voPitch == null ? "" : voPitch;
+    }
+
+    public void setVoPitch(String voPitch) {
+        this.voPitch = voPitch == null ? "" : voPitch;
+    }
+
+    public String getVoVolume() {
+        return voVolume == null ? "" : voVolume;
+    }
+
+    public void setVoVolume(String voVolume) {
+        this.voVolume = voVolume == null ? "" : voVolume;
+    }
 
     public String getVoSex() {
         return voSex == null ? "" : voSex;
@@ -42,13 +60,4 @@ public class BVoiceSetting {
         this.voNumber = voNumber;
     }
 
-    @Override
-    public String toString() {
-        return "Data{" +
-                "voSex='" + voSex + '\'' +
-                ", voSpeed=" + voSpeed +
-                ", voFormat='" + voFormat + '\'' +
-                ", voNumber=" + voNumber +
-                '}';
-    }
 }

@@ -11,8 +11,11 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 import com.jdxy.wyl.baseandroidx.network.HttpLoggingInterceptor2;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
+import com.jdxy.wyl.baseandroidx.tools.ToolTtsXF;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
@@ -52,6 +55,7 @@ public class BaseApp extends Application {
 
     @Override
     public void onCreate() {
+
         super.onCreate();
         new ANRThread().start();
         Toasty.Config.getInstance()
@@ -87,6 +91,26 @@ public class BaseApp extends Application {
                     }
                 })
                 .setLog(false);
+
+    }
+
+    public void initVoice(String appid) {
+        // 应用程序入口处调用,避免手机内存过小,杀死后台进程后通过历史intent进入Activity造成SpeechUtility对象为null
+        // 注意：此接口在非主进程调用会返回null对象，如需在非主进程使用语音功能，请增加参数：SpeechConstant.FORCE_LOGIN
+        // 参数间使用“,”分隔。
+        // 设置你申请的应用appid
+        // 注意： appid 必须和下载的SDK保持一致，否则会出现10407错误
+        if (TextUtils.isEmpty(appid))
+            return;
+
+        if (!ToolTtsXF.Instance(this).existsTTsFile())
+            return;
+        StringBuffer param = new StringBuffer();
+        param.append("appid=" + appid);
+        param.append(",");
+        // 设置使用v5+
+        param.append(SpeechConstant.ENGINE_MODE + "=" + SpeechConstant.MODE_MSC);
+        SpeechUtility.createUtility(this, param.toString());
 
     }
 
