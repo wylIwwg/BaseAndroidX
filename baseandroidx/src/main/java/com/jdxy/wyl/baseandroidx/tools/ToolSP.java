@@ -12,9 +12,9 @@ import java.util.Map;
  */
 
 public class ToolSP {
+    private static final String TAG = " ToolSP ";
     static ToolSP mToolSP = new ToolSP();
     static SharedPreferences sp;
-
 
     public static ToolSP Init(Context context, String pkg) {
         if (sp == null) {
@@ -27,20 +27,43 @@ public class ToolSP {
         return sp.getAll();
     }
 
-    public static ToolSP putDIYString(String key, String value) {
-
-        sp.edit().putString(key, value).apply();
+    public static ToolSP instance() {
+        if (mToolSP == null)
+            mToolSP = new ToolSP();
         return mToolSP;
     }
 
-    public static ToolSP putDIYBoolean(String key, boolean value) {
+    public void putString(String key, String value) {
+        if (sp != null)
+            ToolLog.efile(TAG, "提交数据string:key= " + key + "  value=" + value + "  " + sp.edit().putString(key, value).commit());
+    }
 
-        sp.edit().putBoolean(key, value).apply();
+    public void putBoolean(String key, boolean value) {
+        if (sp != null)
+            ToolLog.efile(TAG, "提交数据boolean: key= " + key + "  value=" + value + "  " + sp.edit().putBoolean(key, value).commit());
+    }
+
+    public void putInt(String key, int value) {
+        if (sp != null)
+            ToolLog.efile(TAG, "提交数据int: key= " + key + "  value=" + value + "  " + sp.edit().putInt(key, value).commit());
+    }
+
+    public static ToolSP putDIYString(String key, String value) {
+        if (sp != null)
+            ToolLog.efile(TAG, "提交数据string:key= " + key + "  value=" + value + "  " + sp.edit().putString(key, value).commit());
+        return mToolSP;
+    }
+
+
+    public static ToolSP putDIYBoolean(String key, boolean value) {
+        if (sp != null)
+            ToolLog.efile(TAG, "提交数据boolean: key= " + key + "  value=" + value + "  " + sp.edit().putBoolean(key, value).commit());
         return mToolSP;
     }
 
     public static ToolSP putDIYInt(String key, int value) {
-        sp.edit().putInt(key, value).apply();
+        if (sp != null)
+            ToolLog.efile(TAG, "提交数据int: key= " + key + "  value=" + value + "  " + sp.edit().putInt(key, value).commit());
         return mToolSP;
     }
 

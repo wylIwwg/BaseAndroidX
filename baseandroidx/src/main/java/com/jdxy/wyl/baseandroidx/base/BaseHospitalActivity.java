@@ -643,7 +643,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         case "change"://节目 数据切换
                             //记录切换操作的时间
                             changeTime = currentTime;
-
                             isContent = "1".equals(mObject.getString("data"));
                             //0:显示节目；1 显示数据
                             ToolSP.putDIYBoolean(IConfigs.SP_CONTENT_SWITCH, isContent);
@@ -898,6 +897,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public long currentTime = 0;
     public long changeTime = 0;
 
+    String lastPrintTime = "";
+
     /**
      * 显示时间
      * 在此基础上判断开关机时间
@@ -907,7 +908,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      * @param week
      */
     public void showTime(String dateStr, String timeStr, String week) {
-        if (timeStr.endsWith("00")) {
+        if (timeStr.endsWith("00") && !timeStr.equals(lastPrintTime)) {
+            lastPrintTime = timeStr;
             ToolLog.efile(TAG, "每隔整点打印一次时间：当前：" + timeStr + " 开机：" + mRebootStarTime + " 关机：" + mRebootEndTime);
         }
 

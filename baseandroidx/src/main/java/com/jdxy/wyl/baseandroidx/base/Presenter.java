@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -289,7 +290,6 @@ public class Presenter {
             public String doInBackground() throws Throwable {
                 for (String url : urls) {
                     //如果包含项目名
-
                     if (url.contains(ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME))) {
                         url = url.replace(ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME), "");
                         ToolLog.efile(TAG, "下载声音文件2: " + url);

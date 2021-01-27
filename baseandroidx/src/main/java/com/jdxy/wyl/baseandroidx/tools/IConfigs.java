@@ -13,6 +13,9 @@ public interface IConfigs {
     String LOG_SOCKET = "【Socket】";
     String LOG_HTTP = "【Http】";
 
+    String DATABASE_SETTING_NAME = "setting";
+
+
     String PATH_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/";
     String PATH_APK = PATH_ROOT + "apk/";
     String PATH_TTS = PATH_ROOT + "tts/";

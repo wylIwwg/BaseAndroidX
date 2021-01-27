@@ -63,8 +63,7 @@ public class BaseApp extends Application {
                 .setTextSize(18)
                 .apply();
         ToolSP.Init(this, getPackageName());
-
-        ToolSP.putDIYBoolean(IConfigs.SP_SHOWLOG, false);
+        ToolSP.instance().putBoolean(IConfigs.SP_SHOWLOG, false);
 
         Utils.init(this);
 
@@ -72,9 +71,9 @@ public class BaseApp extends Application {
             ToolLZ.Init(this);
         }
         LogUtils.getConfig().setDir(IConfigs.PATH_LOG).setFilePrefix("log");
+
         AutoSizeConfig.getInstance()
                 .setCustomFragment(true)
-
                 //屏幕适配监听器
                 .setOnAdaptListener(new onAdaptListener() {
                     @Override
@@ -94,6 +93,11 @@ public class BaseApp extends Application {
 
     }
 
+    /**
+     * 启用语音设置
+     *
+     * @param appid
+     */
     public void initVoice(String appid) {
         // 应用程序入口处调用,避免手机内存过小,杀死后台进程后通过历史intent进入Activity造成SpeechUtility对象为null
         // 注意：此接口在非主进程调用会返回null对象，如需在非主进程使用语音功能，请增加参数：SpeechConstant.FORCE_LOGIN

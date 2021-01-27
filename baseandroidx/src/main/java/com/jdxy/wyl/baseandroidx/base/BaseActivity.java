@@ -8,6 +8,7 @@ import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +29,7 @@ import es.dmoral.toasty.Toasty;
 public class BaseActivity extends AppCompatActivity implements com.jdxy.wyl.baseandroidx.base.BaseDataHandler.MessageListener {
     public String TAG = this.getClass().getSimpleName();
     public Context mContext;
-    public LinearLayout mBaseLlRoot;//根布局
+    public RelativeLayout mBaseLlRoot;//根布局
     public com.jdxy.wyl.baseandroidx.base.BaseDataHandler mDataHandler;
     public String HOST = "";
     public boolean isRegistered = false;
