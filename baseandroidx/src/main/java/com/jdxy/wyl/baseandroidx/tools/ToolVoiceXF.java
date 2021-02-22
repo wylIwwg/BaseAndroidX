@@ -16,8 +16,6 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
-import com.unisound.client.SpeechConstants;
-import com.unisound.client.SpeechSynthesizerListener;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ToolVoiceXF {
 
-    private static final String TAG = "ToolVoice";
+    public static final String TAG = "ToolVoice";
 
 
     static ToolVoiceXF mToolVoice;
@@ -54,18 +52,18 @@ public class ToolVoiceXF {
     }
 
 
-    boolean isSpeeking = false;
-    boolean isSpeakTest = false;
-    int speakTimes = 0;
-    int voiceCount = 1;//语音播报次数 默认1次
+    public  boolean isSpeeking = false;
+    public   boolean isSpeakTest = false;
+    public int speakTimes = 0;
+    public  int voiceCount = 1;//语音播报次数 默认1次
 
-    BVoiceSetting mVoiceSetting;//语音设置
+    public BVoiceSetting mVoiceSetting;//语音设置
 
-    Map<String, BVoice> mapVoice = new HashMap<>();
-    BVoice mNext;
-    String urlFinishVoice = "";
+    public  Map<String, BVoice> mapVoice = new HashMap<>();
+    public  BVoice mNext;
+    public  String urlFinishVoice = "";
 
-    BaseDataHandler mDataHandler;
+    public  BaseDataHandler mDataHandler;
 
 
     public ToolVoiceXF setVoiceSetting(BVoiceSetting voiceSetting) {
@@ -288,23 +286,27 @@ public class ToolVoiceXF {
         if (mNext != null) {
             //"请(line)(name)到(department)(room)(doctor)就诊"
             String format = mVoiceSetting.getVoFormat();
-            final String txt = format.replace("name", ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
-                    .replace("line", mNext.getPatientNum() + "")
-                    .replace("department", mNext.getDepartmentName())
-                    .replace("room", mNext.getClinicName())
-                    .replace("doctor", mNext.getDoctorName())
-                    .replace("type", mNext.getType())
-                    .replace("(", "")
-                    .replace(")", "");
-            String voice = format.replace("name", mNext.getPatientName())
-                    .replace("line", mNext.getPatientNum() + "")
-                    .replace("department", mNext.getDepartmentName())
-                    .replace("room", mNext.getClinicName())
-                    .replace("doctor", mNext.getDoctorName())
-                    .replace("type", mNext.getType())
-                    .replace("(", "")
-                    .replace(")", "")
-                    .replace("一", "衣");
+            final String txt = format
+                    .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
+                    .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                    .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
+                    .replace(ToolRegex.regClinicName, mNext.getClinicName())
+                    .replace(ToolRegex.regDoctorName, mNext.getDoctorName())
+                    .replace(ToolRegex.regClinicNum, mNext.getRoNum())
+                    .replace(ToolRegex.regPatientType, mNext.getType())
+                    .replace(ToolRegex.regLeftParentheses, "")
+                    .replace(ToolRegex.regRightParentheses, "");
+            String voice = format
+                    .replace(ToolRegex.regPatientName, mNext.getPatientName())
+                    .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                    .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
+                    .replace(ToolRegex.regClinicName, mNext.getClinicName())
+                    .replace(ToolRegex.regClinicNum, mNext.getRoNum())
+                    .replace(ToolRegex.regDoctorName, mNext.getDoctorName())
+                    .replace(ToolRegex.regPatientType, mNext.getType())
+                    .replace(ToolRegex.regLeftParentheses, "")
+                    .replace(ToolRegex.regRightParentheses, "")
+                    .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
 
             if (mTextView != null) {
                 ThreadUtils.runOnUiThread(new Runnable() {

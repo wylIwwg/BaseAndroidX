@@ -1,8 +1,5 @@
 package com.jdxy.wyl.baseandroidx.view;
 
-/**
- * Created by wyl on 2018/5/4.
- */
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -13,6 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.ref.WeakReference;
+
+/**
+ * 图片视频混合轮播
+ * Created by wyl on 2018/5/4.
+ */
 
 public class SuperBanner extends RecyclerView {
     private static final String TAG = " SuperBanner ";

@@ -37,6 +37,7 @@ public class ToolSocket {
 
     private IConnectionManager mSocketManager;
 
+    //将心跳喂狗
     public void feed() {
         if (mSocketManager != null && mSocketManager.getPulseManager() != null) {
             mSocketManager.getPulseManager().feed();
@@ -98,10 +99,10 @@ public class ToolSocket {
          * 你需要返回有效载荷的长度,并且返回的长度中不应该包含报文头的固定长度
                         * /
                 return /*有效负载长度(字节数)，固定报文头长度(字节数)除外*/
-                ;
-                // ToolLog.e("getBodyLengthheader: " + header.length);
-                byte[] buffer = new byte[4];
-                System.arraycopy(header, 0, buffer, 0, 4);
+
+
+                byte[] buffer = new byte[4];//用四个字节接收报文头部
+                System.arraycopy(header, 0, buffer, 0, 4);//头部记录的是多少字节
                 int len = bytesToInt(buffer, 0);
                 // ToolLog.e(TAG, "getBodyLength: " + (len - 8));
                 return len - 8;
@@ -215,7 +216,7 @@ public class ToolSocket {
     };
 
     /**
-     * byte数组中取int数值，本方法适用于(低位在前，高位在后)的顺序，和和intToBytes（）配套使用
+     * byte数组中取int数值，本方法适用于(低位在前，高位在后)的顺序
      *
      * @param src    byte数组
      * @param offset 从数组的第offset位开始

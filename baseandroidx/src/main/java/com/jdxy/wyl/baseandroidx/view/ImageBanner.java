@@ -1,8 +1,5 @@
 package com.jdxy.wyl.baseandroidx.view;
 
-/**
- * Created by wyl on 2019/12/13.
- */
 
 import android.content.Context;
 import android.os.Handler;
@@ -28,7 +25,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+/**
+ * 纯图片轮播
+ * Created by wyl on 2019/12/13.
+ */
 public class ImageBanner extends ViewPager {
     private static final String TAG = " ImageBanner ";
     Context mContext;
@@ -134,14 +134,12 @@ public class ImageBanner extends ViewPager {
             mImageView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (mBannerClickLisener != null) {
+                    if (mBannerClickListener != null) {
                         mAutoSwitch = false;
-                        mBannerClickLisener.bannerClick(mData.getUrl());
+                        mBannerClickListener.bannerClick(mData.getUrl());
                     }
                 }
             });
-
-
             return mImageView;
         }
 
@@ -159,21 +157,20 @@ public class ImageBanner extends ViewPager {
         }
     }
 
-    public interface BannerClickLisener {
+    public interface BannerClickListener {
         void bannerClick(String url);
     }
 
-    BannerClickLisener mBannerClickLisener;
+    BannerClickListener mBannerClickListener;
 
-    public void setBannerClickLisener(BannerClickLisener lisener) {
-        mBannerClickLisener = lisener;
+    public void setBannerClickListener(BannerClickListener lisener) {
+        mBannerClickListener = lisener;
     }
-
 
     /**
      * 开始图片的轮播
      *
-     * @param BBanner     轮播的图片集合
+     * @param BBanner    轮播的图片集合
      * @param duration   轮播间隔
      * @param scrollTime 轮播时间（一张图片滚动的时间）
      */
@@ -200,14 +197,7 @@ public class ImageBanner extends ViewPager {
                 scroller.setDuration(mScrollTime);
                 scroller.startScroll(0, 0, 0, 0);
                 field.set(this, scroller);
-            } catch (NoSuchFieldException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

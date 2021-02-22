@@ -74,35 +74,24 @@ public class Presenter {
         if (isCapturing) return;
         isCapturing = true;
         if (base64 != null && base64.length() > 0) {
-            ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
-                @Override
-                public String doInBackground() throws Throwable {
-                    OkGo.<String>post(url)
-                            .tag(this)
-                            .params("macId", ToolDevice.getMac())
-                            .params("sessionId", sessionId)
-                            .params("baseStr", base64)
-                            .execute(new StringCallback() {
-                                @Override
-                                public void onSuccess(Response<String> response) {
-                                    isCapturing = false;
-                                    ToolLog.efile(TAG, "onSuccess: 截图上传成功：" + response.body());
-                                }
+            OkGo.<String>post(url)
+                    .tag(this)
+                    .params("macId", ToolDevice.getMac())
+                    .params("sessionId", sessionId)
+                    .params("baseStr", base64)
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            isCapturing = false;
+                            ToolLog.efile(TAG, "onSuccess: 截图上传成功：" + response.body());
+                        }
 
-                                @Override
-                                public void onError(Response<String> response) {
-                                    isCapturing = false;
-                                    mView.showError("截图上传失败" + response.getException().toString());
-                                }
-                            });
-                    return null;
-                }
-
-                @Override
-                public void onSuccess(String result) {
-
-                }
-            });
+                        @Override
+                        public void onError(Response<String> response) {
+                            isCapturing = false;
+                            mView.showError("截图上传失败" + response.getException().toString());
+                        }
+                    });
         } else {
             mView.showError("截图失败");
             isCapturing = false;
@@ -503,6 +492,8 @@ public class Presenter {
                                         mView.showError("应用程序不匹配");
                                     }
                                 }
+                            } else {
+                                mView.showError("apk文件不存在");
                             }
                         }
 
@@ -513,7 +504,7 @@ public class Presenter {
                         }
                     });
         } else {
-            mView.showError("文件链接不是apk软件！");
+            mView.showError("文件链接无效！");
         }
 
     }
@@ -545,7 +536,7 @@ public class Presenter {
             //执行动作
             intent.setAction(Intent.ACTION_VIEW);
             //判读版本是否在7.0以上
-            if (Build.VERSION.SDK_INT >= 24) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 LogUtils.file("【普通7.0以上系统升级】" + Build.USER);
                 Uri apkUri = FileProvider.getUriForFile(mContext, "com.test.fileprovider", apk);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -557,7 +548,6 @@ public class Presenter {
             }
             mContext.startActivity(intent);
         }
-
 
     }
 

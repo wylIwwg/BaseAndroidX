@@ -26,7 +26,7 @@ public class ScrollTipsView extends AppCompatTextView {
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="50dp"
-            android:text="请妥善保管好您的随身物品请妥善保管好您的随身物品请妥善保管好您的随身物品,谨防丢失"
+            android:text="请妥善保管好您的随身物品,谨防丢失"
             android:textColor="@color/white"
             android:textSize="15sp" />
     * */

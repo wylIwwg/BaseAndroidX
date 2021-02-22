@@ -16,8 +16,17 @@ public class BVoice {
     private String count;//等候人数
     private String nextName;//下一位
     private String nextNum;//下一位排队号
+    private String roNum;//门牌号
 
     private String type;//呼叫类型 就诊/复诊/
+
+    public String getRoNum() {
+        return roNum == null ? "" : roNum;
+    }
+
+    public void setRoNum(String roNum) {
+        this.roNum = roNum == null ? "" : roNum;
+    }
 
     public String getType() {
         return type == null ? "" : type;

@@ -66,7 +66,7 @@ import java.util.Map;
 import cn.jzvd.Jzvd;
 import es.dmoral.toasty.Toasty;
 
-public class BaseHospitalActivity extends AppCompatActivity implements BaseDataHandler.MessageListener, IView {
+public class BaseHosActivity extends AppCompatActivity implements BaseDataHandler.MessageListener, IView {
     public String TAG = "【" + this.getClass().getSimpleName() + "】";
     public static final String SOCKET = "【socket】";
     public static final String HTTP = "【http】";
@@ -99,7 +99,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public SimpleDateFormat mDateTimeFormat;
     public TimeThread mTimeThread;
 
-    // public RestartThread mRestartThread;
     public String mRebootStarTime = "";//开关机 开机时间
     public String mRebootEndTime = "";//开关机 关机时间
 
@@ -124,7 +123,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     public RelativeLayout mRlvBanner;
     public SuperBanner mSuperBanner;
     public TextView mTvCover;
-    public TextView mTvProSetting;//节目界面设置
+   // public TextView mTvProSetting;//节目界面设置
 
     //主内容
     public View mViewContent;
@@ -138,7 +137,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
         mRlvBanner = findViewById(R.id.rlvBanner);
         mTvCover = findViewById(R.id.tvCover);
         mSuperBanner = findViewById(R.id.banner);
-        mTvProSetting = findViewById(R.id.tvProSetting);
 
         mPresenter = new Presenter(mContext, this);
         mDataHandler = new BaseDataHandler(this);
@@ -159,6 +157,12 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                 mRegisterCode = registerResult.getRegisterCode();
                 mRegisterViper = registerResult.getRegisterStr();
                 isRegistered = registerResult.isRegistered();
+                if (mRegisterCode == 0) {
+                    showRegister("设备未注册");
+                }
+                if (mRegisterCode == 2) {
+                    showRegister("设备注册已到期");
+                }
             }
         });
 
@@ -178,8 +182,10 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
      * @param msg
      */
     public void showRegister(String msg) {
-        if (viewRegister != null)
-            return;
+        if (viewRegister != null) {
+            mBaseRlRoot.removeView(viewRegister);
+            viewRegister = null;
+        }
         viewRegister = View.inflate(mContext, R.layout.item_register, null);
         TextView tv = viewRegister.findViewById(R.id.tvRegister);
         tv.setText(msg);
@@ -232,6 +238,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
+    /**
+     * 基本设置
+     */
     public void initSetting() {
         try {
             Map<String, ?> mAll = ToolSP.getAll();
@@ -248,11 +257,12 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             if (mVoiceSwitch.length() < 1) {
                 mVoiceSwitch = "1";
             }
-            //获取声音配置
+            //获取语音配置
             String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
             if (mVoice != null && mVoice.length() > 0) {
                 mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
             } else {
+                //设置默认
                 mVoiceSetting = new BVoiceSetting();
                 mVoiceSetting.setVoFormat(voiceFormat);
                 mVoiceSetting.setVoNumber("1");
@@ -285,6 +295,7 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
             if (mHttpPort.length() < 1) {
                 mHttpPort = "8080";
             }
+
             mBaseHost = String.format(IConfigs.HOST, mIP, mHttpPort);
 
             isContent = ToolSP.getDIYBoolean(IConfigs.SP_CONTENT_SWITCH);
@@ -305,6 +316,9 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
 
     }
 
+    /**
+     * banner节目区域
+     ***/
     public List<BBanner> mBanners;
     public int scrollTime;//图片滚动时间
     public int delayTime;//间隔多少时间滚动
@@ -573,15 +587,15 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
     @Override
     public void userHandler(Message msg) {
         switch (msg.what) {
-            case IConfigs.MSG_SOCKET_DISCONNECT:
-                startLocalTime();
+            case IConfigs.MSG_SOCKET_DISCONNECT://socket断开连接
+                startLocalTime();//启动本地时间线程
                 showError(msg.obj.toString());
                 break;
-            case IConfigs.MSG_CREATE_TCP_ERROR:
+            case IConfigs.MSG_CREATE_TCP_ERROR://socket连接失败
                 showError(msg.obj.toString());
                 break;
 
-            case IConfigs.MSG_MEDIA_INIT:
+            case IConfigs.MSG_MEDIA_INIT://banner资源加载完毕
                 //控制轮播
                 if (mBanners.size() > 1) {
                     mBannerAdapter.setLoop(true);
@@ -685,7 +699,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             break;
                         case "pong"://心跳处理
                             Date mDate;
-                            //feed();
                             ToolSocket.getInstance().feed();
                             if (obj.contains("date")) {
                                 currentTime = mObject.getLong("date");
@@ -708,7 +721,6 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             String dateStr = mDateFormat.format(mDate);
                             //星期
                             String week = mWeekFormat.format(mDate);
-
                             showTime(dateStr, timeStr, week);
                             break;
                         case "voiceSwitch"://flag
@@ -788,9 +800,8 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                         case "init": //socket连接成功之后 做初始化操作
                             ClientId = mObject.getString("id");
                             String ping = "{\"type\":\"ping\",\"id\":\"" + ClientId + "\"}";
-                           /* mPulseData.setPing(ping);
-                            mSocketManager.getPulseManager().setPulseSendable(mPulseData);*/
                             ToolSocket.getInstance().setPing(ping);
+                            //关闭本地时间线程
                             if (mTimeThread != null) {
                                 mTimeThread.onDestroy();
                                 mTimeThread = null;
@@ -802,17 +813,15 @@ public class BaseHospitalActivity extends AppCompatActivity implements BaseDataH
                             mVoiceSetting = JSON.parseObject(mObject.get("data").toString(), BVoiceSetting.class);
                             if (mVoiceSetting != null) {
                                 ToolSP.putDIYString(IConfigs.SP_VOICE_TEMP, JSON.toJSONString(mVoiceSetting));
-                                ToolTtsXF.Instance().setSpeed(Integer.parseInt(mVoiceSetting.getVoSpeed()) * 10);
+                                ToolTtsXF.Instance().InitTtsSetting(mVoiceSetting);
                                 ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
                             }
-
                             break;
-
-
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    showError(e.getMessage());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    ToolLog.efile(TAG, "userHandler: " + ex.toString());
+                    showError(ex.getMessage());
                 }
                 break;
         }

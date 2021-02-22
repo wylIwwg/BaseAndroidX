@@ -16,12 +16,8 @@ import com.iflytek.cloud.SpeechEvent;
 import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.util.ResourceUtil;
-import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
-import com.unisound.client.SpeechConstants;
-import com.unisound.client.SpeechSynthesizerListener;
 
-import java.io.File;
 
 import es.dmoral.toasty.Toasty;
 
@@ -38,9 +34,6 @@ public class ToolTtsXF {
     static Context mContext;
 
     BVoiceSetting mVoiceSetting;
-    //增强版发音人
-    private String[] voicerNames;
-    private String voicer;
 
     public static ToolTtsXF Instance(Context context) {
         mContext = context;
@@ -65,7 +58,8 @@ public class ToolTtsXF {
     public String defaultDir = IConfigs.PATH_TTS;
 
     String baseSource = "common.jet";
-    String voiceFile = "xiaoyan.jet";
+    String voiceFileW = "xiaoyan.jet";
+    String voiceFileM = "xiaofeng.jet";
 
     /**
      * 指定目录下是否存在语音播放文件
@@ -74,12 +68,6 @@ public class ToolTtsXF {
      */
     public boolean existsTTsFile() {
         String pathBaseSource = defaultDir + baseSource;
-        String pathVoiceFile = defaultDir + voiceFile;
-        if (!FileUtils.isFileExists(pathVoiceFile)) {
-            ToolLog.efile(TAG, "existsTTsFile: 声音资源文件存在 " + pathVoiceFile);
-            Toasty.error(mContext, "声音资源文件存在 " + pathVoiceFile).show();
-            return false;
-        }
         if (!FileUtils.isFileExists(pathBaseSource)) {
             Toasty.error(mContext, "声音文件存在 " + pathBaseSource).show();
             ToolLog.efile(TAG, "existsTTsFile: 声音文件存在 " + pathBaseSource);
@@ -96,23 +84,22 @@ public class ToolTtsXF {
         // 清空参数
         mTTSPlayer.setParameter(SpeechConstant.PARAMS, null);
         //设置合成
-
         mTTSPlayer.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_XTTS);
         //设置发音人资源路径
         mTTSPlayer.setParameter(ResourceUtil.TTS_RES_PATH, getResourcePath());
         //设置发音人
-        mTTSPlayer.setParameter(SpeechConstant.VOICE_NAME, voicer);
-
+        mTTSPlayer.setParameter(SpeechConstant.VOICE_NAME, "0".equals(mVoiceSetting.getVoSex())?"xiaoyan":"xiaofeng");
         //mTTSPlayer.setParameter(SpeechConstant.TTS_DATA_NOTIFY,"1");//支持实时音频流抛出，仅在synthesizeToUri条件下支持
         //设置合成语速
-        mTTSPlayer.setParameter(SpeechConstant.SPEED, TextUtils.isEmpty(mVoiceSetting.getVoSpeed()) ? "30" : mVoiceSetting.getVoSpeed());
+        //默认设置40
+        mTTSPlayer.setParameter(SpeechConstant.SPEED, TextUtils.isEmpty(mVoiceSetting.getVoSpeed()) ? "40" : mVoiceSetting.getVoSpeed().length() == 1 ? (mVoiceSetting.getVoSpeed() + "0") : mVoiceSetting.getVoSpeed());
         //设置合成音调
         mTTSPlayer.setParameter(SpeechConstant.PITCH, TextUtils.isEmpty(mVoiceSetting.getVoPitch()) ? "50" : mVoiceSetting.getVoPitch());
         //设置合成音量
         mTTSPlayer.setParameter(SpeechConstant.VOLUME, TextUtils.isEmpty(mVoiceSetting.getVoVolume()) ? "100" : mVoiceSetting.getVoVolume());
         //设置播放器音频流类型
         mTTSPlayer.setParameter(SpeechConstant.STREAM_TYPE, AudioManager.STREAM_MUSIC + "");
-        //	mTTSPlayer.setParameter(SpeechConstant.STREAM_TYPE, AudioManager.STREAM_MUSIC+"");
+        //mTTSPlayer.setParameter(SpeechConstant.STREAM_TYPE, AudioManager.STREAM_MUSIC+"");
 
         // 设置播放合成音频打断音乐播放，默认为true
         mTTSPlayer.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "true");
@@ -133,7 +120,14 @@ public class ToolTtsXF {
         tempBuffer.append(ResourceUtil.generateResourcePath(mContext, ResourceUtil.RESOURCE_TYPE.path, IConfigs.PATH_TTS + baseSource));
         tempBuffer.append(";");
         //发音人资源
-        tempBuffer.append(ResourceUtil.generateResourcePath(mContext, ResourceUtil.RESOURCE_TYPE.path, IConfigs.PATH_TTS + voiceFile));
+        if ("0".equals(mVoiceSetting.getVoSex())) {
+            //女发音
+            tempBuffer.append(ResourceUtil.generateResourcePath(mContext, ResourceUtil.RESOURCE_TYPE.path, IConfigs.PATH_TTS + voiceFileW));
+        } else {
+            //男发音
+            tempBuffer.append(ResourceUtil.generateResourcePath(mContext, ResourceUtil.RESOURCE_TYPE.path, IConfigs.PATH_TTS + voiceFileM));
+
+        }
         return tempBuffer.toString();
     }
 
@@ -149,7 +143,7 @@ public class ToolTtsXF {
     /**
      * 合成回调监听。
      */
-    private SynthesizerListener mDeafultTtsListener = new SynthesizerListener() {
+    private SynthesizerListener mDefaultTtsListener = new SynthesizerListener() {
 
         @Override
         public void onSpeakBegin() {
@@ -225,6 +219,8 @@ Log.e("MscSpeechLog", "buf is =" + buf);
                 }
             });
 
+        } else {
+            setParam();
         }
         return this;
     }
@@ -243,28 +239,11 @@ Log.e("MscSpeechLog", "buf is =" + buf);
         mSynthesizerListener = synthesizerListener;
     }
 
-    int speed;
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-        if (mTTSPlayer != null)
-            mTTSPlayer.setParameter(SpeechConstant.SPEED, (speed > 0 ? speed : 50) + "");
-    }
-
-    public ToolTtsXF InitTtsSetting(int speed) {
-        this.speed = speed;
-        if (existsTTsFile()) {
-            InitTts();
-        }
-        //  mTTSPlayer.setOption(SpeechConstants.TTS_KEY_BACKEND_MODEL_PATH, TTSManager.getInstance(mContext).defaultDir + TTSManager.getInstance(mContext).backName);
-        return this;
-    }
-
     public void TtsSpeak(String txt) {
         if (mTTSPlayer != null) {
             if (mSynthesizerListener != null)
                 mTTSPlayer.startSpeaking(txt, mSynthesizerListener);
-            else mTTSPlayer.startSpeaking(txt, mDeafultTtsListener);
+            else mTTSPlayer.startSpeaking(txt, mDefaultTtsListener);
             ToolLog.efile(TAG, "TtsSpeak: " + txt);
         }
     }

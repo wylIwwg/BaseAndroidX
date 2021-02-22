@@ -112,21 +112,12 @@ public class ToolRegister {
         try {
             if (data == null || data.equals(""))
                 return false;
-            String result = str2Regsiter(data);//解密数据
+            String result = str2Register(data);//解密数据
             ToolLog.e(TAG, "registerDevice: 允许注册： " + result);
             if (result != null) {
                 mRegister = JSON.parseObject(result, BRegister.class);
                 if (mRegister != null) {
                     return writeDevice(data);//直接写入
-                    /*String mLimit = mRegister.getLimit();
-                    if (mLimit != null && mLimit.length() > 0) {
-                        int mParseInt = Integer.parseInt(mLimit);
-                        if (mParseInt == 0) {//不允许注册
-                            return false;
-                        } else {
-                            return writeDevice(data);
-                        }
-                    }*/
                 }
                 return false;
             }
@@ -209,7 +200,7 @@ public class ToolRegister {
                 br.close();
                 if (data != null && data.length() > 0) {
 
-                    String result = str2Regsiter(data);//解密获取明文数据json
+                    String result = str2Register(data);//解密获取明文数据json
                     return JSON.parseObject(result, BRegister.class);//将数据转成对象
                 }
             }//文件不存在 表示未注册
@@ -375,7 +366,7 @@ public class ToolRegister {
      * @param data
      * @return
      */
-    public String str2Regsiter(String data) {
+    public String str2Register(String data) {
         //解密
         try {
             ToolLog.e(TAG, "str2Regsiter:源数据 " + data);

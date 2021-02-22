@@ -14,8 +14,9 @@
         android:theme="@style/AppTheme">
         <activity android:name=".base.BaseSettingActivity" />
         <activity android:name=".base.LzSettingActivity" />
-        <activity android:name=".base.BaseHospitalActivity" />
+        <activity android:name=".base.BaseHosActivity" />
         <activity android:name=".base.BasePhpActivity" />
+        <activity android:name=".base.BaseMediaActivity" />
         <activity
             android:name=".crash.activity.ErrorActivity"
             android:process=":error_activity" />

@@ -8,7 +8,6 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -23,12 +22,9 @@ import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BPulse;
 import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
-import com.jdxy.wyl.baseandroidx.bean.BResult2;
-import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
-import com.jdxy.wyl.baseandroidx.thread.RestartThread;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolCommon;
@@ -38,10 +34,7 @@ import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
-import com.jdxy.wyl.baseandroidx.tools.ToolTts;
-import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
 import com.jdxy.wyl.baseandroidx.view.DialogLogs;
-import com.unisound.client.SpeechSynthesizer;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
 import com.xuhao.didi.core.iocore.interfaces.ISendable;
 import com.xuhao.didi.core.pojo.OriginalData;
@@ -59,7 +52,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -570,9 +562,9 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     public void InitTtsSetting() {
 
         //初始化语音sdk
-        ToolTts.Instance(mContext).InitTtsSetting(Integer.parseInt(mVoiceSetting.getVoSpeed()));
+       // ToolTts.Instance(mContext).InitTtsSetting(Integer.parseInt(mVoiceSetting.getVoSpeed()));
         //初始化语音控制
-        ToolVoice.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
+       // ToolVoice.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
 
     }
 
