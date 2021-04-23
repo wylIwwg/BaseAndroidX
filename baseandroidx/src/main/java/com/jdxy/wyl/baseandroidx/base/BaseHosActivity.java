@@ -266,7 +266,7 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
                 mVoiceSetting = new BVoiceSetting();
                 mVoiceSetting.setVoFormat(voiceFormat);
                 mVoiceSetting.setVoNumber("1");
-                mVoiceSetting.setVoSex("1");
+                mVoiceSetting.setVoSex("0");
                 mVoiceSetting.setVoSpeed("45");
                 mVoiceSetting.setVoPitch("50");
                 mVoiceSetting.setVoVolume("100");

@@ -52,18 +52,18 @@ public class ToolVoiceXF {
     }
 
 
-    public  boolean isSpeeking = false;
-    public   boolean isSpeakTest = false;
+    public boolean isSpeeking = false;
+    public boolean isSpeakTest = false;
     public int speakTimes = 0;
-    public  int voiceCount = 1;//语音播报次数 默认1次
+    public int voiceCount = 1;//语音播报次数 默认1次
 
     public BVoiceSetting mVoiceSetting;//语音设置
 
-    public  Map<String, BVoice> mapVoice = new HashMap<>();
-    public  BVoice mNext;
-    public  String urlFinishVoice = "";
+    public Map<String, BVoice> mapVoice = new HashMap<>();
+    public BVoice mNext;
+    public String urlFinishVoice = "";
 
-    public  BaseDataHandler mDataHandler;
+    public BaseDataHandler mDataHandler;
 
 
     public ToolVoiceXF setVoiceSetting(BVoiceSetting voiceSetting) {
@@ -132,7 +132,7 @@ public class ToolVoiceXF {
 
             @Override
             public void onCompleted(SpeechError error) {
-
+                ToolLog.efile(TAG, "onCompleted: " + error.toString());
                 if (error == null) {
                     ToolLog.e(TAG, "onCompleted: 播放完成 ");
                     isSpeeking = false;
@@ -269,7 +269,7 @@ public class ToolVoiceXF {
     }
 
 
-    TextView mTextView;
+    public TextView mTextView;
 
     public ToolVoiceXF setVoiceView(TextView textView) {
         mTextView = textView;

@@ -2,6 +2,7 @@ package com.jdxy.wyl.baseandroidx.base;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
+import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
@@ -166,8 +168,9 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         tv.setText(msg);
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ToolDisplay.dip2px(mContext, 250), ToolDisplay.dip2px(mContext, 180));
         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+
         viewRegister.setLayoutParams(lp);
-        mBaseRlRoot.addView(viewRegister);
+        mBaseRlRoot.addView(viewRegister,90);
         viewRegister.bringToFront();
     }
 
@@ -621,5 +624,46 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         }
     }
 
+
+    /**
+     * 默认设置
+     *
+     * @param api 获取地址的api
+     */
+    public void showSetting(String api) {
+        showSetting(api, null, false);
+
+    }
+
+    /**
+     * 添加软件类型
+     *
+     * @param api
+     * @param appTypes 软件类型集合
+     */
+    public void showSetting(String api, List<BAppType> appTypes) {
+        showSetting(api, appTypes, false);
+    }
+
+    /**
+     * 添加软件类型
+     *
+     * @param api
+     * @param appTypes 软件类型集合
+     * @param clear    是否清除默认集合
+     */
+    public void showSetting(String api, List<BAppType> appTypes, boolean clear) {
+        Intent mIntent = new Intent(mContext, BaseSettingActivity.class);
+        mIntent.putExtra(IConfigs.SP_API, api);
+        mIntent.putExtra(IConfigs.INTENT_APP_TYPE, JSON.toJSONString(appTypes));
+        mIntent.putExtra(IConfigs.INTENT_CLEAR_APP_TYPE, clear);
+        startActivity(mIntent);
+
+    }
+
+    public void showSetting() {
+        showSetting(null, null, false);
+
+    }
 
 }

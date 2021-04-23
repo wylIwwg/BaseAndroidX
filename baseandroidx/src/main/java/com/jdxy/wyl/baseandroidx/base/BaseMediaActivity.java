@@ -52,6 +52,12 @@ public class BaseMediaActivity extends BaseActivity {
     }
 
     @Override
+    public void initListener() {
+        super.initListener();
+
+    }
+
+    @Override
     public void userHandler(Message msg) {
         super.userHandler(msg);
         if (msg.what == IConfigs.MSG_SOCKET_RECEIVED) {

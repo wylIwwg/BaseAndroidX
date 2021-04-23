@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.FileUtils;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
@@ -91,6 +92,7 @@ public class ToolTtsXF {
         mTTSPlayer.setParameter(SpeechConstant.VOICE_NAME, "0".equals(mVoiceSetting.getVoSex())?"xiaoyan":"xiaofeng");
         //mTTSPlayer.setParameter(SpeechConstant.TTS_DATA_NOTIFY,"1");//支持实时音频流抛出，仅在synthesizeToUri条件下支持
         //设置合成语速
+        ToolLog.e(TAG, "setParam: " + JSON.toJSONString(mVoiceSetting));
         //默认设置40
         mTTSPlayer.setParameter(SpeechConstant.SPEED, TextUtils.isEmpty(mVoiceSetting.getVoSpeed()) ? "40" : mVoiceSetting.getVoSpeed().length() == 1 ? (mVoiceSetting.getVoSpeed() + "0") : mVoiceSetting.getVoSpeed());
         //设置合成音调
@@ -241,6 +243,8 @@ Log.e("MscSpeechLog", "buf is =" + buf);
 
     public void TtsSpeak(String txt) {
         if (mTTSPlayer != null) {
+            ToolLog.e(TAG, "TtsSpeak: mSynthesizerListener " + mSynthesizerListener);
+            ToolLog.e(TAG, "TtsSpeak: mDefaultTtsListener " + mDefaultTtsListener);
             if (mSynthesizerListener != null)
                 mTTSPlayer.startSpeaking(txt, mSynthesizerListener);
             else mTTSPlayer.startSpeaking(txt, mDefaultTtsListener);

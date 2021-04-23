@@ -23,7 +23,7 @@ public interface IConfigs {
     String PATH_MAC = PATH_ROOT + "mac/";
     String PATH_ERROR = PATH_ROOT + "icon_error/";//错误日志
     String PATH_CAPTURE = PATH_ROOT + "capture/";//截图保存
-    String PATH_VIDEO = PATH_ROOT + "video/";//截图保存
+    String PATH_VIDEO = PATH_ROOT + "video/";//视频保存
 
     String PATH_PROGRAM = PATH_ROOT + "program/";//项目节目
     String PATH_ZIP = PATH_ROOT + "zip/";//项目节目
