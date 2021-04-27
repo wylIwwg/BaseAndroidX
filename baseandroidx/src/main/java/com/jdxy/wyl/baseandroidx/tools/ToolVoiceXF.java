@@ -132,7 +132,6 @@ public class ToolVoiceXF {
 
             @Override
             public void onCompleted(SpeechError error) {
-                ToolLog.efile(TAG, "onCompleted: " + error.toString());
                 if (error == null) {
                     ToolLog.e(TAG, "onCompleted: 播放完成 ");
                     isSpeeking = false;
