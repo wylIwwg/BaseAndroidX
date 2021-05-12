@@ -167,12 +167,6 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
             }
         });
 
-        ProjectName = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
-        if (TextUtils.isEmpty(ProjectName)) {
-            showInfo("请设置 ProjectName");
-        }
-
-
     }
 
 
@@ -250,13 +244,6 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
                 ToolLog.efile("【key= " + str + " value= " + mAll.get(str) + "】");
             }
 
-            mIP = ToolSP.getDIYString(IConfigs.SP_IP);
-            mIP = ToolSP.getDIYString(IConfigs.SP_IP);
-            mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
-            mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
-
-            mDomainName= ToolSP.getDIYString(IConfigs.SP_DOMAIN_NAME);
-
             mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWITCH);
             if (mVoiceSwitch.length() < 1) {
                 mVoiceSwitch = "1";
@@ -292,15 +279,44 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
             mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
             mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
 
-
             isContent = ToolSP.getDIYBoolean(IConfigs.SP_CONTENT_SWITCH);
+
+
+            ProjectName = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
+            if (TextUtils.isEmpty(ProjectName)) {
+                showInfo("请设置 ProjectName");
+                return;
+            }
+
+            mDomainName= ToolSP.getDIYString(IConfigs.SP_DOMAIN_NAME);
+            mIP = ToolSP.getDIYString(IConfigs.SP_IP);
+            mIP = ToolSP.getDIYString(IConfigs.SP_IP);
+            mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
+            mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
+
+            if (!TextUtils.isEmpty(mDomainName)) {
+                mHost = mDomainName;
+            } else {
+                if (mIP.length() < 6) {
+                    showError("请设置ip");
+                    return;
+                }
+                if (mHttpPort.length() < 1) {
+                    showError("请设置ip端口");
+                    return;
+                }
+                mHost = String.format(IConfigs.HOST, mIP, mHttpPort);
+            }
+            //设置项目名  修改后设置的
+            mHost += ProjectName;
+            mBaseHost = mHost;
+
+            ToolSP.putDIYString(IConfigs.SP_HOST, mHost);
 
         } catch (Exception error) {
 
             ToolLog.efile(TAG, "initSetting: " + error.toString());
         }
-
-
     }
 
 

@@ -267,57 +267,71 @@ public class SettingFragment extends Fragment {
         mHolder.mBtnGetArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String ip = mHolder.mEtIp.getText().toString();
-                if (!RegexUtils.isIP(ip)) {
-                    Toasty.error(getActivity(), "请输入合法的ip地址：" + ip).show();
-                    return;
-                }
-                String port = mHolder.mEtPort.getText().toString();
+                String mHost;
+                String api;
 
-                ToolSP.putDIYString(IConfigs.SP_IP, ip);
-                ToolSP.putDIYString(IConfigs.SP_PORT_HTTP, mHolder.mEtPort.getText().toString());
-                ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString());
-                if (!TextUtils.isEmpty(ip) && !TextUtils.isEmpty(port)) {
-                    String api = mApi;
-                    //onClick: /baseConsultaioninfo/departAlls
-                    ToolLog.efile("SETTING", "onClick: " + api);
-                    if (!mApi.startsWith("http")) {//说明第一次
-                        String mHost = String.format(IConfigs.HOST, ip, port);
+                //优先使用域名
+                if (!TextUtils.isEmpty(mHolder.mEtDomainName.getText().toString())) {
+                    //使用域名
+                    ToolSP.putDIYString(IConfigs.SP_DOMAIN_NAME, mHolder.mEtDomainName.getText().toString());
+                    mHost = mHolder.mEtDomainName.getText().toString() + mHolder.mEtProjectName.getText().toString();
+                } else {
+                    String ip = mHolder.mEtIp.getText().toString();
+                    String port = mHolder.mEtPort.getText().toString();
+                    if (!TextUtils.isEmpty(ip) && !TextUtils.isEmpty(port) && RegexUtils.isIP(ip)) {
+                        //使用IP 和端口
+                        mHost = String.format(IConfigs.HOST, ip, port);
                         //设置项目名  修改后设置的
                         mHost += mHolder.mEtProjectName.getText().toString();
-                        ToolSP.putDIYString(IConfigs.SP_HOST, mHost);
-                        mApi = mHost + mApi;
-                        api = mApi;
+
+                    } else {
+                        Toasty.error(getActivity(), "请输入合法的ip地址：" + ip).show();
+                        return;
                     }
-                    OkGo.<BHosSetting>get(api).execute(new JsonCallBack<BHosSetting>(BHosSetting.class) {
-                        @Override
-                        public void onSuccess(Response<BHosSetting> response) {
-                            if (response != null) {
-                                BHosSetting mBody = response.body();
-                                if (mBody != null && mBody.getState() == 1) {
-                                    mDepartsList.clear();
-                                    mClinicList.clear();
-                                    mDepartsList.addAll(mBody.getData());
-                                    mClinicAdapter.notifyDataSetChanged();
-                                    mDepartAdapter.notifyDataSetChanged();
-                                } else {
-                                    Toasty.error(getActivity(), "获取失败：数据格式错误", Toast.LENGTH_LONG, true).show();
-                                }
-
-                            } else
-                                Toasty.error(getActivity(), "获取失败：请求数据为空", Toast.LENGTH_LONG, true).show();
-                        }
-
-                        @Override
-                        public void onError(Response<BHosSetting> response) {
-                            super.onError(response);
-                            Toasty.error(getActivity(), "获取失败：" + (response.getException() == null ? response.body() : response.getException().toString()), Toast.LENGTH_LONG, true).show();
-                        }
-                    });
-
-                } else {
-                    Toasty.error(getActivity(), "请设置ip和端口号", Toast.LENGTH_LONG, true).show();
+                    ToolSP.putDIYString(IConfigs.SP_IP, ip);
+                    ToolSP.putDIYString(IConfigs.SP_PORT_HTTP, port);
+                    ToolSP.putDIYString(IConfigs.SP_DOMAIN_NAME, "");
                 }
+                ToolSP.putDIYString(IConfigs.SP_HOST, mHost);
+                ToolSP.putDIYString(IConfigs.SP_PORT_SOCKET, mHolder.mEtSocketPort.getText().toString());
+
+                api = mHost + mApi;
+
+                //onClick: /baseConsultaioninfo/departAlls
+                ToolLog.efile("SETTING", "onClick: " + api);
+
+                OkGo.<BHosSetting>get(api).execute(new JsonCallBack<BHosSetting>(BHosSetting.class) {
+                    @Override
+                    public void onSuccess(Response<BHosSetting> response) {
+                        mDepartsList.clear();
+                        mClinicList.clear();
+                        if (response != null) {
+                            BHosSetting mBody = response.body();
+                            if (mBody != null && mBody.getState() == 1) {
+                                mDepartsList.addAll(mBody.getData());
+
+                            } else {
+                                Toasty.error(getActivity(), "获取失败：数据格式错误", Toast.LENGTH_LONG, true).show();
+                            }
+
+                        } else {
+                            Toasty.error(getActivity(), "获取失败：请求数据为空", Toast.LENGTH_LONG, true).show();
+                        }
+                        mClinicAdapter.notifyDataSetChanged();
+                        mDepartAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(Response<BHosSetting> response) {
+                        super.onError(response);
+                        mDepartsList.clear();
+                        mClinicList.clear();
+                        mClinicAdapter.notifyDataSetChanged();
+                        mDepartAdapter.notifyDataSetChanged();
+                        Toasty.error(getActivity(), "获取失败：" + (response.getException() == null ? response.body() : response.getException().toString()), Toast.LENGTH_LONG, true).show();
+                    }
+                });
+
 
             }
         });
@@ -359,7 +373,7 @@ public class SettingFragment extends Fragment {
                     return;
                 }
                 //优先使用域名
-                if(!TextUtils.isEmpty(mHolder.mEtDomainName.getText().toString())){
+                if (!TextUtils.isEmpty(mHolder.mEtDomainName.getText().toString())) {
                     ToolSP.putDIYString(IConfigs.SP_DOMAIN_NAME, mHolder.mEtDomainName.getText().toString());
                 }
                 //重新启动应用
