@@ -78,14 +78,15 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
     public String mBaseHost = "";//host http://192.168.2.188:8080
     public String mHost = "";//host http://192.168.2.188:8080/项目名
 
-    public boolean isRegistered = false;
-    public int mRegisterCode = 0;
-    public String mRegisterViper = "";
+    public boolean isRegistered = false;//是否注册
+    public int mRegisterCode = 0;//注册code
+    public String mRegisterViper = "";//注册码
 
-    public String mIP;
-    public String mHttpPort;
-    public String mSocketPort;
-    public String mMac;
+    public String mIP; //ip地址 如 192.168.2.1
+    public String mDomainName;//域名，若不为空 则优先使用域名
+    public String mHttpPort;//ip端口 结合ip使用，http请求时需要
+    public String mSocketPort;//socket连接端口
+    public String mMac;//设备mac地址
 
     public String[] mPermissions;//申请权限
 
@@ -244,14 +245,17 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
     public void initSetting() {
         try {
             Map<String, ?> mAll = ToolSP.getAll();
-            ToolLog.efile("【本地配置信息】：");
+            ToolLog.efile("【打印本地配置信息】：");
             for (String str : mAll.keySet()) {
                 ToolLog.efile("【key= " + str + " value= " + mAll.get(str) + "】");
             }
 
             mIP = ToolSP.getDIYString(IConfigs.SP_IP);
+            mIP = ToolSP.getDIYString(IConfigs.SP_IP);
             mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
             mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
+
+            mDomainName= ToolSP.getDIYString(IConfigs.SP_DOMAIN_NAME);
 
             mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWITCH);
             if (mVoiceSwitch.length() < 1) {
@@ -288,15 +292,6 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
             mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
             mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
 
-
-            if (mIP.length() < 6) {
-                return;
-            }
-            if (mHttpPort.length() < 1) {
-                mHttpPort = "8080";
-            }
-
-            mBaseHost = String.format(IConfigs.HOST, mIP, mHttpPort);
 
             isContent = ToolSP.getDIYBoolean(IConfigs.SP_CONTENT_SWITCH);
 

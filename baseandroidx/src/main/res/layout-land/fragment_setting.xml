@@ -68,10 +68,10 @@
             android:padding="20dp">
 
             <TextView
+                android:layout_gravity="center"
                 android:id="@+id/tvModify"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="155dp"
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="0dp"
                 android:text="*项目名称仅可修改一次 以 ‘/’开头*"
@@ -190,6 +190,45 @@
                     android:textCursorDrawable="@drawable/base_et_cursor"
                     android:textSize="13sp" />
             </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="2dp"
+                android:text="*若填写域名，优先使用域名，ip仅用于socket连接，http端口无效*"
+                android:textColor="@color/red"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/DetailTitle"
+                    android:layout_width="140dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="end"
+                    android:text="输入正确域名：" />
+
+                <EditText
+                    android:id="@+id/etDomainName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/base_et"
+                    android:hint="域名(如https://mobile.chumo028.com/)"
+                    android:inputType="textUri"
+                    android:padding="5dp"
+                    android:textColor="@color/txt"
+                    android:textColorHint="@color/txt"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
         </LinearLayout>
 
 

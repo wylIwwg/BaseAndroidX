@@ -207,10 +207,12 @@ public class SettingFragment extends Fragment {
         mHolder.mEtPort.setText(ToolSP.getDIYString(IConfigs.SP_PORT_HTTP));
         mHolder.mEtSocketPort.setText(ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET));
 
+        mHolder.mEtDomainName.setText(ToolSP.getDIYString(IConfigs.SP_DOMAIN_NAME));
+
 
         //设置项目名  获取系统项目名称
         if (!TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME))) {
-            mHolder.mTvModify.setText("* 项目名已修改*");
+            mHolder.mTvModify.setText("* 项目名已修改 *");
             mHolder.mTvModify.setTextColor(getResources().getColor(R.color.grey));
             mHolder.mEtProjectName.setText(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME));
             mHolder.mEtProjectName.setEnabled(false);
@@ -351,9 +353,14 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 final String ip = mHolder.mEtIp.getText().toString();
-                if (!RegexUtils.isIP(ip)) {
+                //未输入域名  则判断ip
+                if (TextUtils.isEmpty(mHolder.mEtDomainName.getText().toString()) && !RegexUtils.isIP(ip)) {
                     Toasty.error(getActivity(), "请输入合法的ip地址：" + ip).show();
                     return;
+                }
+                //优先使用域名
+                if(!TextUtils.isEmpty(mHolder.mEtDomainName.getText().toString())){
+                    ToolSP.putDIYString(IConfigs.SP_DOMAIN_NAME, mHolder.mEtDomainName.getText().toString());
                 }
                 //重新启动应用
                 ToolSP.putDIYString(IConfigs.SP_IP, ip);
@@ -470,6 +477,8 @@ public class SettingFragment extends Fragment {
         EditText mEtSocketPort;
         @BindView(R2.id.etProjectName)
         EditText mEtProjectName;
+        @BindView(R2.id.etDomainName)
+        EditText mEtDomainName;
         @BindView(R2.id.btnGetArea)
         Button mBtnGetArea;
         @BindView(R2.id.rlvDepart)

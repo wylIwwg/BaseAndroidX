@@ -2,8 +2,6 @@ package com.jdxy.wyl.baseandroidx.tools;
 
 import android.os.Environment;
 
-import com.jdxy.wyl.baseandroidx.base.IDescription;
-
 /**
  * Created by wyl on 2019/5/29.
  */
@@ -85,6 +83,7 @@ public interface IConfigs {
 
     String SP_HIDE_PATIENTNAME = "hidename";//隐藏病人姓名
     String SP_IP = "ip";
+    String SP_DOMAIN_NAME = "domainname";//域名
     String SP_PORT_HTTP = "portHttp";
     String SP_PORT_SOCKET = "portSocket";//
     String SP_VOICE_TEMP = "voiceFormat";//
