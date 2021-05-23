@@ -281,31 +281,66 @@ public class ToolVoiceXF {
         ToolLog.e(TAG, "TtsSpeakTest: " + test);
     }
 
+    String voice="";
+    String txt="";
     public synchronized void ttsSpeak() {
         if (mNext != null) {
             //"请(line)(name)到(department)(room)(doctor)就诊"
             String format = mVoiceSetting.getVoFormat();
-            final String txt = format
-                    .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
-                    .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
-                    .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
-                    .replace(ToolRegex.regClinicName, mNext.getClinicName())
-                    .replace(ToolRegex.regDoctorName, mNext.getDoctorName())
-                    .replace(ToolRegex.regClinicNum, mNext.getRoNum())
-                    .replace(ToolRegex.regPatientType, mNext.getType())
-                    .replace(ToolRegex.regLeftParentheses, "")
-                    .replace(ToolRegex.regRightParentheses, "");
-            String voice = format
-                    .replace(ToolRegex.regPatientName, mNext.getPatientName())
-                    .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
-                    .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
-                    .replace(ToolRegex.regClinicName, mNext.getClinicName())
-                    .replace(ToolRegex.regClinicNum, mNext.getRoNum())
-                    .replace(ToolRegex.regDoctorName, mNext.getDoctorName())
-                    .replace(ToolRegex.regPatientType, mNext.getType())
-                    .replace(ToolRegex.regLeftParentheses, "")
-                    .replace(ToolRegex.regRightParentheses, "")
-                    .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
+
+            if(format.contains(",")){
+                txt = format
+                        .replaceFirst(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
+                        .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                        .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
+                        .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
+                        .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
+                        .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
+                        .replaceFirst(ToolRegex.regPatientType, mNext.getType())
+                        .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getNextName() : ToolCommon.SplitStarName(mNext.getNextName(), "*", 1, 2))
+                        .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
+
+                        .replace(ToolRegex.regLeftParentheses, "")
+                        .replace(ToolRegex.regRightParentheses, "");
+                voice = format
+                        .replaceFirst(ToolRegex.regPatientName, mNext.getPatientName())
+                        .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                        .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
+                        .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
+                        .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
+                        .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
+                        .replaceFirst(ToolRegex.regPatientType, mNext.getType())
+
+                        .replace(ToolRegex.regPatientName, mNext.getNextName())
+                        .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
+                        .replaceFirst(ToolRegex.regLeftParentheses, "")
+                        .replaceFirst(ToolRegex.regRightParentheses, "")
+
+                        .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
+            }else {
+                 txt = format
+                        .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
+                        .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                        .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
+                        .replace(ToolRegex.regClinicName, mNext.getClinicName())
+                        .replace(ToolRegex.regDoctorName, mNext.getDoctorName())
+                        .replace(ToolRegex.regClinicNum, mNext.getRoNum())
+                        .replace(ToolRegex.regPatientType, mNext.getType())
+                        .replace(ToolRegex.regLeftParentheses, "")
+                        .replace(ToolRegex.regRightParentheses, "");
+                 voice = format
+                        .replace(ToolRegex.regPatientName, mNext.getPatientName())
+                        .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                        .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
+                        .replace(ToolRegex.regClinicName, mNext.getClinicName())
+                        .replace(ToolRegex.regClinicNum, mNext.getRoNum())
+                        .replace(ToolRegex.regDoctorName, mNext.getDoctorName())
+                        .replace(ToolRegex.regPatientType, mNext.getType())
+                        .replace(ToolRegex.regLeftParentheses, "")
+                        .replace(ToolRegex.regRightParentheses, "")
+                        .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
+
+            }
 
             if (mTextView != null) {
                 ThreadUtils.runOnUiThread(new Runnable() {
