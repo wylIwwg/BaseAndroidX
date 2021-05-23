@@ -281,44 +281,53 @@ public class ToolVoiceXF {
         ToolLog.e(TAG, "TtsSpeakTest: " + test);
     }
 
-    String voice="";
-    String txt="";
+    String voice = "";
+    String txt = "";
+
     public synchronized void ttsSpeak() {
         if (mNext != null) {
             //"请(line)(name)到(department)(room)(doctor)就诊"
             String format = mVoiceSetting.getVoFormat();
+            //说明是预叫号
+            if (format.contains(",")) {
+                //没有下一位了
+                if (TextUtils.isEmpty(mNext.getNextName())) {
+                    format = format.split(",")[0];//取前半
+                   ToolLog.efile("预叫号 没有下一位了 "+format);
+                }
+                {
+                    txt = format
+                            .replaceFirst(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
+                            .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                            .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
+                            .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
+                            .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
+                            .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
+                            .replaceFirst(ToolRegex.regPatientType, mNext.getType())
+                            .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getNextName() : ToolCommon.SplitStarName(mNext.getNextName(), "*", 1, 2))
+                            .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
 
-            if(format.contains(",")){
+                            .replace(ToolRegex.regLeftParentheses, "")
+                            .replace(ToolRegex.regRightParentheses, "");
+                    voice = format
+                            .replaceFirst(ToolRegex.regPatientName, mNext.getPatientName())
+                            .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                            .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
+                            .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
+                            .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
+                            .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
+                            .replaceFirst(ToolRegex.regPatientType, mNext.getType())
+
+                            .replace(ToolRegex.regPatientName, mNext.getNextName())
+                            .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
+                            .replaceFirst(ToolRegex.regLeftParentheses, "")
+                            .replaceFirst(ToolRegex.regRightParentheses, "")
+
+                            .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
+                }
+
+            } else {
                 txt = format
-                        .replaceFirst(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
-                        .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
-                        .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
-                        .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
-                        .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
-                        .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
-                        .replaceFirst(ToolRegex.regPatientType, mNext.getType())
-                        .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getNextName() : ToolCommon.SplitStarName(mNext.getNextName(), "*", 1, 2))
-                        .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
-
-                        .replace(ToolRegex.regLeftParentheses, "")
-                        .replace(ToolRegex.regRightParentheses, "");
-                voice = format
-                        .replaceFirst(ToolRegex.regPatientName, mNext.getPatientName())
-                        .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
-                        .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
-                        .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
-                        .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
-                        .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
-                        .replaceFirst(ToolRegex.regPatientType, mNext.getType())
-
-                        .replace(ToolRegex.regPatientName, mNext.getNextName())
-                        .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
-                        .replaceFirst(ToolRegex.regLeftParentheses, "")
-                        .replaceFirst(ToolRegex.regRightParentheses, "")
-
-                        .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
-            }else {
-                 txt = format
                         .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
                         .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
                         .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
@@ -328,7 +337,7 @@ public class ToolVoiceXF {
                         .replace(ToolRegex.regPatientType, mNext.getType())
                         .replace(ToolRegex.regLeftParentheses, "")
                         .replace(ToolRegex.regRightParentheses, "");
-                 voice = format
+                voice = format
                         .replace(ToolRegex.regPatientName, mNext.getPatientName())
                         .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
                         .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
