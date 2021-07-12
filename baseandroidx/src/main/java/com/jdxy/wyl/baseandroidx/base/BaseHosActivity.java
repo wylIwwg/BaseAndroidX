@@ -124,7 +124,7 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
     public RelativeLayout mRlvBanner;
     public SuperBanner mSuperBanner;
     public TextView mTvCover;
-   // public TextView mTvProSetting;//节目界面设置
+    // public TextView mTvProSetting;//节目界面设置
 
     //主内容
     public View mViewContent;
@@ -288,7 +288,7 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
                 return;
             }
 
-            mDomainName= ToolSP.getDIYString(IConfigs.SP_DOMAIN_NAME);
+            mDomainName = ToolSP.getDIYString(IConfigs.SP_DOMAIN_NAME);
             mIP = ToolSP.getDIYString(IConfigs.SP_IP);
             mIP = ToolSP.getDIYString(IConfigs.SP_IP);
             mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
@@ -774,8 +774,8 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
                             showInfo("收到软件更新");
                             String link = mObject.getString("link");
                             if (!TextUtils.isEmpty(link)) {
-                                ToolLog.efile(TAG, "userHandler: " + "【下载更新】" + mBaseHost + link);
-                                mPresenter.downloadApk(mBaseHost + link);
+
+                                mPresenter.downloadApk(link.contains(ProjectName) ? mBaseHost + link : mHost + link);
                             }
 
                             break;

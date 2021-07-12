@@ -144,7 +144,8 @@ public class BaseSettingActivity extends AppCompatActivity implements IView {
         mFragments.add(SettingFragment.newInstance(mApi, apps, clear));
         mFragments.add(PingFragment.newInstance(mApi));
         mFragments.add(new DeviceFragment());
-
+       /* mTitleList.add("亮钻设备");
+        mFragments.add(new LzFragment());*/
         if (ToolLZ.Instance().isLZDevice()) {
             mTitleList.add("亮钻设备");
             mFragments.add(new LzFragment());

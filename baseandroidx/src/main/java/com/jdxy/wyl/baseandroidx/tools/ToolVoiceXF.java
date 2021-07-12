@@ -52,6 +52,11 @@ public class ToolVoiceXF {
     }
 
 
+    /**
+     * 是否按顺序播放排队号
+     */
+    public boolean isOrderPlay = false;
+
     public boolean isSpeeking = false;
     public boolean isSpeakTest = false;
     public int speakTimes = 0;
@@ -65,6 +70,15 @@ public class ToolVoiceXF {
 
     public BaseDataHandler mDataHandler;
 
+    /**
+     * 是否按顺序播放排队号： 设置为true时，排队号 123 将逐字念成 一 二 三，而不是一百二十三
+     *
+     * @param orderPlay
+     */
+    public ToolVoiceXF setOrderPlay(boolean orderPlay) {
+        isOrderPlay = orderPlay;
+        return this;
+    }
 
     public ToolVoiceXF setVoiceSetting(BVoiceSetting voiceSetting) {
         mVoiceSetting = voiceSetting;
@@ -293,7 +307,7 @@ public class ToolVoiceXF {
                 //没有下一位了
                 if (TextUtils.isEmpty(mNext.getNextName())) {
                     format = format.split(",")[0];//取前半
-                   ToolLog.efile("预叫号 没有下一位了 "+format);
+                    ToolLog.efile("预叫号 没有下一位了 " + format);
                 }
                 {
                     txt = format
@@ -311,7 +325,7 @@ public class ToolVoiceXF {
                             .replace(ToolRegex.regRightParentheses, "");
                     voice = format
                             .replaceFirst(ToolRegex.regPatientName, mNext.getPatientName())
-                            .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                            .replaceFirst(ToolRegex.regPatientNum, isOrderPlay ? mNext.getPatientNum().replaceAll(".{1}(?!$)", "$0 ") : mNext.getPatientNum())
                             .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
                             .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
                             .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
@@ -339,7 +353,7 @@ public class ToolVoiceXF {
                         .replace(ToolRegex.regRightParentheses, "");
                 voice = format
                         .replace(ToolRegex.regPatientName, mNext.getPatientName())
-                        .replace(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                        .replace(ToolRegex.regPatientNum, isOrderPlay ? mNext.getPatientNum().replaceAll(".{1}(?!$)", "$0 ") : mNext.getPatientNum())
                         .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
                         .replace(ToolRegex.regClinicName, mNext.getClinicName())
                         .replace(ToolRegex.regClinicNum, mNext.getRoNum())

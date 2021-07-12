@@ -15,21 +15,21 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
+import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
+import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.network.LogDownloadListener;
+import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
+import com.jdxy.wyl.baseandroidx.tools.IConfigs;
+import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
+import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
-import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
-import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
-import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
-import com.jdxy.wyl.baseandroidx.tools.IConfigs;
-import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
-import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.OkDownload;
 import com.yanzhenjie.permission.Action;
@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -466,6 +465,7 @@ public class Presenter {
      * @param url
      */
     public void downloadApk(String url) {
+        ToolLog.efile(TAG, "downloadApk: " + "【下载更新】" + url);
         if (!TextUtils.isEmpty(url) && url.endsWith(".apk")) {
             OkGo.<File>get(url)
                     .tag(this)

@@ -1,41 +1,21 @@
 package com.jdxy.wyl.baseandroidx.fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.blankj.utilcode.util.ReflectUtils;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.R2;
-import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
-import com.jdxy.wyl.baseandroidx.adapter.ViewHolder;
-import com.jdxy.wyl.baseandroidx.base.IDescription;
-import com.jdxy.wyl.baseandroidx.base.LzSettingActivity;
-import com.jdxy.wyl.baseandroidx.bean.BBaseSetting;
-import com.jdxy.wyl.baseandroidx.bean.ConfigSetting;
-import com.jdxy.wyl.baseandroidx.tools.ToolLog;
-import com.jdxy.wyl.baseandroidx.tools.ToolSP;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
+import com.jdxy.wyl.baseandroidx.tools.ToolVoiceXF;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -80,15 +60,29 @@ public class LzFragment extends Fragment {
     }
 
     private void initData() {
+        BVoiceSetting mBVoiceSetting=new BVoiceSetting();
+       // ToolTtsXF.Instance().InitTtsSetting(mBVoiceSetting);
+       // ToolVoiceXF.Instance().setVoiceSetting(mBVoiceSetting).InitTtsListener();
     }
 
     private void initFindViewById(View view) {
         mLlRootSetting = view.findViewById(R.id.llLzSetting);
         mHolder = new BaseHolder(mLlRootSetting);
+
+        mHolder.mBtnTestAlarm.setOnClickListener(this::BtnClick);
+        mHolder.mBtnEnableAlarm.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnVoiceSystemAdd.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnVoiceSystemMinus.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnVoiceMusicAdd.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnVoiceMusicMinus.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnVoiceRingAdd.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnVoiceRingmMinus.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnVoiceAlarmAdd.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnVoiceAlarmMinus.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnTestTts.setOnClickListener(v -> BtnClick(v));
+        mHolder.mBtnEnableTts.setOnClickListener(v -> BtnClick(v));
+
     }
-
-
-
 
     public void BtnClick(View view) {
         int id = view.getId();
@@ -103,6 +97,7 @@ public class LzFragment extends Fragment {
         } else if (id == R.id.btnVoiceAlarmAdd) {
         } else if (id == R.id.btnVoiceAlarmMinus) {
         } else if (id == R.id.btnTestTts) {
+            ToolVoiceXF.Instance().TtsSpeakTest(mHolder.mEtVoice.getText().toString());
         } else if (id == R.id.btnEnableTts) {
         } else if (id == R.id.btnGetSetting) {
         } else if (id == R.id.tvBack || id == R.id.imgBack) {
@@ -111,6 +106,9 @@ public class LzFragment extends Fragment {
     }
 
     static class BaseHolder {
+        @BindView(R2.id.etVoice)
+        EditText mEtVoice;
+
         @BindView(R2.id.btnTestAlarm)
         Button mBtnTestAlarm;
         @BindView(R2.id.btnEnableAlarm)

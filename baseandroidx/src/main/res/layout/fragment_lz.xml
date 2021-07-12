@@ -125,6 +125,7 @@
 
 
                 <EditText
+                    android:id="@+id/etVoice"
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
                     android:background="@drawable/base_et"

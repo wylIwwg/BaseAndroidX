@@ -149,7 +149,7 @@ public class PingFragment extends Fragment {
 
             }
         } else if (mId == R.id.btnPingIp) {
-            if (!TextUtils.isEmpty(mEtHttpIP.getText().toString())) {
+            if (!TextUtils.isEmpty(mEtHttpIP.getText().toString()) && mBtnPingIp.getText().toString().contains("ip")) {
                 mApiResult.setVisibility(View.GONE);
                 mPingResult.setVisibility(View.VISIBLE);
                 String times = mEtPingTimes.getText().toString();
@@ -164,6 +164,11 @@ public class PingFragment extends Fragment {
                     return;
                 }
                 mPingResult.pingHost(mEtHttpIP.getText().toString(), t);
+                mBtnPingIp.setText("停止ping");
+
+            } else if (mBtnPingIp.getText().toString().equals("停止ping")) {
+                mPingResult.cancelPing();
+                mBtnPingIp.setText("ping ip");
             }
         } else if (mId == R.id.btnPingApi) {
             if (!TextUtils.isEmpty(mEtApi.getText().toString())) {
