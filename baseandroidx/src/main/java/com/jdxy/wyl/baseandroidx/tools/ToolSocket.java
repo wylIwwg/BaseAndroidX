@@ -149,7 +149,6 @@ public class ToolSocket {
                     .setPulseSendable(mPulseData)//只需要设置一次,下一次可以直接调用pulse()
                     .pulse();//开始心跳,开始心跳后,心跳管理器会自动进行心跳触发*/
             isConnected = true;
-
             mSocketManager.getPulseManager().setPulseSendable(mPulseData).pulse();
 
         }
@@ -160,7 +159,8 @@ public class ToolSocket {
             if (mDataHandler != null) {
                 Message mObtain = Message.obtain();
                 mObtain.what = IConfigs.MSG_SOCKET_DISCONNECT;
-                mObtain.obj = "socket断开连接：" + (e == null ? "" : e.getMessage());
+                ToolLog.efile(TAG, "【socket断开连接：】" + (e == null ? "" : e.getMessage()));
+                mObtain.obj = "与服务器断开连接，请检查网络！";
                 mDataHandler.sendMessage(mObtain);
             }
         }
@@ -171,7 +171,8 @@ public class ToolSocket {
             if (mDataHandler != null) {
                 Message mObtain = Message.obtain();
                 mObtain.what = IConfigs.MSG_CREATE_TCP_ERROR;
-                mObtain.obj = "socket连接失败：" + (e == null ? "" : e.getMessage());
+                ToolLog.efile(TAG, "【socket连接失败：】" + (e == null ? "" : e.getMessage()));
+                mObtain.obj = "连接服务器失败，请检查网络！";
                 mDataHandler.sendMessage(mObtain);
             }
         }
@@ -191,7 +192,7 @@ public class ToolSocket {
                 msg.obj = str;
                 mDataHandler.sendMessage(msg);
             } else {
-                // showError("handler 为空");
+                ToolLog.efile(TAG, "【=======handler为空=========】");
             }
 
         }

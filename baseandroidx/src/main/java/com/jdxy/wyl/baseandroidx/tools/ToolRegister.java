@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Base64;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jdxy.wyl.baseandroidx.bean.BRegister;
 import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 
@@ -16,9 +17,9 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import es.dmoral.toasty.Toasty;
 
 /**
  * Created by wyl on 2019/3/29.
@@ -56,10 +57,9 @@ public class ToolRegister {
         }
     }
 
+
     public static ToolRegister Instance(Context context) {
-
         return Instance(context, null, null);
-
     }
 
     public static ToolRegister Instance(Context context, String privateKey, String publicKey) {
@@ -79,6 +79,12 @@ public class ToolRegister {
      */
     public String register2Base64(boolean just64, String mark) {
 
+        return register2Base64(just64, mark, true);
+
+    }
+
+    public String register2Base64(boolean just64, String mark, boolean isPublic) {
+
         String mac = ToolDevice.getMac();
         BRegister r = new BRegister();
         r.setIdentity(mac);
@@ -92,7 +98,7 @@ public class ToolRegister {
             mEncode = Base64.encode(mDataBytes, base64Mode);
             result = new String(mEncode);
         } else {
-            mEncode = ToolEncrypt.encryptRSA(mDataBytes, mPublicBytes, true, transform);
+            mEncode = ToolEncrypt.encryptRSA(mDataBytes, isPublic ? mPublicBytes : mPrivateBytes, isPublic, transform);
             result = Base64.encodeToString(mEncode, base64Mode);
         }
 
@@ -100,7 +106,6 @@ public class ToolRegister {
         return result;
 
     }
-
 
     /**
      * //设备注册成功，写入本地
@@ -112,16 +117,23 @@ public class ToolRegister {
         try {
             if (data == null || data.equals(""))
                 return false;
-            String result = str2Register(data);//解密数据
+            String result = str2Register(data, true);//解密数据
             ToolLog.e(TAG, "registerDevice: 允许注册： " + result);
             if (result != null) {
-                mRegister = JSON.parseObject(result, BRegister.class);
+                JSONObject jsonObject = JSON.parseObject(result, JSONObject.class);//将数据转成对象
+                mRegister = new BRegister();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+                Date date = sdf.parse(jsonObject.get("registerDate").toString());
+                mRegister.setDate(date.getTime() + "");
+                mRegister.setLimit(jsonObject.get("registerDays").toString());
+                //mRegister = JSON.parseObject(result, BRegister.class);
                 if (mRegister != null) {
                     return writeDevice(data);//直接写入
                 }
                 return false;
             }
         } catch (Exception e) {
+            ToolLog.e(TAG, "registerDevice: 允许注册error： " + e.toString());
             e.printStackTrace();
             return false;
         }
@@ -172,6 +184,7 @@ public class ToolRegister {
                 bw.write(data);//写入密文数据
                 bw.flush();
                 bw.close();
+                ToolLog.e(TAG, "writeDevice: ： ");
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -191,6 +204,10 @@ public class ToolRegister {
      * @return
      */
     private BRegister getRegisterText() {
+        return getRegisterText(true);
+    }
+
+    private BRegister getRegisterText(boolean isPublic) {
 
         try {
             File mFile = new File(PATH);
@@ -200,14 +217,19 @@ public class ToolRegister {
                 br.close();
                 if (data != null && data.length() > 0) {
 
-                    String result = str2Register(data);//解密获取明文数据json
-                    return JSON.parseObject(result, BRegister.class);//将数据转成对象
+                    String result = str2Register(data, isPublic);//解密获取明文数据json
+                    JSONObject jsonObject = JSON.parseObject(result, JSONObject.class);//将数据转成对象
+                    BRegister register = new BRegister();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+                    Date date = sdf.parse(jsonObject.get("registerDate").toString());
+                    register.setDate(date.getTime() + "");
+                    register.setLimit(jsonObject.get("registerDays").toString());
+                    return register;//将数据转成对象
                 }
             }//文件不存在 表示未注册
 
         } catch (Exception e) {
-            e.printStackTrace();
-
+            ToolLog.efile(TAG, e.toString());
         }
 
         return null;
@@ -302,49 +324,39 @@ public class ToolRegister {
         try {
             this.mRegister = this.getRegisterText();
             if (this.mRegister != null) {
-                String mac = ToolDevice.getMac();
-                //未获取到mac
-                if (mac == null || mac.equals("02:00:00:00:00:00")) {
-                    //  Toasty.icon_error(mContext, "MAC获取不正确：" + mac, 1, true).show();
-                    mResult.setRegisterCode(0);
-                    mResult.setRegistered(false);
 
-                    return mResult;
-                }
+                String mLimit = this.mRegister.getLimit();
+                ToolLog.e(TAG, "checkDeviceRegisteredJava2: 1 " + mLimit);
+                if (mLimit != null && mLimit.length() > 0) {
+                    int mInt = Integer.parseInt(mLimit);
+                    if (mInt == -1) {
+                        //永久
+                        mResult.setRegistered(true);
+                        mResult.setRegisterCode(1);
+                        mRegister.setResidue(-1);
+                    } else if (mInt > 0) {
+                        mResult.setRegistered(true);
+                        mResult.setRegisterCode(1);
+                        long rt = Long.parseLong(this.mRegister.getDate());
+                        long mMillis = System.currentTimeMillis();//采用系统时间  如果是亮钻的板子
+                        //如果注册时间 + 注册天数 的总时间 小于当前时间 注册过期
+                        Date newDate2 = new Date(rt + (long) mInt * 24L * 60L * 60L * 1000L);
+                        long mL = newDate2.getTime() - mMillis;
 
-                if (this.mRegister.getIdentity().equals(mac)) {
-                    String mLimit = this.mRegister.getLimit();
-                    if (mLimit != null && mLimit.length() > 0) {
-                        int mInt = Integer.parseInt(mLimit);
-                        if (mInt == -1) {
-                            //永久
-                            mResult.setRegistered(true);
-                            mResult.setRegisterCode(1);
-                            mRegister.setResidue(-1);
-                        } else if (mInt > 0) {
-                            mResult.setRegistered(true);
-                            mResult.setRegisterCode(1);
-                            long rt = Long.parseLong(this.mRegister.getDate());
-                            long mMillis = System.currentTimeMillis();//采用系统时间  如果是亮钻的板子
-                            //如果注册时间 + 注册天数 的总时间 小于当前时间 注册过期
-                            Date newDate2 = new Date(rt + (long) mInt * 24L * 60L * 60L * 1000L);
-                            long mL = newDate2.getTime() - mMillis;
-
-                            long days = (mL / (24L * 60L * 60L * 1000L));
-                            if (days > 0) {
-                                int result = (int) days;
-                                //若还有剩余天数。更新到本地
-                                ToolLog.e(TAG, "还有剩余天数。更新到本地: " + days + "  " + result);
-                                mRegister.setResidue(result);
-                                // registerDevice(mRegister);
-                            }
-                            if (mL < 0) {
-                                mResult.setRegisterCode(2);
-                                mResult.setRegistered(false);
-                            }
+                        long days = (mL / (24L * 60L * 60L * 1000L));
+                        if (days > 0) {
+                            int result = (int) days;
+                            //若还有剩余天数。更新到本地
+                            ToolLog.e(TAG, "还有剩余天数。更新到本地: " + days + "  " + result);
+                            mRegister.setResidue(result);
+                            // registerDevice(mRegister);
                         }
-                        return mResult;
+                        if (mL < 0) {
+                            mResult.setRegisterCode(2);
+                            mResult.setRegistered(false);
+                        }
                     }
+                    return mResult;
                 }
                 //mac值不一致 不允许注册
 
@@ -360,18 +372,19 @@ public class ToolRegister {
 
     }
 
+
     /**
      * 将字符串解密为明文数据
      *
      * @param data
      * @return
      */
-    public String str2Register(String data) {
+    public String str2Register(String data, boolean isPublic) {
         //解密
         try {
             ToolLog.e(TAG, "str2Regsiter:源数据 " + data);
             byte[] mDataBytes = Base64.decode(data, base64Mode);
-            byte[] mDecryptBytes = ToolEncrypt.decryptRSA(mDataBytes, mPrivateBytes, false, transform);
+            byte[] mDecryptBytes = ToolEncrypt.decryptRSA(mDataBytes, isPublic ? mPublicBytes : mPrivateBytes, isPublic, transform);
 
             String b64 = Base64.encodeToString(mDecryptBytes, base64Mode);
             byte[] mEncode = Base64.decode(b64, base64Mode);

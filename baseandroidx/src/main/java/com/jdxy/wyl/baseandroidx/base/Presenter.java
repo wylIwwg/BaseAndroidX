@@ -394,7 +394,7 @@ public class Presenter {
                             .execute(new JsonCallBack<String>(String.class) {
                                 @Override
                                 public void onSuccess(Response<String> response) {
-                                    LogUtils.file("HTTP", "上传日志：" + response.body());
+                                    ToolLog.efile("HTTP", "上传日志：" + response.body());
                                     isLoging = false;
                                     ToolLog.mLogger.setLogging(false);
                                 }
@@ -404,7 +404,9 @@ public class Presenter {
                                     super.onError(response);
                                     isLoging = false;
                                     ToolLog.mLogger.setLogging(false);
-                                    mView.showError("日志上传失败" + response.getException().toString());
+                                    if (response.getException() != null)
+                                        mView.showError("日志上传失败" + response.getException().toString());
+                                    ToolLog.efile(TAG, "【日志上传失败】" + response.message());
                                 }
                             });
                 } else {
@@ -420,7 +422,7 @@ public class Presenter {
                 isLoging = false;
                 ToolLog.mLogger.setLogging(false);
             }
-        }, 1, TimeUnit.SECONDS);
+        }, 200, TimeUnit.MILLISECONDS);
 
 
     }
@@ -515,7 +517,7 @@ public class Presenter {
         if (Build.USER.contains("liaokai")) {
             //7.0以下 安装升级
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                LogUtils.file("【亮钻7.0以下系统升级】" + Build.USER);
+                ToolLog.efile("【亮钻7.0以下系统升级】" + Build.USER);
                 Intent intentapk = new Intent(Intent.ACTION_VIEW);
                 intentapk.setDataAndType(Uri.fromFile(apk),
                         "application/vnd.android.package-archive");
@@ -527,7 +529,7 @@ public class Presenter {
                         "-t application/vnd.android.package-archive -e IMPLUS_INSTALL SILENT_INSTALL";
                 String apkPath = "file:///" + apk.getAbsolutePath();
 
-                LogUtils.file("【亮钻7.0以上系统升级】" + Build.USER, "onSuccess: " + String.format(SHELL, apkPath));
+                ToolLog.efile("【亮钻7.0以上系统升级】" + Build.USER, "onSuccess: " + String.format(SHELL, apkPath));
                 ToolLZ.Instance().suExec(String.format(SHELL, apkPath));
             }
         } else {
@@ -537,14 +539,14 @@ public class Presenter {
             intent.setAction(Intent.ACTION_VIEW);
             //判读版本是否在7.0以上
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                LogUtils.file("【普通7.0以上系统升级】" + Build.USER);
+                ToolLog.efile("【普通7.0以上系统升级】" + Build.USER);
                 Uri apkUri = FileProvider.getUriForFile(mContext, "com.test.fileprovider", apk);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
             } else {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setDataAndType(Uri.fromFile(apk), "application/vnd.android.package-archive");
-                LogUtils.file("【普通7.0以下系统升级】" + Build.USER);
+                ToolLog.efile("【普通7.0以下系统升级】" + Build.USER);
             }
             mContext.startActivity(intent);
         }
@@ -559,9 +561,12 @@ public class Presenter {
 
 
     public void checkJavaRegister(RegisterListener listener) {
-        BRegisterResult mRegisterResult = ToolRegister.Instance(mContext).checkDeviceRegisteredJava();
+        checkJavaRegister(null, null, listener);
+    }
+
+    public void checkJavaRegister(String priKey, String pubKey, RegisterListener listener) {
+        BRegisterResult mRegisterResult = ToolRegister.Instance(mContext, priKey, pubKey).checkDeviceRegisteredJava();
         if (listener != null)
             listener.RegisterCallBack(mRegisterResult);
     }
-
 }
