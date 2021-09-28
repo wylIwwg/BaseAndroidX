@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Build;
 
 import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.NetworkUtils;
 import com.lztek.toolkit.Lztek;
 
 import java.io.File;
@@ -208,9 +207,9 @@ public class ToolLZ {
      *
      * @return
      */
-    public String suExec(String su) {
+    public void suExec(String su) {
         if (mLztek == null)
-            return "";
-        return mLztek.getEthMac();
+            return;
+        mLztek.suExec(su);
     }
 }
