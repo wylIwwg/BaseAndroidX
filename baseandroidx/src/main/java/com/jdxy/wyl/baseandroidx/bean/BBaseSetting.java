@@ -53,14 +53,23 @@ public class BBaseSetting {
     private String pathRegister;
 
     @IDescription("项目名称")
-    private String defaultProjectName;
+    private String projectName;
+    private String packageName;
 
-    public String getDefaultProjectName() {
-        return defaultProjectName == null ? "" : defaultProjectName;
+    public String getProjectName() {
+        return projectName == null ? "" : projectName;
     }
 
-    public void setDefaultProjectName(String defaultProjectName) {
-        this.defaultProjectName = defaultProjectName == null ? "" : defaultProjectName;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName == null ? "" : projectName;
+    }
+
+    public String getPackageName() {
+        return packageName == null ? "" : packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName == null ? "" : packageName;
     }
 
     public String getIp() {

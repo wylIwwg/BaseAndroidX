@@ -32,7 +32,6 @@ import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
-import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.view.DialogLogs;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
@@ -427,7 +426,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                             break;
                         case "register":
                             String mRegister_code = mObject.getString("register_code");
-                            ToolRegister.Instance(mContext).registerDevice(mRegister_code);
+                            //ToolRegister.Instance(mContext).registerDevice(mRegister_code);
                             showInfo("注册信息已更改，软件即将重启");
                             if (mDataHandler != null)
                                 mDataHandler.postDelayed(new Runnable() {

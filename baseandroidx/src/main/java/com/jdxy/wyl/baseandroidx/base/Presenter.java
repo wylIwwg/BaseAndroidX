@@ -15,7 +15,6 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
-import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.network.LogDownloadListener;
 import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
@@ -23,7 +22,6 @@ import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
-import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -554,9 +552,6 @@ public class Presenter {
     }
 
     public void checkPhpRegister(RegisterListener listener) {
-        BRegisterResult mRegisterResult = ToolRegister.Instance(mContext).checkDeviceRegisteredPhp();
-        if (listener != null)
-            listener.RegisterCallBack(mRegisterResult);
     }
 
 
@@ -565,8 +560,5 @@ public class Presenter {
     }
 
     public void checkJavaRegister(String priKey, String pubKey, RegisterListener listener) {
-        BRegisterResult mRegisterResult = ToolRegister.Instance(mContext, priKey, pubKey).checkDeviceRegisteredJava();
-        if (listener != null)
-            listener.RegisterCallBack(mRegisterResult);
     }
 }

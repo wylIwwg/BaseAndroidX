@@ -43,7 +43,6 @@ import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
-import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolSocket;
 import com.jdxy.wyl.baseandroidx.tools.ToolTtsXF;
@@ -397,10 +396,13 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
+                if (mBanners.size() == 0)
+                    return;
                 LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //获取最后一个完全显示的ItemPosition
+
                     int mVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
                     int index = mVisibleItemPosition % mBanners.size();
                     ToolLog.e(TAG, "onScrollStateChanged: " + index + "  " + mVisibleItemPosition);
@@ -462,6 +464,7 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
         if (mSuperBanner != null) {
             mSuperBanner.stop();
             Jzvd.releaseAllVideos();
+            mSuperBanner.clearOnScrollListeners();
         }
 
         mRlvBanner.setVisibility(View.GONE);
@@ -797,7 +800,7 @@ public class BaseHosActivity extends AppCompatActivity implements BaseDataHandle
 */
                         case "register"://在线注册
                             String mRegister_code = mObject.getString("register_code");
-                            ToolRegister.Instance(mContext).registerDevice(mRegister_code);
+                            // ToolRegister.Instance(mContext).registerDevice(mRegister_code);
                             showInfo("注册信息已更改，软件即将重启");
                             if (mDataHandler != null)
                                 mDataHandler.postDelayed(new Runnable() {

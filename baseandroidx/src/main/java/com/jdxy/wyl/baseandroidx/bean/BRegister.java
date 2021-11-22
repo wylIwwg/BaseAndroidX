@@ -11,6 +11,15 @@ public class BRegister {
     private int residue;//剩余天数
     private String longitude;//经度
     private String latitude;//纬度
+    private String message;//
+
+    public String getMessage() {
+        return message == null ? "" : message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message == null ? "" : message;
+    }
 
     public String getLongitude() {
         return longitude == null ? "" : longitude;

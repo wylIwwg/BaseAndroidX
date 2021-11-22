@@ -1,6 +1,5 @@
 package com.jdxy.wyl.baseandroidx.base;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -10,7 +9,6 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,32 +18,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
+import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
-import com.jdxy.wyl.baseandroidx.bean.BProgram;
+import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolCommon;
+import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
+import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
-import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolSocket;
 import com.jdxy.wyl.baseandroidx.tools.ToolTtsXF;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoiceXF;
-import com.lzy.okgo.model.HttpParams;
-import com.jdxy.wyl.baseandroidx.R;
-import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
-import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
-import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
-import com.yanzhenjie.permission.Action;
-import com.yanzhenjie.permission.AndPermission;
 
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -488,15 +479,6 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
                             break;
                         case "register"://在线注册
                             String mRegister_code = mObject.getString("register_code");
-                            ToolRegister.Instance(mContext).registerDevice(mRegister_code);
-                            showInfo("注册信息已更改，软件即将重启");
-                            if (mDataHandler != null)
-                                mDataHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        AppUtils.relaunchApp(true);
-                                    }
-                                }, 2000);
 
                             break;
                         case "init": //socket连接成功之后 做初始化操作

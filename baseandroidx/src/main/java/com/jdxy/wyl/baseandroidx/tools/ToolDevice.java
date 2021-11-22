@@ -9,10 +9,11 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 import android.provider.Settings;
-import androidx.core.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+
+import androidx.core.app.ActivityCompat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -204,7 +205,7 @@ public class ToolDevice {
     public static String getMac() {
         //优先读取本地文件记录的mac值
         String mac = ToolFile.readString(IConfigs.PATH_MAC);
-        if (mac == null || mac.length() < 1) {
+        if (TextUtils.isEmpty(mac)) {
             mac = getMacFromCatOrder();
             if (mac != null)
                 ToolFile.string2File(IConfigs.PATH_MAC, mac);
@@ -268,6 +269,7 @@ public class ToolDevice {
 
     /**
      * 获取mac地址  wifi  网口
+     *
      * @return
      */
     public static String getMacFromCatOrder() {

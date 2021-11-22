@@ -1,10 +1,8 @@
 package com.jdxy.wyl.baseandroidx.anr;
 
-import android.content.Context;
-import android.os.Environment;
 import android.os.Looper;
-import android.widget.Toast;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 
 import java.io.File;
@@ -51,8 +49,9 @@ public class ANRException extends RuntimeException {
                 }
 
                 //抛出空指针异常  来重启应用
-                Context mContext = null;
-                Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
+                AppUtils.relaunchApp(true);
+                //Context mContext = null;
+                //Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
             }
         }).start();
 

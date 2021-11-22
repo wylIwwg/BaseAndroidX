@@ -126,8 +126,10 @@ public final class ToolEncrypt {
      */
     public static String encryptMD5ToString(final String data, final String salt) {
         if (data == null && salt == null) return "";
-        if (salt == null) return bytes2HexString(encryptMD5(data.getBytes(Charset.forName("UTF-8"))));
-        if (data == null) return bytes2HexString(encryptMD5(salt.getBytes(Charset.forName("UTF-8"))));
+        if (salt == null)
+            return bytes2HexString(encryptMD5(data.getBytes(Charset.forName("UTF-8"))));
+        if (data == null)
+            return bytes2HexString(encryptMD5(salt.getBytes(Charset.forName("UTF-8"))));
         return bytes2HexString(encryptMD5((data + salt).getBytes(Charset.forName("UTF-8"))));
     }
 
@@ -1096,6 +1098,36 @@ public final class ToolEncrypt {
                                     final String transformation) {
         return rsaTemplate(data, key, isPublicKey, transformation, false);
     }
+
+    /**
+     * Return the bytes of RSA decryption.
+     *
+     * @param data           The data.
+     * @param key            The key.
+     * @param transformation The name of the transformation, e.g., <i>RSA/CBC/PKCS1Padding</i>.
+     * @return the bytes of RSA decryption
+     */
+    public static byte[] decryptRSAWithPk(String data,
+                                          String key,
+                                          String transformation) {
+        return rsaTemplate(Base64.decode(data, Base64.DEFAULT), Base64.decode(key, Base64.DEFAULT),
+                true, transformation, false);
+    }
+
+    /**
+     * Return the bytes of RSA decryption.
+     *
+     * @param data           The data.
+     * @param key            The key.
+     * @param transformation The name of the transformation, e.g., <i>RSA/CBC/PKCS1Padding</i>.
+     * @return the bytes of RSA decryption
+     */
+    public static byte[] decryptRSAWithPk(final byte[] data,
+                                          final byte[] key,
+                                          final String transformation) {
+        return rsaTemplate(data, key, true, transformation, false);
+    }
+
 
     /**
      * Return the bytes of RSA encryption or decryption.

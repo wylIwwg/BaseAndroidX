@@ -5,7 +5,6 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.FileUtils;
@@ -18,7 +17,6 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.util.ResourceUtil;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
-
 
 import es.dmoral.toasty.Toasty;
 
@@ -70,8 +68,8 @@ public class ToolTtsXF {
     public boolean existsTTsFile() {
         String pathBaseSource = defaultDir + baseSource;
         if (!FileUtils.isFileExists(pathBaseSource)) {
-            Toasty.error(mContext, "声音文件存在 " + pathBaseSource).show();
-            ToolLog.efile(TAG, "existsTTsFile: 声音文件存在 " + pathBaseSource);
+            Toasty.error(mContext, "声音文件不存在 " + pathBaseSource).show();
+            ToolLog.efile(TAG, "existsTTsFile: 声音文件不存在 " + pathBaseSource);
             return false;
         }
         return true;
