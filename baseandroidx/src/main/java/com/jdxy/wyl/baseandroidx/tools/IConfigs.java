@@ -15,6 +15,7 @@ public interface IConfigs {
 
 
     String PATH_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/";
+    String FILE_REGISTER = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/register";
     String PATH_APK = PATH_ROOT + "apk/";
     String PATH_TTS = PATH_ROOT + "tts/";
     String PATH_LOG = PATH_ROOT + "log/";//数据日志

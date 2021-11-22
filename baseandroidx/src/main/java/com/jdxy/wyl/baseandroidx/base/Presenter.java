@@ -15,6 +15,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
+import com.jdxy.wyl.baseandroidx.bean.BRegister;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.network.LogDownloadListener;
 import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
@@ -22,6 +23,7 @@ import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
+import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -560,5 +562,14 @@ public class Presenter {
     }
 
     public void checkJavaRegister(String priKey, String pubKey, RegisterListener listener) {
+        checkJavaRegister(IConfigs.FILE_REGISTER, null, listener);
+    }
+
+    public void checkJavaRegister(String path, String priKey, String pubKey, RegisterListener listener) {
+        ToolRegister mRegister = new ToolRegister();
+        BRegister mBRegister = mRegister.checkRegisterState(path, pubKey);
+        if (listener != null) {
+            listener.RegisterCallBack(mBRegister);
+        }
     }
 }
