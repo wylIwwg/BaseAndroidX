@@ -21,10 +21,8 @@ import com.blankj.utilcode.util.AppUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
-import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
-import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolCommon;
@@ -117,21 +115,6 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         mWeekFormat = new SimpleDateFormat("EEEE", Locale.CHINA);
 
         mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
-
-        mPresenter.checkJavaRegister(new RegisterListener() {
-            @Override
-            public void RegisterCallBack(BRegisterResult registerResult) {
-                mRegisterCode = registerResult.getRegisterCode();
-                mRegisterViper = registerResult.getRegisterStr();
-                isRegistered = registerResult.isRegistered();
-                if (mRegisterCode == 0) {
-                    showRegister("设备未注册");
-                }
-                if (mRegisterCode == 2) {
-                    showRegister("设备注册已到期");
-                }
-            }
-        });
 
         mProjectName = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
         if (TextUtils.isEmpty(mProjectName)) {

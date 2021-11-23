@@ -21,10 +21,8 @@ import com.blankj.utilcode.util.LogUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BPulse;
-import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
-import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolCommon;
@@ -117,14 +115,6 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         mWeekFormat = new SimpleDateFormat("EEEE", Locale.CHINA);
 
-        mPresenter.checkPhpRegister(new RegisterListener() {
-            @Override
-            public void RegisterCallBack(BRegisterResult registerResult) {
-                mRegisterCode = registerResult.getRegisterCode();
-                mRegisterViper = registerResult.getRegisterStr();
-                isRegistered = registerResult.isRegistered();
-            }
-        });
     }
 
     public void startLocalTime() {
