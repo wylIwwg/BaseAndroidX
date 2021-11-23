@@ -562,12 +562,12 @@ public class Presenter {
     }
 
     public void checkJavaRegister(String priKey, String pubKey, RegisterListener listener) {
-        checkJavaRegister(IConfigs.FILE_REGISTER, null, listener);
+        checkJavaRegister(IConfigs.FILE_REGISTER, pubKey, listener);
     }
 
     public void checkJavaRegister(String path, String priKey, String pubKey, RegisterListener listener) {
         ToolRegister mRegister = new ToolRegister();
-        BRegister mBRegister = mRegister.checkRegisterState(path, pubKey);
+        BRegister mBRegister = mRegister.checkRegister(pubKey);
         if (listener != null) {
             listener.RegisterCallBack(mBRegister);
         }

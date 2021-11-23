@@ -14,5 +14,8 @@ public class ToolRegister {
 
     public native String getVersion();
 
-    public native BRegister checkRegisterState(String path, String key);
+    public native BRegister checkRegister(String key);
+
+    public native BRegister checkRegisterFromStr(String content, String key);
+
 }
