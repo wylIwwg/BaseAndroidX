@@ -540,7 +540,7 @@ public class Presenter {
             //判读版本是否在7.0以上
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 ToolLog.efile("【普通7.0以上系统升级】" + Build.USER);
-                Uri apkUri = FileProvider.getUriForFile(mContext, "com.test.fileprovider", apk);
+                Uri apkUri = FileProvider.getUriForFile(mContext, "com.jdxy.update.fileprovider", apk);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
             } else {

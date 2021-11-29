@@ -26,7 +26,15 @@
             android:authorities="${applicationId}.customactivityoncrashinitprovider"
             android:exported="false"
             android:initOrder="101" />
-
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.jdxy.update.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <activity android:name=".base.BaseActivity" />
 
         <meta-data
