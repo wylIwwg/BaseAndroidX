@@ -28,13 +28,14 @@
             android:initOrder="101" />
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.jdxy.update.fileprovider"
+            android:authorities="${applicationId}.com.jdxy.updatefileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <activity android:name=".base.BaseActivity" />
 
         <meta-data

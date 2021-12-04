@@ -56,6 +56,33 @@ public class BBaseSetting {
     private String projectName;
     private String packageName;
 
+
+    /**
+     * 软件类型：门诊 医技 药房等
+     */
+    private String appType;
+
+    /**
+     * 是否显示病人全名
+     */
+    private String showFullName;
+
+    public String getAppType() {
+        return appType == null ? "" : appType;
+    }
+
+    public void setAppType(String appType) {
+        this.appType = appType == null ? "" : appType;
+    }
+
+    public String getShowFullName() {
+        return showFullName == null ? "" : showFullName;
+    }
+
+    public void setShowFullName(String showFullName) {
+        this.showFullName = showFullName == null ? "" : showFullName;
+    }
+
     public String getProjectName() {
         return projectName == null ? "" : projectName;
     }
