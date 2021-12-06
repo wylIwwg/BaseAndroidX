@@ -13,13 +13,13 @@ public class BBaseSetting {
     private String roomName;
     @IDescription("房间id")
     private String roomId;
-    @IDescription("科室名称:")
+    @IDescription("位置名称:")
     private String deptName;
-    @IDescription("科室id")
+    @IDescription("位置id")
     private String deptId;
-    @IDescription("诊室名称:")
+    @IDescription("位置名称:")
     private String clinicName;
-    @IDescription("诊室id")
+    @IDescription("位置id")
     private String clinicId;
     @IDescription("单位id")
     private String unitId;

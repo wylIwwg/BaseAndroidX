@@ -8,11 +8,11 @@ public class BVoice {
     private String patientName;//当前就诊
     private String patientNum;//当前就诊排队号
     private String patientId;//当前就诊id
-    private String doctorName;//医生
+    private String doctorName;//员工
     private String docid;//医生
-    private String departmentName;//科室
-    private String clinicName;//诊室
-    private String clinicId;//诊室ID
+    private String departmentName;//位置
+    private String clinicName;//位置
+    private String clinicId;//位置ID
     private String count;//等候人数
     private String nextName;//下一位
     private String nextNum;//下一位排队号

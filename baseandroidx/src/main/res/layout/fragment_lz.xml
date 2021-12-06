@@ -131,7 +131,7 @@
                     android:background="@drawable/base_et"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:text="请A002号张三到301诊室黄李医生处就诊"
+                    android:text="请A002号张三到301位置黄李医生处就诊"
                     android:textSize="13sp" />
 
                 <EditText

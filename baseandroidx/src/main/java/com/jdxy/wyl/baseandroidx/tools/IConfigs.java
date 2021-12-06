@@ -130,11 +130,11 @@ public interface IConfigs {
     String SP_AREA_NAME = "areaName";
     String SP_WINDOW_NAME = "windowName";
 
-    String SP_DEPART_NAME = "deptName";//科室名
-    String SP_DEPART_ID = "deptId";//科室id
+    String SP_DEPART_NAME = "deptName";//位置名
+    String SP_DEPART_ID = "deptId";//位置id
 
-    String SP_CLINIC_NAME = "clinicName";//诊室名
-    String SP_CLINIC_ID = "clinicId";//诊室id
+    String SP_CLINIC_NAME = "clinicName";//位置名
+    String SP_CLINIC_ID = "clinicId";//位置id
 
     String SP_WINDOW_NUM = "windowNum";//窗口号
     String SP_WINDOW_ID = "windowId";//窗口id

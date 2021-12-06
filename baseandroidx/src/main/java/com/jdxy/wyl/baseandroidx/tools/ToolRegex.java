@@ -11,10 +11,10 @@ public interface ToolRegex {
     String regPatientName = "name";//用于替换姓名
     String regPatientNum = "line";//用于替换排队号
     String regPatientType = "type";//替换类型  出诊 复制 过号
-    String regDeptName = "department";//科室名称
-    String regClinicName = "room";//诊室名称
+    String regDeptName = "department";//位置名称
+    String regClinicName = "room";//位置名称
     String regDoctorName = "doctor";//医生名称
-    String regClinicNum = "roNum";//诊室门牌号
+    String regClinicNum = "roNum";//位置门牌号
     String regLeftParentheses = "(";//左括号
     String regRightParentheses = ")";//右括号
 

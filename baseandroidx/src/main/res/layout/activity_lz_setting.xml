@@ -195,7 +195,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="请A002号张三到301诊室黄李医生处就诊"
+                    android:text="请A002号张三到301位置黄李医生处就诊"
                     android:textSize="13sp" />
 
                 <EditText
