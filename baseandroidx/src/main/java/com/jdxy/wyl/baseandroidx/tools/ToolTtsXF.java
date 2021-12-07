@@ -3,7 +3,6 @@ package com.jdxy.wyl.baseandroidx.tools;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -79,7 +78,7 @@ public class ToolTtsXF {
     /**
      * 参数设置
      */
-    private void setParam() {
+    public void setParam() {
         // 清空参数
         mTTSPlayer.setParameter(SpeechConstant.PARAMS, null);
         //设置合成
@@ -87,7 +86,7 @@ public class ToolTtsXF {
         //设置发音人资源路径
         mTTSPlayer.setParameter(ResourceUtil.TTS_RES_PATH, getResourcePath());
         //设置发音人
-        mTTSPlayer.setParameter(SpeechConstant.VOICE_NAME, "0".equals(mVoiceSetting.getVoSex())?"xiaoyan":"xiaofeng");
+        mTTSPlayer.setParameter(SpeechConstant.VOICE_NAME, "0".equals(mVoiceSetting.getVoSex()) ? "xiaoyan" : "xiaofeng");
         //mTTSPlayer.setParameter(SpeechConstant.TTS_DATA_NOTIFY,"1");//支持实时音频流抛出，仅在synthesizeToUri条件下支持
         //设置合成语速
         ToolLog.e(TAG, "setParam: " + JSON.toJSONString(mVoiceSetting));
@@ -107,14 +106,14 @@ public class ToolTtsXF {
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
         mTTSPlayer.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
 
-        //合成录音保存路径
-        mTTSPlayer.setParameter(SpeechConstant.TTS_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/tts/tts.wav");
-
+        if (mVoiceSetting.isNeedSave())
+            //合成录音保存路径
+            mTTSPlayer.setParameter(SpeechConstant.TTS_AUDIO_PATH, IConfigs.FILE_TTS_RESULT);
 
     }
 
     //获取发音人资源路径
-    private String getResourcePath() {
+    public String getResourcePath() {
         StringBuffer tempBuffer = new StringBuffer();
         //合成通用资源
         tempBuffer.append(ResourceUtil.generateResourcePath(mContext, ResourceUtil.RESOURCE_TYPE.path, IConfigs.PATH_TTS + baseSource));

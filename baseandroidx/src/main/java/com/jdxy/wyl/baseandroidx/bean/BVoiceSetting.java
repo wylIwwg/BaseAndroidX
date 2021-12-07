@@ -11,6 +11,15 @@ public class BVoiceSetting {
     private String voNumber;//播放次数
     private String voPitch;//音调 值范围：[0，100]，默认：50
     private String voVolume;//音量 值范围：[0，100]，默认：50
+    private boolean needSave;//
+
+    public boolean isNeedSave() {
+        return needSave;
+    }
+
+    public void setNeedSave(boolean needSave) {
+        this.needSave = needSave;
+    }
 
     public String getVoPitch() {
         return voPitch == null ? "" : voPitch;

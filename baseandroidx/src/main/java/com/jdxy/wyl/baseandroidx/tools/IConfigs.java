@@ -15,7 +15,7 @@ public interface IConfigs {
 
 
     String PATH_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/";
-    String FILE_REGISTER = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/register";
+
     String PATH_APK = PATH_ROOT + "apk/";
     String PATH_TTS = PATH_ROOT + "tts/";
     String PATH_LOG = PATH_ROOT + "log/";//数据日志
@@ -26,6 +26,10 @@ public interface IConfigs {
 
     String PATH_PROGRAM = PATH_ROOT + "program/";//项目节目
     String PATH_ZIP = PATH_ROOT + "zip/";//项目节目
+
+
+    String FILE_REGISTER = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/register";
+    String FILE_TTS_RESULT = PATH_TTS + "/tts.wav";
 
     String URL_ADD_TERMINAL = "/baseConsultaioninfo/addfacility";
 
