@@ -30,6 +30,7 @@ import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
+import com.jdxy.wyl.baseandroidx.tools.ToolRegisterPhp;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.view.DialogLogs;
 import com.xuhao.didi.core.iocore.interfaces.IPulseSendable;
@@ -318,8 +319,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                 }
 
                 if (!obj.contains("pong"))//不再打印心跳
-                    LogUtils.file(SOCKET, obj);
-                ToolLog.e(TAG, "handleMessage: socket  " + obj);
+                    ToolLog.efile(SOCKET, obj);
                 try {
                     JSONObject mObject = JSONObject.parseObject(obj);
                     String mType = mObject.getString("type");
@@ -370,19 +370,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                             BVolume.Data vdata = volume.getData();
                             if (vdata != null) {
                                 String vsize = vdata.getSize();
-                                if (vsize.length() > 0) {
-                                    AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                                    if (mAudioManager != null) {
-                                        int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                                        int value = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                                        vsize = vsize.replace("%", "");
-                                        int index = max * Integer.parseInt(vsize) / 100;
-                                        if (index != 0) {
-                                            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index, 0); //音量
-                                            ToolLog.e(TAG, "userHandler: " + index + "  " + max + "  " + value + "  " + mAudioManager.getStreamVolume(AudioManager.STREAM_SYSTEM));
-                                        }
-                                    }
-                                }
+                                largeVoice(vsize);
                             }
                             break;
                         case "voiceSwitch"://flag
@@ -416,7 +404,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
                             break;
                         case "register":
                             String mRegister_code = mObject.getString("register_code");
-                            //ToolRegister.Instance(mContext).registerDevice(mRegister_code);
+                            ToolRegisterPhp.Instance(mContext).registerDevice(mRegister_code);
                             showInfo("注册信息已更改，软件即将重启");
                             if (mDataHandler != null)
                                 mDataHandler.postDelayed(new Runnable() {
@@ -446,6 +434,18 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
 
     }
 
+    public void largeVoice(String vsize) {
+        if (vsize.length() > 0) {
+            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (mAudioManager != null) {
+                int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);//最大值
+                int value = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);//设置前
+                int index = max * Integer.parseInt(vsize) / 100;//需要设置的值
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index, 0); //音量
+                ToolLog.efile(SOCKET, "【音量设置 】 " + vsize + " ，设置前：" + value + "， 设置后：" + mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+            }
+        }
+    }
 
     public void showInfo(final String info) {
         ToolLog.efile(TAG, "showInfo: " + info);
@@ -519,7 +519,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
      */
     public void showTime(String dateStr, String timeStr, String week) {
         if (timeStr.equals(mRebootEndTime)) {
-            LogUtils.file("【关机时间到了】: " + mRebootEndTime);
+            ToolLog.efile("【关机时间到了】: " + mRebootEndTime);
             if (mDataHandler != null) {
                 mDataHandler.sendEmptyMessage(IConfigs.MSG_REBOOT_LISTENER);
             }
@@ -551,9 +551,9 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     public void InitTtsSetting() {
 
         //初始化语音sdk
-       // ToolTts.Instance(mContext).InitTtsSetting(Integer.parseInt(mVoiceSetting.getVoSpeed()));
+        // ToolTts.Instance(mContext).InitTtsSetting(Integer.parseInt(mVoiceSetting.getVoSpeed()));
         //初始化语音控制
-       // ToolVoice.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
+        // ToolVoice.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
 
     }
 
