@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.bean.BAppType;
+import com.jdxy.wyl.baseandroidx.bean.BBanner;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
@@ -104,7 +105,6 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         mBaseRlRoot = findViewById(R.id.baseRlRoot);
 
         mPresenter = new Presenter(mContext, this);
-        mDataHandler = new BaseDataHandler(this);
         mDataHandler.setMessageListener(this);
 
         mMac = ToolDevice.getMac();
@@ -146,6 +146,16 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         viewRegister.setLayoutParams(lp);
         mBaseRlRoot.addView(viewRegister,90);
         viewRegister.bringToFront();
+    }
+
+    @Override
+    public void showBanner(List<BBanner> banners) {
+
+    }
+
+    @Override
+    public void showData() {
+
     }
 
     @Override
@@ -273,7 +283,6 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         mBaseRlRoot.addView(view, lp);
     }
 
-    @Override
     public void showSuccess(String success) {
         ToolLog.efile(SUCCESS, "showSuccess: " + success);
         runOnUiThread(new Runnable() {
@@ -284,7 +293,6 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         });
     }
 
-    @Override
     public void showError(final String error) {
         ToolLog.efile(ERROR, "showError: " + error);
         runOnUiThread(new Runnable() {
@@ -307,6 +315,11 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
 
     @Override
     public void release() {
+
+    }
+
+    @Override
+    public void showTips(int type, String message) {
 
     }
 
@@ -518,6 +531,11 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
     }
 
     public void addDevice(String clientId) {
+
+    }
+
+    @Override
+    public void uploadScreen(String url, String sessionId) {
 
     }
 

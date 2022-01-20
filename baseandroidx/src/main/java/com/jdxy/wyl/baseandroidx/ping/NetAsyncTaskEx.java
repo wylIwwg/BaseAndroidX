@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 
+import com.jdxy.wyl.baseandroidx.tools.ToolLog;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -27,6 +29,7 @@ public abstract class NetAsyncTaskEx<Params, Progress, Result> {
     private static final int MESSAGE_POST_RESULT = 0x1;
     private static final int MESSAGE_POST_PROGRESS = 0x2;
     private static final int MESSAGE_POST_CANCEL = 0x3;
+    private static final String TAG = " NetAsyncTaskEx ";
 
     private volatile Status mStatus = Status.PENDING;
 
@@ -61,9 +64,7 @@ public abstract class NetAsyncTaskEx<Params, Progress, Result> {
                 } catch (InterruptedException e) {
                     android.util.Log.w(this.getClass().getSimpleName(), e);
                 } catch (ExecutionException e) {
-                    throw new RuntimeException(
-                            "An icon_error occured while executing doInBackground()",
-                            e.getCause());
+                    ToolLog.e(TAG, ""+e.toString());
                 } catch (CancellationException e) {
                     message = sHandler.obtainMessage(MESSAGE_POST_CANCEL,
                             new LDNetAsyncTaskResult<Result>(NetAsyncTaskEx.this,
@@ -71,9 +72,7 @@ public abstract class NetAsyncTaskEx<Params, Progress, Result> {
                     message.sendToTarget();
                     return;
                 } catch (Throwable t) {
-                    throw new RuntimeException(
-                            "An icon_error occured while executing "
-                                    + "doInBackground()", t);
+                    ToolLog.e(TAG, ""+t.toString());
                 }
 
                 message = sHandler.obtainMessage(MESSAGE_POST_RESULT,

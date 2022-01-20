@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.jdxy.wyl.baseandroidx.R;
+import com.jdxy.wyl.baseandroidx.bean.BBanner;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BPulse;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
@@ -50,6 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -79,7 +81,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     ///默认语音格式
     public String voiceFormat = "请(line)(name)到(department)(room)(doctor)办理业务";
 
-    public Presenter mPresenter;
+    public PresenterPhp mPresenter;
     public SimpleDateFormat mDateFormat;
     public SimpleDateFormat mTimeFormat;
     public SimpleDateFormat mWeekFormat;
@@ -105,8 +107,7 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         mContext = this;
         mBaseRlRoot = findViewById(R.id.baseRlRoot);
 
-        mPresenter = new Presenter(mContext, this);
-        mDataHandler = new BaseDataHandler(this);
+        mPresenter = new PresenterPhp(mContext, this);
         mDataHandler.setMessageListener(this);
 
         mMac = ToolDevice.getMac();
@@ -224,6 +225,21 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     }
 
     @Override
+    public void showRegister(String msg) {
+
+    }
+
+    @Override
+    public void showBanner(List<BBanner> banners) {
+
+    }
+
+    @Override
+    public void showData() {
+
+    }
+
+    @Override
     public void setContentView(int layoutResID) {
         setContentView(View.inflate(this, layoutResID, null));
     }
@@ -237,7 +253,6 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     }
 
 
-    @Override
     public void showSuccess(String success) {
         ToolLog.efile(TAG, "showError: " + success);
         runOnUiThread(new Runnable() {
@@ -249,7 +264,6 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
     }
 
 
-    @Override
     public void showError(final String error) {
         ToolLog.efile(TAG, "showError: " + error);
         runOnUiThread(new Runnable() {
@@ -274,6 +288,11 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         mDialogLogs = DialogLogs.newInstance();
         mDialogLogs.setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_FullScreen);
         mDialogLogs.show(getSupportFragmentManager(), "");
+    }
+
+    @Override
+    public void showTips(int type, String message) {
+
     }
 
     @Override

@@ -30,13 +30,15 @@ public class PingParseTool {
         List<String> icmpList = getIcmp_seq(log);
         int len = timeList.size();
         for (int i = 0; i < len - 1; i++) {
-            logRes.append(bytesList.get(i) + "bytes from " + hostIp + ": icmp_seq=#"
-                    + icmpList.get(i) + " ttl=" + ttlList.get(i) + " time="
-                    + timeList.get(i) + "ms" + "\n");
+            logRes.append(bytesList.get(i)).append("bytes from ").append(hostIp).append(": icmp_seq=#")
+                    .append(icmpList.get(i)).append(" ttl=").append(ttlList.get(i)).append(" time=")
+                    .append(timeList.get(i)).append("ms").append("\n");
         }
-        logRes.append(bytesList.get(len - 1) + "bytes from " + hostIp
-                + ": icmp_seq=#" + icmpList.get(len - 1) + " ttl="
-                + ttlList.get(len - 1) + " time=" + timeList.get(len - 1) + "ms");
+        if (len < 1)
+            return;
+        logRes.append(bytesList.get(len - 1)).append("bytes from ").append(hostIp).append(": icmp_seq=#")
+                .append(icmpList.get(len - 1)).append(" ttl=").append(ttlList.get(len - 1)).append(" time=")
+                .append(timeList.get(len - 1)).append("ms");
     }
 
     private static List<String> getTime(String log) {

@@ -1,9 +1,7 @@
 package com.jdxy.wyl.baseandroidx.network;
 
-import android.os.Message;
-
 import com.blankj.utilcode.util.Utils;
-import com.jdxy.wyl.baseandroidx.base.Presenter;
+import com.jdxy.wyl.baseandroidx.base.IPresenter;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.lzy.okgo.model.Progress;
 import com.lzy.okserver.download.DownloadListener;
@@ -22,9 +20,9 @@ public class LogDownloadListener extends DownloadListener {
 
 
     private String TAG = "  LogDownloadListener ";
-    Presenter presenter;
+    IPresenter presenter;
 
-    public LogDownloadListener(Presenter presenter) {
+    public LogDownloadListener(IPresenter presenter) {
         super("LogDownloadListener");
         this.presenter = presenter;
     }

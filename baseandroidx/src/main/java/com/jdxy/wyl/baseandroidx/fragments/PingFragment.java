@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.blankj.utilcode.util.RegexUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.base.NetworkFeedBean;
+import com.jdxy.wyl.baseandroidx.ping.NetDiagnoListener;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
@@ -136,6 +137,24 @@ public class PingFragment extends Fragment {
                 mEtApi.setText(mApi);
             }
         }
+
+        mPingResult.setLDNetDiagnoListener(new NetDiagnoListener() {
+            @Override
+            public void OnNetDiagnoFinished(String log) {
+                ToolLog.e(TAG, "OnNetDiagnoFinished " + log);
+                mBtnPingIp.setText("ping ip");
+            }
+
+            @Override
+            public void OnNetDiagnoUpdated(String log) {
+                ToolLog.e(TAG, " OnNetDiagnoUpdated " + log);
+            }
+
+            @Override
+            public void OnNetStates(boolean isDomainParseOk, boolean isSocketConnected) {
+
+            }
+        });
     }
 
     public void BtnClick(View view) {

@@ -37,7 +37,7 @@ import me.jessyan.autosize.AutoSizeCompat;
 import me.jessyan.autosize.AutoSizeConfig;
 
 
-public class BaseSettingActivity extends AppCompatActivity implements IView {
+public class BaseSettingActivity extends AppCompatActivity  {
     ImageView mImgBack;
     TextView mTvBack;
     TextView mTvTitleLeft;
@@ -183,27 +183,22 @@ public class BaseSettingActivity extends AppCompatActivity implements IView {
 
     }
 
-    @Override
     public void showSuccess(String success) {
 
     }
 
-    @Override
     public void showError(String error) {
 
     }
 
-    @Override
     public void showInfo(String info) {
 
     }
 
-    @Override
     public void release() {
 
     }
 
-    @Override
     public void initData() {
 
     }

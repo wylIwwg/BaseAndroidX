@@ -31,6 +31,7 @@
 
         <EditText
 
+            android:text="10"
             android:gravity="center"
             android:hint="ping的次数"
             android:id="@+id/etTimes"

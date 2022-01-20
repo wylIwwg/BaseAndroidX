@@ -7,6 +7,18 @@ import android.os.Environment;
  */
 public interface IConfigs {
 
+
+    String URL_UPLOAD_IMAGE = "/baseConsultaioninfo/screenShot";
+    String URL_UPLOAD_LOGS = "/upload/logs";
+
+
+
+
+    int MESSAGE_INFO = 1;
+    int MESSAGE_ERROR = 2;
+    int MESSAGE_SUCCESS = 0;
+
+
     String LOG_ERROR = "【Error】";
     String LOG_SOCKET = "【Socket】";
     String LOG_HTTP = "【Http】";

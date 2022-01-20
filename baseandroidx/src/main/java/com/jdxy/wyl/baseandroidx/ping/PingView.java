@@ -3,6 +3,7 @@ package com.jdxy.wyl.baseandroidx.ping;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -39,7 +40,13 @@ public class PingView extends ScrollView implements NetDiagnoListener {
         addView(textView);
     }
 
-    public void pingHost(String host,int time) {
+    private Button btn;
+
+    public void setBtn(Button btn) {
+        this.btn = btn;
+    }
+
+    public void pingHost(String host, int time) {
         showInfo = "";
         setText(showInfo);
         _netDiagnoService = new NetDiagnoService(getContext(), getContext().getPackageName()
