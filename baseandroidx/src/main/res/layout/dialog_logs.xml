@@ -19,20 +19,6 @@
             android:text="白背景" />
 
         <Button
-            android:id="@+id/btnLogsLocal"
-            style="@style/baseBtn"
-            android:layout_width="100dp"
-            android:layout_marginTop="@dimen/permission_dp_10"
-            android:text="查看本地日志" />
-
-        <Button
-            android:id="@+id/btnLogsReal"
-            style="@style/baseBtn"
-            android:layout_width="100dp"
-            android:layout_marginTop="@dimen/permission_dp_10"
-            android:text="查看实时日志" />
-
-        <Button
             android:id="@+id/btnClose"
             style="@style/baseBtn"
             android:layout_width="100dp"

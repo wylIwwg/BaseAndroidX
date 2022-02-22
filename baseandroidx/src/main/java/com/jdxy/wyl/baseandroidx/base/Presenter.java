@@ -17,11 +17,11 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.Utils;
-import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
+import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BBanner;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
-import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
+import com.jdxy.wyl.baseandroidx.bean.BRegister;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -151,6 +152,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 mVoiceSetting.setVoSpeed("45");
                 mVoiceSetting.setVoPitch("50");
                 mVoiceSetting.setVoVolume("100");
+                mVoiceSetting.setNeedSave(false);
             }
 
             //读取到开关机设置
@@ -171,7 +173,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
 
             isContent = ToolSP.getDIYBoolean(IConfigs.SP_CONTENT_SWITCH);
 
-
             ProjectName = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
             if (TextUtils.isEmpty(ProjectName)) {
                 showTips(IConfigs.MESSAGE_INFO, "请设置 ProjectName");
@@ -182,8 +183,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
             String mDomainName = ToolSP.getDIYString(IConfigs.SP_DOMAIN_NAME);
             String mIP = ToolSP.getDIYString(IConfigs.SP_IP);
             String mHttpPort = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
-            String mSocketPort = ToolSP.getDIYString(IConfigs.SP_PORT_SOCKET);
-
             if (!TextUtils.isEmpty(mDomainName)) {
                 mHost = mDomainName;//填写了域名 则使用域名请求
             } else {
@@ -205,6 +204,9 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
             URL_UPLOAD_LOGS = mHost + IConfigs.URL_UPLOAD_LOGS;
 
             ToolSP.putDIYString(IConfigs.SP_HOST, mHost);
+
+            //连接socket
+            ToolSocket.getInstance().setDataHandler(mHandler).initSocket();
 
         } catch (Exception error) {
 
@@ -604,13 +606,13 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     }
 
     public void checkJavaRegister(RegisterListener listener) {
-        checkJavaRegister(null, null, listener);
+        checkJavaRegister(null, listener);
     }
 
-    public void checkJavaRegister(String priKey, String pubKey, RegisterListener listener) {
-        BRegisterResult mBRegister = ToolRegister.Instance(Utils.getApp(), priKey, pubKey).checkDeviceRegisteredJava();
+    public void checkJavaRegister(String pubKey, RegisterListener listener) {
+        BRegister mBRegister = ToolRegister.Instance(Utils.getApp(), null, pubKey).checkDeviceRegisteredJava();
         if (listener != null) {
-            // listener.RegisterCallBack(mBRegister);
+            listener.RegisterCallBack(mBRegister);
         }
     }
 
@@ -629,13 +631,10 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     public void userHandler(Message msg) {
         switch (msg.what) {
             case IConfigs.MSG_SOCKET_DISCONNECT://socket断开连接
-                // startLocalTime();//启动本地时间线程
+                startLocalTime();//启动本地时间线程
             case IConfigs.MSG_CREATE_TCP_ERROR://socket连接失败
+                startLocalTime();//启动本地时间线程
                 showTips(IConfigs.MESSAGE_ERROR, msg.obj.toString());
-                break;
-
-            case IConfigs.MSG_MEDIA_INIT://banner资源加载完毕
-                //控制轮播
                 break;
             case IConfigs.MSG_REBOOT_LISTENER://设备关机 重启
                 int mins;
@@ -667,7 +666,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                     //星期
                     String week = times.get("week");
 
-                    mView.showTime(dateStr, timeStr, week);
+                    showTime(dateStr, timeStr, week);
                 }
                 break;
             case IConfigs.MSG_SOCKET_RECEIVED://socket收到通知
@@ -749,7 +748,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             String dateStr = mDateFormat.format(mDate);
                             //星期
                             String week = mWeekFormat.format(mDate);
-                            mView.showTime(dateStr, timeStr, week);
+                            showTime(dateStr, timeStr, week);
                             break;
                         case "voiceSwitch"://flag
                             mVoiceSwitch = mObject.getString("flag");
@@ -791,13 +790,12 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             showTips(IConfigs.MESSAGE_INFO, "收到软件更新");
                             String link = mObject.getString("link");
                             if (!TextUtils.isEmpty(link)) {
-                                downloadApk(link.contains(ProjectName) ? mBaseHost + link : mHost + link);
+                                downloadApk(mHost + link.replace(ProjectName, ""));
                             }
-
                             break;
                         case "register"://在线注册
                             String mRegister_code = mObject.getString("register_code");
-                            // ToolRegister.Instance(mContext).registerDevice(mRegister_code);
+                            ToolRegister.Instance(mContext).registerDevice(mRegister_code);
                             showTips(IConfigs.MESSAGE_INFO, "注册信息已更改，软件即将重启");
                             if (mHandler != null)
                                 mHandler.postDelayed(new Runnable() {
@@ -812,7 +810,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             String clientId = mObject.getString("id");
                             String ping = "{\"type\":\"ping\",\"id\":\"" + clientId + "\"}";
                             ToolSocket.getInstance().setPing(ping);
-                            //关闭本地时间线程
+                            //连接上服务器 关闭本地时间线程
                             if (mTimeThread != null) {
                                 mTimeThread.onDestroy();
                                 mTimeThread = null;
@@ -853,11 +851,10 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
      */
     public void startLocalTime() {
         if (mTimeThread != null) {
-            mTimeThread.onDestroy();
-            mTimeThread = null;
+            return;
         }
         mTimeThread = new TimeThread(mContext, mHandler, "yyyy-MM-dd", "HH:mm", "EEEE");
-        mTimeThread.sleep_time = 1000 * 3;
+        mTimeThread.sleep_time = 1000 * 10;
         mTimeThread.start();
     }
 
@@ -875,6 +872,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
      * @param week
      */
     public void showTime(String dateStr, String timeStr, String week) {
+        mView.showTime(dateStr, timeStr, week);
+
         if (timeStr.endsWith("00") && !timeStr.equals(lastPrintTime)) {
             lastPrintTime = timeStr;
             ToolLog.efile(TAG, "每隔整点打印一次时间：当前：" + timeStr + " 开机：" + mRebootStarTime + " 关机：" + mRebootEndTime);
@@ -958,16 +957,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
 
 
     /**
-     * banner节目区域
-     ***/
-    public List<BBanner> mBanners;
-    public int scrollTime;//图片滚动时间
-    public int delayTime;//间隔多少时间滚动
-    public String PathData = "";
-    public CommonAdapter<BBanner> mBannerAdapter;
-
-
-    /**
      * 获取资源文件
      *
      * @param dir
@@ -976,27 +965,27 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<Object>() {
             @Override
             public Object doInBackground() throws Throwable {
+                List<BBanner> mBanners = new ArrayList<>();
                 FileUtils.listFilesInDirWithFilter(dir, new FileFilter() {
                     @Override
                     public boolean accept(File pathname) {
-                        String mPath = pathname.getAbsolutePath();
+                        String mPath = pathname.getAbsolutePath().toLowerCase();
                         if (mPath.endsWith("jpg") || mPath.endsWith("jpeg") || mPath.endsWith("png")) {
                             BBanner mBanner = new BBanner();
-                            mBanner.setUrl(mPath);
+                            mBanner.setUrl(pathname.getAbsolutePath());
                             mBanner.setType("0");
                             mBanners.add(mBanner);
                         } else if (mPath.endsWith("mp4") || mPath.endsWith("avi") || mPath.endsWith("flv")) {
                             BBanner mBanner = new BBanner();
-                            mBanner.setUrl(mPath);
+                            mBanner.setUrl(pathname.getAbsolutePath());
                             mBanner.setType("1");
                             mBanners.add(mBanner);
-
                         }
                         return false;
                     }
                 });
                 if (mBanners.size() > 0) {
-                    mHandler.sendEmptyMessage(IConfigs.MSG_MEDIA_INIT);
+                    mView.showBanner(mBanners);
                 } else {
                     showTips(IConfigs.MESSAGE_ERROR, "资源文件不支持");
                 }
@@ -1043,6 +1032,11 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         }
     }
 
+    /**
+     * 设置音量
+     *
+     * @param vsize
+     */
     public void largeVoice(String vsize) {
         if (vsize.length() > 0) {
             AudioManager mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
@@ -1054,5 +1048,47 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 ToolLog.efile(TAG, "【音量设置 】 " + vsize + " ，设置前：" + value + "， 设置后：" + mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
             }
         }
+    }
+
+
+    /**
+     * 默认设置
+     *
+     * @param api 获取地址的api
+     */
+    public void showSetting(String api) {
+        showSetting(api, null, false);
+
+    }
+
+    /**
+     * 添加软件类型
+     *
+     * @param api
+     * @param appTypes 软件类型集合
+     */
+    public void showSetting(String api, List<BAppType> appTypes) {
+        showSetting(api, appTypes, false);
+    }
+
+    /**
+     * 添加软件类型
+     *
+     * @param api
+     * @param appTypes 软件类型集合
+     * @param clear    是否清除默认集合
+     */
+    public void showSetting(String api, List<BAppType> appTypes, boolean clear) {
+        Intent mIntent = new Intent(mContext, BaseSettingActivity.class);
+        mIntent.putExtra(IConfigs.SP_API, api);
+        mIntent.putExtra(IConfigs.INTENT_APP_TYPE, JSON.toJSONString(appTypes));
+        mIntent.putExtra(IConfigs.INTENT_CLEAR_APP_TYPE, clear);
+        mContext.startActivity(mIntent);
+
+    }
+
+    public void showSetting() {
+        showSetting(null, null, false);
+
     }
 }

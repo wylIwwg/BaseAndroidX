@@ -82,8 +82,8 @@ public class ToolRegisterPhp {
 
         String mac = ToolDevice.getMac();
         BRegister r = new BRegister();
-        r.setIdentity(mac);
-        r.setMark(mark);
+        r.setMac(mac);
+        r.setMessage(mark);
         String sb = JSON.toJSONString(r);
 
         byte[] mDataBytes = sb.getBytes();
@@ -140,7 +140,7 @@ public class ToolRegisterPhp {
         try {
             ToolLog.e(TAG, "registerDevice: 允许注册： " + result);
             if (result != null) {
-                String mLimit = result.getLimit();
+                String mLimit = result.getRegisterDays();
                 if (mLimit != null && mLimit.length() > 0) {
                     int mParseInt = Integer.parseInt(mLimit);
                     if (mParseInt == 0) {//不允许注册
@@ -241,8 +241,8 @@ public class ToolRegisterPhp {
                     return mResult;
                 }
 
-                if (this.mRegister.getIdentity().equals(mac)) {
-                    String mLimit = this.mRegister.getLimit();
+                if (this.mRegister.getMac().equals(mac)) {
+                    String mLimit = this.mRegister.getRegisterDays();
                     if (mLimit != null && mLimit.length() > 0) {
                         int mInt = Integer.parseInt(mLimit);
                         if (mInt <= -1) {
@@ -253,7 +253,7 @@ public class ToolRegisterPhp {
                         } else if (mInt > 0) {
                             mResult.setRegistered(true);
                             mResult.setRegisterCode(2);
-                            long rt = Long.parseLong(this.mRegister.getDate());
+                            long rt = Long.parseLong(this.mRegister.getRegisterDate());
                             long mMillis = System.currentTimeMillis();//采用系统时间  如果是亮钻的板子
                             //如果注册时间 + 注册天数 的总时间 小于当前时间 注册过期
                             Date newDate2 = new Date(rt + (long) mInt * 24L * 60L * 60L * 1000L);

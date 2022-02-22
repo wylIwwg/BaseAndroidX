@@ -5,9 +5,7 @@ import android.os.Environment;
 import android.util.Base64;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.jdxy.wyl.baseandroidx.bean.BRegister;
-import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -73,38 +71,6 @@ public class ToolRegister {
     }
 
     /**
-     * 封装注册信息 转为base64字符串
-     * 公钥加密
-     *
-     * @param just64 是否只是转为base64
-     * @return
-     */
-    public String register2Base64(boolean just64, String mark) {
-
-        String mac = ToolDevice.getMac();
-        BRegister r = new BRegister();
-        r.setIdentity(mac);
-        r.setMark(mark);
-        String sb = JSON.toJSONString(r);
-
-        byte[] mDataBytes = sb.getBytes();
-        String result;
-        byte[] mEncode;
-        if (just64) {
-            mEncode = Base64.encode(mDataBytes, base64Mode);
-            result = new String(mEncode);
-        } else {
-            mEncode = ToolEncrypt.encryptRSA(mDataBytes, mPublicBytes, true, transform);
-            result = Base64.encodeToString(mEncode, base64Mode);
-        }
-
-        ToolLog.e(TAG, "BRegister: 加密后的数据： " + result);
-        return result;
-
-    }
-
-
-    /**
      * //设备注册成功，写入本地
      *
      * @param data 加密数据
@@ -117,13 +83,9 @@ public class ToolRegister {
             String result = str2Register(data, true);//解密数据
             ToolLog.e(TAG, "registerDevice: 允许注册： " + result);
             if (result != null) {
-                JSONObject jsonObject = JSON.parseObject(result, JSONObject.class);//将数据转成对象
-                mRegister = new BRegister();
+                mRegister = JSON.parseObject(result, BRegister.class);//将数据转成对象
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
-                Date date = sdf.parse(jsonObject.get("registerDate").toString());
-                mRegister.setDate(date.getTime() + "");
-                mRegister.setLimit(jsonObject.get("registerDays").toString());
-                //mRegister = JSON.parseObject(result, BRegister.class);
+                Date date = sdf.parse(mRegister.getRegisterDate());
                 if (mRegister != null) {
                     return writeDevice(data);//直接写入
                 }
@@ -147,7 +109,7 @@ public class ToolRegister {
         try {
             ToolLog.e(TAG, "registerDevice: 允许注册： " + result);
             if (result != null) {
-                String mLimit = result.getLimit();
+                String mLimit = result.getRegisterDays();
                 if (mLimit != null && mLimit.length() > 0) {
                     int mParseInt = Integer.parseInt(mLimit);
                     if (mParseInt == 0) {//不允许注册
@@ -211,12 +173,10 @@ public class ToolRegister {
                 if (data != null && data.length() > 0) {
 
                     String result = str2Register(data, true);//解密获取明文数据json
-                    JSONObject jsonObject = JSON.parseObject(result, JSONObject.class);//将数据转成对象
-                    BRegister register = new BRegister();
+                    BRegister register = JSON.parseObject(result, BRegister.class);//将数据转成对象
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
-                    Date date = sdf.parse(jsonObject.get("registerDate").toString());
-                    register.setDate(date.getTime() + "");
-                    register.setLimit(jsonObject.get("registerDays").toString());
+                    Date date = sdf.parse(register.getRegisterDate());
+                    register.setRegisterDate(date.getTime() + "");
                     return register;//将数据转成对象
                 }
             }//文件不存在 表示未注册
@@ -230,91 +190,13 @@ public class ToolRegister {
     }
 
     /**
-     * PHP   1 未注册  2 注册  3 过期
-     * JAVA  0 未注册  1 注册  2 过期
-     * 哎 就是不统一 能怎么办？？
-     *
-     * @return
-     */
-    public BRegisterResult checkDeviceRegisteredPhp() {
-        BRegisterResult mResult = new BRegisterResult();
-        mResult.setRegisterCode(1);
-        mResult.setRegistered(false);
-        mResult.setRegisterStr(this.register2Base64(false, ToolSP.getDIYString("app_type")));
-        try {
-            this.mRegister = this.getRegisterText();
-            if (this.mRegister != null) {
-                String mac = ToolDevice.getMac();
-                //未获取到mac
-                if (mac == null || mac.equals("02:00:00:00:00:00")) {
-                    //  Toasty.icon_error(mContext, "MAC获取不正确：" + mac, 1, true).show();
-                    mResult.setRegisterCode(1);
-                    mResult.setRegistered(false);
-
-                    return mResult;
-                }
-
-                if (this.mRegister.getIdentity().equals(mac)) {
-                    String mLimit = this.mRegister.getLimit();
-                    if (mLimit != null && mLimit.length() > 0) {
-                        int mInt = Integer.parseInt(mLimit);
-                        if (mInt <= -1) {
-                            //永久
-                            mResult.setRegistered(true);
-                            mResult.setRegisterCode(2);
-                            mRegister.setResidue(2);
-                        } else if (mInt > 0) {
-                            mResult.setRegistered(true);
-                            mResult.setRegisterCode(2);
-                            long rt = Long.parseLong(this.mRegister.getDate());
-                            long mMillis = System.currentTimeMillis();//采用系统时间  如果是亮钻的板子
-                            //如果注册时间 + 注册天数 的总时间 小于当前时间 注册过期
-                            Date newDate2 = new Date(rt + (long) mInt * 24L * 60L * 60L * 1000L);
-                            long mL = newDate2.getTime() - mMillis;
-
-                            long days = (mL / (24L * 60L * 60L * 1000L));
-                            if (days > 0) {
-                                //若还有剩余天数。更新到本地
-                                int result = (int) days;
-                                //若还有剩余天数。更新到本地
-                                ToolLog.e(TAG, "还有剩余天数。更新到本地: " + days + "  " + result);
-                                mRegister.setResidue(result);
-                                // registerDevice(mRegister);
-                            }
-                            if (mL < 0) {
-                                mResult.setRegisterCode(3);
-                                mResult.setRegistered(false);
-                            }
-                        }
-                        return mResult;
-                    }
-                }
-                //mac值不一致 不允许注册
-
-            } else {
-                //未获取到注册信息
-                mResult.setRegisterCode(1);
-                mResult.setRegistered(false);
-            }
-        } catch (Exception var10) {
-            var10.printStackTrace();
-        }
-        return mResult;
-    }
-
-
-    /**
      * 检测设备是否注册
      * 设备注册信息
      * 统一 0 未注册  1 注册  2 过期
      *
      * @return
      */
-    public BRegisterResult checkDeviceRegisteredJava() {
-        BRegisterResult mResult = new BRegisterResult();
-        mResult.setRegisterCode(0);
-        mResult.setRegistered(false);
-        mResult.setRegisterStr(this.register2Base64(false, ToolSP.getDIYString(IConfigs.SP_SOFT_TYPE)));
+    public BRegister checkDeviceRegisteredJava() {
         try {
             this.mRegister = this.getRegisterText();
             if (this.mRegister != null) {
@@ -322,30 +204,25 @@ public class ToolRegister {
                 //未获取到mac
                 if (mac == null || mac.equals("02:00:00:00:00:00")) {
                     //  Toasty.icon_error(mContext, "MAC获取不正确：" + mac, 1, true).show();
-                    mResult.setRegisterCode(0);
-                    mResult.setRegistered(false);
-
-                    return mResult;
+                    mRegister.setResidue(0);
+                    mRegister.setMessage("MAC地址获取异常");
+                    return mRegister;
                 }
 
-                if (this.mRegister.getIdentity().equals(mac)) {
-                    String mLimit = this.mRegister.getLimit();
+                if (this.mRegister.getMac().equals(mac)) {
+                    String mLimit = this.mRegister.getRegisterDays();
                     if (mLimit != null && mLimit.length() > 0) {
                         int mInt = Integer.parseInt(mLimit);
                         if (mInt == -1) {
                             //永久
-                            mResult.setRegistered(true);
-                            mResult.setRegisterCode(1);
                             mRegister.setResidue(-1);
                         } else if (mInt > 0) {
-                            mResult.setRegistered(true);
-                            mResult.setRegisterCode(1);
-                            long rt = Long.parseLong(this.mRegister.getDate());
+                            long rt = Long.parseLong(this.mRegister.getRegisterDate());
                             long mMillis = System.currentTimeMillis();//采用系统时间  如果是亮钻的板子
                             //如果注册时间 + 注册天数 的总时间 小于当前时间 注册过期
                             Date newDate2 = new Date(rt + (long) mInt * 24L * 60L * 60L * 1000L);
                             long mL = newDate2.getTime() - mMillis;
-
+                            mRegister.setResidue(0);
                             long days = (mL / (24L * 60L * 60L * 1000L));
                             if (days > 0) {
                                 int result = (int) days;
@@ -355,87 +232,35 @@ public class ToolRegister {
                                 // registerDevice(mRegister);
                             }
                             if (mL < 0) {
-                                mResult.setRegisterCode(2);
-                                mResult.setRegistered(false);
+                                mRegister.setMessage("设备注册已到期");
+                                mRegister.setResidue(0);
                             }
+                        } else {
+                            mRegister.setMessage("设备未注册");
+                            mRegister.setResidue(0);
                         }
-                        return mResult;
+                        return mRegister;
+                    } else {
+                        mRegister.setMessage("设备未注册");
+                        mRegister.setResidue(0);
                     }
+                } else {
+                    //mac值不一致 不允许注册
+                    mRegister.setResidue(0);
+                    mRegister.setMessage("设备MAC不一致，请检查");
                 }
-                //mac值不一致 不允许注册
+
 
             } else {
                 //未获取到注册信息
-                mResult.setRegisterCode(0);
-                mResult.setRegistered(false);
+                mRegister = new BRegister();
+                mRegister.setResidue(0);
+                mRegister.setMessage("设备未注册");
             }
         } catch (Exception var10) {
             var10.printStackTrace();
         }
-        return mResult;
-
-    }
-
-    /**
-     * 检测设备是否注册
-     * 设备注册信息
-     * 统一 0 未注册  1 注册  2 过期
-     *
-     * @return
-     */
-    public BRegisterResult checkDeviceRegisteredJava2() {
-        BRegisterResult mResult = new BRegisterResult();
-        mResult.setRegisterCode(0);
-        mResult.setRegistered(false);
-        mResult.setRegisterStr(this.register2Base64(false, ToolSP.getDIYString(IConfigs.SP_SOFT_TYPE)));
-        try {
-            this.mRegister = this.getRegisterText();
-            if (this.mRegister != null) {
-
-                String mLimit = this.mRegister.getLimit();
-                ToolLog.e(TAG, "checkDeviceRegisteredJava2: 1 " + mLimit);
-                if (mLimit != null && mLimit.length() > 0) {
-                    int mInt = Integer.parseInt(mLimit);
-                    if (mInt == -1) {
-                        //永久
-                        mResult.setRegistered(true);
-                        mResult.setRegisterCode(1);
-                        mRegister.setResidue(-1);
-                    } else if (mInt > 0) {
-                        mResult.setRegistered(true);
-                        mResult.setRegisterCode(1);
-                        long rt = Long.parseLong(this.mRegister.getDate());
-                        long mMillis = System.currentTimeMillis();//采用系统时间  如果是亮钻的板子
-                        //如果注册时间 + 注册天数 的总时间 小于当前时间 注册过期
-                        Date newDate2 = new Date(rt + (long) mInt * 24L * 60L * 60L * 1000L);
-                        long mL = newDate2.getTime() - mMillis;
-
-                        long days = (mL / (24L * 60L * 60L * 1000L));
-                        if (days > 0) {
-                            int result = (int) days;
-                            //若还有剩余天数。更新到本地
-                            ToolLog.e(TAG, "还有剩余天数。更新到本地: " + days + "  " + result);
-                            mRegister.setResidue(result);
-                            // registerDevice(mRegister);
-                        }
-                        if (mL < 0) {
-                            mResult.setRegisterCode(2);
-                            mResult.setRegistered(false);
-                        }
-                    }
-                    return mResult;
-                }
-                //mac值不一致 不允许注册
-
-            } else {
-                //未获取到注册信息
-                mResult.setRegisterCode(0);
-                mResult.setRegistered(false);
-            }
-        } catch (Exception var10) {
-            var10.printStackTrace();
-        }
-        return mResult;
+        return mRegister;
 
     }
 

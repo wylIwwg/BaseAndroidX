@@ -342,17 +342,11 @@ public class SettingFragment extends Fragment {
             }
         });
 
-        if (ToolSP.getDIYBoolean(IConfigs.SP_SHOWLOG)) {
-            mHolder.mBtnShowLog.setText("关闭日志");
-        } else {
-            mHolder.mBtnShowLog.setText("查看日志");
-        }
         mHolder.mBtnShowLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToolSP.putDIYBoolean(IConfigs.SP_SHOWLOG, !ToolSP.getDIYBoolean(IConfigs.SP_SHOWLOG));
+                ToolSP.putDIYBoolean(IConfigs.SP_SHOWLOG, true);
                 getActivity().finish();
-
             }
         });
 

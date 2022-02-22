@@ -15,7 +15,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
-import com.jdxy.wyl.baseandroidx.bean.BRegisterResult;
+import com.jdxy.wyl.baseandroidx.bean.BRegister;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
 import com.jdxy.wyl.baseandroidx.network.LogDownloadListener;
 import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
@@ -92,7 +92,7 @@ public class PresenterPhp implements IPresenter {
                         }
                     });
         } else {
-            mView.showTips(IConfigs.MESSAGE_ERROR,"截图失败");
+            mView.showTips(IConfigs.MESSAGE_ERROR, "截图失败");
             isCapturing = false;
 
         }
@@ -135,7 +135,7 @@ public class PresenterPhp implements IPresenter {
                             public void onError(Response<String> response) {
                                 super.onError(response);
                                 isCapturing = false;
-                                mView.showTips(IConfigs.MESSAGE_ERROR,"截图上传失败" + response.getException().toString());
+                                mView.showTips(IConfigs.MESSAGE_ERROR, "截图上传失败" + response.getException().toString());
                             }
                         });
                 return null;
@@ -353,7 +353,7 @@ public class PresenterPhp implements IPresenter {
                                 public void onError(Response<String> response) {
                                     super.onError(response);
                                     isLoging = false;
-                                    mView.showTips(IConfigs.MESSAGE_ERROR,"日志上传失败" + response.getException().toString());
+                                    mView.showTips(IConfigs.MESSAGE_ERROR, "日志上传失败" + response.getException().toString());
                                 }
                             });
                 }
@@ -405,7 +405,7 @@ public class PresenterPhp implements IPresenter {
                                     isLoging = false;
                                     ToolLog.mLogger.setLogging(false);
                                     if (response.getException() != null)
-                                        mView.showTips(IConfigs.MESSAGE_ERROR,"日志上传失败" + response.getException().toString());
+                                        mView.showTips(IConfigs.MESSAGE_ERROR, "日志上传失败" + response.getException().toString());
                                     ToolLog.efile(TAG, "【日志上传失败】" + response.message());
                                 }
                             });
@@ -451,7 +451,7 @@ public class PresenterPhp implements IPresenter {
                         .onDenied(new Action<List<String>>() {
                             @Override
                             public void onAction(List<String> data) {
-                                mView.showTips(IConfigs.MESSAGE_ERROR,"权限请求被拒绝将无法正常使用！");
+                                mView.showTips(IConfigs.MESSAGE_ERROR, "权限请求被拒绝将无法正常使用！");
                             }
                         })
                         .start();
@@ -478,7 +478,7 @@ public class PresenterPhp implements IPresenter {
                             if (apk != null) {
                                 AppUtils.AppInfo mApkInfo = AppUtils.getApkInfo(apk.getAbsolutePath());
                                 if (mApkInfo == null) {
-                                    mView.showTips(IConfigs.MESSAGE_ERROR,"apk软件解析异常！");
+                                    mView.showTips(IConfigs.MESSAGE_ERROR, "apk软件解析异常！");
                                     return;
                                 }
                                 String mPackageName = mApkInfo.getPackageName();
@@ -491,22 +491,22 @@ public class PresenterPhp implements IPresenter {
                                         //如果更新包的apk的版本号大 则更新apk
                                         installApk(apk);
                                     } else {
-                                        mView.showTips(IConfigs.MESSAGE_ERROR,"应用程序不匹配");
+                                        mView.showTips(IConfigs.MESSAGE_ERROR, "应用程序不匹配");
                                     }
                                 }
                             } else {
-                                mView.showTips(IConfigs.MESSAGE_ERROR,"apk文件不存在");
+                                mView.showTips(IConfigs.MESSAGE_ERROR, "apk文件不存在");
                             }
                         }
 
                         @Override
                         public void onError(Response<File> response) {
                             super.onError(response);
-                            mView.showTips(IConfigs.MESSAGE_ERROR,"apk下载失败" + response.getException().toString());
+                            mView.showTips(IConfigs.MESSAGE_ERROR, "apk下载失败" + response.getException().toString());
                         }
                     });
         } else {
-            mView.showTips(IConfigs.MESSAGE_ERROR,"文件链接无效！");
+            mView.showTips(IConfigs.MESSAGE_ERROR, "文件链接无效！");
         }
 
     }
@@ -557,16 +557,9 @@ public class PresenterPhp implements IPresenter {
     }
 
 
-    public void checkJavaRegister(RegisterListener listener) {
-        checkJavaRegister(null, null, listener);
-    }
 
-    public void checkJavaRegister(String priKey, String pubKey, RegisterListener listener) {
-        checkJavaRegister(IConfigs.FILE_REGISTER, pubKey, listener);
-    }
-
-    public void checkJavaRegister(String path, String priKey, String pubKey, RegisterListener listener) {
-        BRegisterResult mBRegister = ToolRegister.Instance(mContext, priKey, pubKey).checkDeviceRegisteredJava();
+    public void checkJavaRegister(String pubKey, RegisterListener listener) {
+        BRegister mBRegister = ToolRegister.Instance(mContext, null, pubKey).checkDeviceRegisteredJava();
         if (listener != null) {
             // listener.RegisterCallBack(mBRegister);
         }

@@ -1,7 +1,6 @@
 package com.jdxy.wyl.baseandroidx.base;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -15,14 +14,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.bumptech.glide.Glide;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.adapter.CommonAdapter;
 import com.jdxy.wyl.baseandroidx.adapter.ViewHolder;
-import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BBanner;
 import com.jdxy.wyl.baseandroidx.media.player.SimpleJZPlayer;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
@@ -176,13 +173,12 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if (mBanners.size() == 0)
+                if (mBanners.size() < 1)
                     return;
                 LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //获取最后一个完全显示的ItemPosition
-
                     int mVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
                     int index = mVisibleItemPosition % mBanners.size();
                     if (index < mBanners.size() && index > 0) {
@@ -235,7 +231,6 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
 
     @Override
     public void showData() {
-
         if (mBanners != null) {
             mBanners.clear();
         }
@@ -260,11 +255,12 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
     public void hasPermission() {
         //6.0以上申请权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mPresenter.checkPermission(mPermissions);
+            if (mPermissions != null && mPermissions.length > 0)
+                mPresenter.checkPermission(mPermissions);
+            else throw new RuntimeException("6.0以上申请权限 请先调用hasPermission方法");
         } else {
             initData();
         }
-
     }
 
     @Override
@@ -287,12 +283,9 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
 
 
     public void initData() {
-        // initSetting();
         initListener();
-        // ToolSocket.getInstance().setDataHandler(mDataHandler);
 
     }
-
 
     @Override
     public void setContentView(int layoutResID) {
@@ -349,6 +342,7 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {
+                //需要获取到根布局视图
                 String res = ToolCommon.getBitmapString(mBaseRlRoot);
                 mPresenter.uploadScreen(url, res, sessionId);
                 return null;
@@ -415,48 +409,6 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
      * @param txt
      */
     public void showVoice(String txt) {
-
-    }
-
-
-    /**
-     * 默认设置
-     *
-     * @param api 获取地址的api
-     */
-    public void showSetting(String api) {
-        showSetting(api, null, false);
-
-    }
-
-    /**
-     * 添加软件类型
-     *
-     * @param api
-     * @param appTypes 软件类型集合
-     */
-    public void showSetting(String api, List<BAppType> appTypes) {
-        showSetting(api, appTypes, false);
-    }
-
-    /**
-     * 添加软件类型
-     *
-     * @param api
-     * @param appTypes 软件类型集合
-     * @param clear    是否清除默认集合
-     */
-    public void showSetting(String api, List<BAppType> appTypes, boolean clear) {
-        Intent mIntent = new Intent(mContext, BaseSettingActivity.class);
-        mIntent.putExtra(IConfigs.SP_API, api);
-        mIntent.putExtra(IConfigs.INTENT_APP_TYPE, JSON.toJSONString(appTypes));
-        mIntent.putExtra(IConfigs.INTENT_CLEAR_APP_TYPE, clear);
-        startActivity(mIntent);
-
-    }
-
-    public void showSetting() {
-        showSetting(null, null, false);
 
     }
 

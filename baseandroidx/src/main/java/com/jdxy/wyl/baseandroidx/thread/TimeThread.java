@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
+import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,6 +41,7 @@ public class TimeThread extends BaseThread {
         mTimeFormat = new SimpleDateFormat(timeFormat, Locale.CHINA);
         mDateFormat = new SimpleDateFormat(dateFormat, Locale.CHINA);
         mWeekFormat = new SimpleDateFormat(weekFormat, Locale.CHINA);
+        ToolLog.e(TAG, "开启时间线程");
 
     }
 
