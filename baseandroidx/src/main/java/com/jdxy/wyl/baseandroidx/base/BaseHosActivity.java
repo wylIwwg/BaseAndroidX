@@ -251,6 +251,11 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
 
     }
 
+    @Override
+    public void moreMessage(String type, String data) {
+
+    }
+
 
     public void hasPermission() {
         //6.0以上申请权限

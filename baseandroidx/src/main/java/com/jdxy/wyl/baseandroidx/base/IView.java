@@ -43,4 +43,12 @@ public interface IView {
      */
     void showTime(String dateStr, String timeStr, String week);
 
+
+    /**
+     * 将未处理的socket信息抛出
+     *
+     * @param type
+     * @param data
+     */
+    void moreMessage(String type, String data);
 }

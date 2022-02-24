@@ -530,6 +530,11 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         }
     }
 
+    @Override
+    public void moreMessage(String type, String data) {
+
+    }
+
     public void addDevice(String clientId) {
 
     }

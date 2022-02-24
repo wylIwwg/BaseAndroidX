@@ -545,6 +545,11 @@ public class BasePhpActivity extends AppCompatActivity implements BaseDataHandle
         }
     }
 
+    @Override
+    public void moreMessage(String type, String data) {
+
+    }
+
 
     @Override
     public void onBackPressed() {

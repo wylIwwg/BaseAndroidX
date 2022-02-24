@@ -622,6 +622,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         mView.showTips(type, message);
     }
 
+
     /**
      * 包含 开关机；时间变化；声音大小，开关；截屏；重启；语音格式；连接；在线注册；升级；
      *
@@ -826,6 +827,9 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                 ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
                             }
                             break;
+                        default://需要将未处理的信息抛出去
+                            mView.moreMessage(mType, mObject.getString("data"));
+                            break;
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -834,6 +838,11 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 }
                 break;
         }
+    }
+
+    //获取Handler
+    public BaseDataHandler getHandler() {
+        return mHandler;
     }
 
     public void InitTtsSetting() {
