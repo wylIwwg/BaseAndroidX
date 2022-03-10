@@ -11,7 +11,7 @@ import com.lztek.toolkit.Lztek;
 import java.io.File;
 import java.util.Date;
 
-public class ToolLZ {
+public class ToolLZ implements IToolDevice {
 
     static ToolLZ mToolLZ = new ToolLZ();
     static Lztek mLztek;
@@ -71,11 +71,11 @@ public class ToolLZ {
      *
      * @param milliseconds1970
      */
-    public boolean setSystemTime(long milliseconds1970) {
+    @Override
+    public void setSystemTime(long milliseconds1970) {
         if (mLztek == null)
-            return false;
+            return;
         mLztek.setSystemTime(milliseconds1970);
-        return true;
     }
 
     /**
@@ -207,9 +207,46 @@ public class ToolLZ {
      *
      * @return
      */
+    @Override
     public void suExec(String su) {
         if (mLztek == null)
             return;
         mLztek.suExec(su);
+    }
+
+    @Override
+    public boolean installApk(String apk) {
+        if (mLztek == null)
+            return false;
+        mLztek.installApplication(apk);
+        return true;
+    }
+
+    @Override
+    public boolean uninstallApk(String packageName) {
+        if (mLztek == null)
+            return false;
+        mLztek.uninstallApplication(packageName);
+        return true;
+    }
+
+    @Override
+    public boolean takeScreenshot(String path) {
+        if (mLztek == null)
+            return false;
+        mLztek.screenCapture(path);
+        return true;
+    }
+
+    @Override
+    public void setPowerOnOff(int[] powerOnTime, int[] powerOffTime, long seconds) {
+        if (mLztek == null)
+            return;
+        mLztek.alarmPoweron((int) seconds);
+    }
+
+    @Override
+    public String getPowerOnOffTime() {
+        return null;
     }
 }

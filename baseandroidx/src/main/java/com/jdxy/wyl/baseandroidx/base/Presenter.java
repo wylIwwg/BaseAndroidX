@@ -9,12 +9,14 @@ import android.os.Build;
 import android.os.Message;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.Utils;
 import com.jdxy.wyl.baseandroidx.bean.BAppType;
@@ -29,6 +31,7 @@ import com.jdxy.wyl.baseandroidx.network.LogDownloadListener;
 import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
 import com.jdxy.wyl.baseandroidx.thread.TimeThread;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
+import com.jdxy.wyl.baseandroidx.tools.IToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
@@ -44,8 +47,6 @@ import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.OkDownload;
-import com.yanzhenjie.permission.Action;
-import com.yanzhenjie.permission.AndPermission;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -120,9 +121,10 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
 
         mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
 
-        initSetting();
+        //initSetting();
     }
 
+    IToolDevice mToolDevice;
 
     /**
      * 基本设置
@@ -163,7 +165,11 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 if (mPowerBean != null) {
                     mRebootStarTime = mPowerBean.getString("starTime");
                     mRebootEndTime = mPowerBean.getString("endTime");
-                    ToolLog.efile(TAG, "开关机时间设置完成: " + " 开机时间：" + mRebootStarTime + "  关机时间：" + mRebootEndTime);
+                    ToolLog.efile(TAG, ": " + " 开机时间：" + mRebootStarTime + "  关机时间：" + mRebootEndTime);
+                    if (mToolDevice != null) {
+                        ToolLog.efile(TAG, "获取开关机时间: " + mToolDevice.getPowerOnOffTime());
+
+                    }
                 }
             }
 
@@ -214,6 +220,9 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         }
     }
 
+    public void setToolDevice(IToolDevice device) {
+        mToolDevice = device;
+    }
 
     /**
      * 上传截图
@@ -488,28 +497,25 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     @SuppressLint("WrongConstant")
     public void checkPermission(String[] mPermissions) {
         if (mPermissions != null && mPermissions.length > 0) {
-            if (AndPermission.hasPermissions(Utils.getApp(), mPermissions)) {
+            if (PermissionUtils.isGranted(mPermissions)) {
                 mView.initData();
             } else {
-                AndPermission.with(Utils.getApp())
-                        .runtime()
+                PermissionUtils
                         .permission(mPermissions)
-                        .onGranted(new Action<List<String>>() {
+                        .callback(new PermissionUtils.FullCallback() {
                             @Override
-                            public void onAction(List<String> data) {
+                            public void onGranted(@NonNull List<String> granted) {
                                 mView.initData();
                             }
-                        })
-                        .onDenied(new Action<List<String>>() {
+
                             @Override
-                            public void onAction(List<String> data) {
+                            public void onDenied(@NonNull List<String> deniedForever, @NonNull List<String> denied) {
                                 mView.showTips(IConfigs.MESSAGE_ERROR, "权限请求被拒绝将无法正常使用！");
                             }
-                        })
-                        .start();
+                        }).request();
             }
         } else {
-            throw new RuntimeException("权限列表为空");
+            mView.showTips(IConfigs.MESSAGE_ERROR, "权限列表为空");
         }
     }
 
@@ -523,11 +529,12 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         if (!TextUtils.isEmpty(url) && url.endsWith(".apk")) {
             OkGo.<File>get(url)
                     .tag(this)
-                    .execute(new FileCallback(IConfigs.PATH_APK, "") {
+                    .execute(new FileCallback(IConfigs.PATH_APK, "update.apk") {
                         @Override
                         public void onSuccess(Response<File> response) {
                             final File apk = response.body();
-                            if (apk != null) {
+                            ToolLog.e(TAG, "文件路径：" + apk.getAbsolutePath());
+                            if (FileUtils.isFileExists(apk)) {
                                 AppUtils.AppInfo mApkInfo = AppUtils.getApkInfo(apk.getAbsolutePath());
                                 if (mApkInfo == null) {
                                     mView.showTips(IConfigs.MESSAGE_ERROR, "apk软件解析异常！");
@@ -536,12 +543,12 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                 String mPackageName = mApkInfo.getPackageName();
                                 //如果当前包名是root包 说明可以安装其他软件  否则只能安装同包名软件
                                 if (Utils.getApp().getPackageName().endsWith("root")) {
-                                    installApk(apk);
+                                    installApk(apk, mPackageName);
                                 } else {
                                     if (mPackageName.equals(Utils.getApp().getPackageName())) {
                                         //包名一样  是正确的apk
                                         //如果更新包的apk的版本号大 则更新apk
-                                        installApk(apk);
+                                        installApk(apk, mPackageName);
                                     } else {
                                         mView.showTips(IConfigs.MESSAGE_ERROR, "应用程序不匹配");
                                     }
@@ -564,7 +571,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     }
 
 
-    public void installApk(File apk) {
+    public void installApk(File apk, String mPackageName) {
+        ToolLog.efile(TAG, "【准备安装apk】" + apk.getAbsolutePath());
         //亮钻
         if (Build.USER.contains("liaokai")) {
             //7.0以下 安装升级
@@ -585,6 +593,29 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 ToolLZ.Instance().suExec(String.format(SHELL, apkPath));
             }
         } else {
+
+            if (mToolDevice != null) {
+                //boolean success = mToolDevice.installApk(apk.getAbsolutePath());
+                // ToolLog.efile("【非亮钻安装7.0以上系统自动安装升级】" + Build.USER, "onSuccess: " + success);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    ToolLog.efile("【非亮钻7.0以下系统升级】" + Build.USER);
+                    Intent intentapk = new Intent(Intent.ACTION_VIEW);
+                    intentapk.setDataAndType(Uri.fromFile(apk),
+                            "application/vnd.android.package-archive");
+                    intentapk.putExtra("IMPLUS_INSTALL", "SILENT_INSTALL");
+                    Utils.getApp().startActivity(intentapk);
+
+                } else {
+                    String SHELL = "am start -a android.intent.action.VIEW -d %1$s " +
+                            "-t application/vnd.android.package-archive -e IMPLUS_INSTALL SILENT_INSTALL";
+                    String apkPath = "file:///" + apk.getAbsolutePath();
+
+                    ToolLog.efile("【非亮钻安装7.0以上系统自动安装升级】" + Build.USER, "onSuccess: " + String.format(SHELL, apkPath));
+                    mToolDevice.suExec(String.format(SHELL, apkPath));
+                }
+                return;
+            }
+
             //普通板子
             Intent intent = new Intent();
             //执行动作
@@ -714,6 +745,15 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                     mRebootStarTime = pbd.getStarTime();
                                     mRebootEndTime = pbd.getEndTime();
                                     ToolSP.putDIYString(IConfigs.SP_POWER, JSON.toJSONString(pbd));
+                                    if (mToolDevice != null) {
+                                        String[] ends = mRebootEndTime.split(":");
+                                        String[] starts = mRebootStarTime.split(":");
+                                        int endhour = Integer.parseInt(ends[0]);
+                                        int endmin = Integer.parseInt(ends[1]);
+                                        int starthour = Integer.parseInt(starts[0]);
+                                        int startmin = Integer.parseInt(starts[1]);
+                                        mToolDevice.setPowerOnOff(new int[]{starthour, startmin}, new int[]{endhour, endmin}, 0);
+                                    }
                                 }
                             }
                             break;
@@ -895,72 +935,67 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
             }
         }
         try {
-            {
-                mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
-                mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
-                //开始时间和结束时间不为空才进入
-                if (!TextUtils.isEmpty(mProEndTime) && !TextUtils.isEmpty(mProStarTime)) {
-                    Date mParse = mTimeFormat.parse(timeStr);// 15:00  15:10  15:20 15:21
-                    ToolLog.e(TAG, "showTime:  " + " 当前时间： " + timeStr + "  节目开始时间： " + mProStarTime + " 节目结束时间： " + mProEndTime);
-                    Date startDate = mTimeFormat.parse(mProStarTime);
-                    Date endDate = mTimeFormat.parse(mProEndTime);
-                    //结束时间 小于 开始时间  表示跨天   15:00 —— 08：00
-                    if (endDate.getTime() - startDate.getTime() < 0) {
-                        // 15:00  19:00   8：00
-                        if (mParse.getTime() - startDate.getTime() >= 0) {
+            mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
+            mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
+            //开始时间和结束时间不为空才进入
+            if (!TextUtils.isEmpty(mProEndTime) && !TextUtils.isEmpty(mProStarTime)) {
+                Date mParse = mTimeFormat.parse(timeStr);// 15:00  15:10  15:20 15:21
+                ToolLog.e(TAG, "showTime:  " + " 当前时间： " + timeStr + "  节目开始时间： " + mProStarTime + " 节目结束时间： " + mProEndTime);
+                Date startDate = mTimeFormat.parse(mProStarTime);
+                Date endDate = mTimeFormat.parse(mProEndTime);
+                //结束时间 小于 开始时间  表示跨天   15:00 —— 08：00
+                if (endDate.getTime() - startDate.getTime() < 0) {
+                    // 15:00  19:00   8：00
+                    if (mParse.getTime() - startDate.getTime() >= 0) {
 
-                            Date mDateChange = new Date(changeTime);
-                            if (isContent && (endDate.getTime() - mDateChange.getTime() > 0)) {
-                                return;
-                            }
-                            //若是没有显示banner
-                            if (isContent) {
-                                //展示信息 当天  展示
-                                ToolLog.efile(TAG, "showTime: 当天  展示");
-                                mView.showBanner(null);
-                            }
-                        } else if (mParse.getTime() - endDate.getTime() <= 0) {
-                            Date mDateChange = new Date(changeTime);
-                            if (isContent && (endDate.getTime() - mDateChange.getTime() > 0)) {
-                                return;
-                            }
-                            //展示信息 第二天  展示   若是没有显示banner
-                            if (isContent) {
-                                ToolLog.efile(TAG, "showTime: 第二天  展示");
-                                mView.showBanner(null);
-                            }
-                        } else {
-                            //时间不合  显示数据内容
-                            mView.showData();
-                        }
-
-                    } else if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
-
-                        String mFormat = mTimeFormat.format(changeTime);
-                        Date mDateChange = mTimeFormat.parse(mFormat);
-                        ToolLog.e(TAG, "showTime: " + mFormat + "  " + (endDate.getTime() - mDateChange.getTime()));
+                        Date mDateChange = new Date(changeTime);
                         if (isContent && (endDate.getTime() - mDateChange.getTime() > 0)) {
                             return;
                         }
-                        //展示信息
+                        //若是没有显示banner
                         if (isContent) {
-                            ToolLog.efile(TAG, "showTime: 当天且同一天  展示");
+                            //展示信息 当天  展示
+                            ToolLog.efile(TAG, "showTime: 当天  展示");
                             mView.showBanner(null);
                         }
-
+                    } else if (mParse.getTime() - endDate.getTime() <= 0) {
+                        Date mDateChange = new Date(changeTime);
+                        if (isContent && (endDate.getTime() - mDateChange.getTime() > 0)) {
+                            return;
+                        }
+                        //展示信息 第二天  展示   若是没有显示banner
+                        if (isContent) {
+                            ToolLog.efile(TAG, "showTime: 第二天  展示");
+                            mView.showBanner(null);
+                        }
                     } else {
-                        //时间不合 显示数据
+                        //时间不合  显示数据内容
                         mView.showData();
                     }
+
+                } else if (mParse.getTime() - startDate.getTime() >= 0 && endDate.getTime() - mParse.getTime() >= 0) {
+
+                    String mFormat = mTimeFormat.format(changeTime);
+                    Date mDateChange = mTimeFormat.parse(mFormat);
+                    ToolLog.e(TAG, "showTime: " + mFormat + "  " + (endDate.getTime() - mDateChange.getTime()));
+                    if (isContent && (endDate.getTime() - mDateChange.getTime() > 0)) {
+                        return;
+                    }
+                    //展示信息
+                    if (isContent) {
+                        ToolLog.efile(TAG, "showTime: 当天且同一天  展示");
+                        mView.showBanner(null);
+                    }
+
+                } else {
+                    //时间不合 显示数据
+                    mView.showData();
                 }
             }
-
-
         } catch (ParseException e) {
             ToolLog.e(TAG, e.toString());
             // e.printStackTrace();
         }
-
 
     }
 
@@ -1015,8 +1050,11 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
      * @param time
      */
     public void setSystemTime(long time) {
-
-        localTimeSeted = ToolLZ.Instance().setSystemTime(time);
+        if (mToolDevice != null) {
+            mToolDevice.setSystemTime(time);
+        } else
+            ToolLZ.Instance().setSystemTime(time);
+        localTimeSeted = true;
     }
 
 

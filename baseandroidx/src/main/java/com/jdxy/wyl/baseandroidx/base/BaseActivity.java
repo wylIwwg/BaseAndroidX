@@ -144,7 +144,7 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         viewRegister.setLayoutParams(lp);
-        mBaseRlRoot.addView(viewRegister,90);
+        mBaseRlRoot.addView(viewRegister, 90);
         viewRegister.bringToFront();
     }
 
@@ -563,8 +563,8 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
      * @param time
      */
     public void setSystemTime(long time) {
-
-        islocalTimeSeted = ToolLZ.Instance().setSystemTime(time);
+        ToolLZ.Instance().setSystemTime(time);
+        islocalTimeSeted = true;
     }
 
 

@@ -174,6 +174,8 @@ public class ToolRegister {
 
                     String result = str2Register(data, true);//解密获取明文数据json
                     BRegister register = JSON.parseObject(result, BRegister.class);//将数据转成对象
+                    if (register == null)
+                        return null;
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
                     Date date = sdf.parse(register.getRegisterDate());
                     register.setRegisterDate(date.getTime() + "");
@@ -274,14 +276,15 @@ public class ToolRegister {
     public String str2Register(String data, boolean usePublic) {
         //解密
         try {
-            ToolLog.e(TAG, "str2Regsiter:源数据 " + data);
+            ToolLog.efile(TAG, "str2Regsiter:源数据 " + data);
             byte[] mDataBytes = Base64.decode(data, base64Mode);
             byte[] mDecryptBytes = ToolEncrypt.decryptRSA(mDataBytes, usePublic ? mPublicBytes : mPrivateBytes, usePublic, transform);
-
+            if (mDecryptBytes == null)
+                return null;
             String b64 = Base64.encodeToString(mDecryptBytes, base64Mode);
             byte[] mEncode = Base64.decode(b64, base64Mode);
             String result = new String(mEncode);
-            ToolLog.e(TAG, "str2Regsiter: 解密后的数据： " + result);
+            ToolLog.efile(TAG, "str2Regsiter: 解密后的数据： " + result);
             return result;
         } catch (Exception e) {
             e.printStackTrace();

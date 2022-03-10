@@ -7,12 +7,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
 import com.jdxy.wyl.baseandroidx.bean.BRegister;
@@ -32,8 +34,6 @@ import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.OkDownload;
-import com.yanzhenjie.permission.Action;
-import com.yanzhenjie.permission.AndPermission;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -436,28 +436,25 @@ public class PresenterPhp implements IPresenter {
     @SuppressLint("WrongConstant")
     public void checkPermission(String[] mPermissions) {
         if (mPermissions != null && mPermissions.length > 0) {
-            if (AndPermission.hasPermissions(mContext, mPermissions)) {
+            if (PermissionUtils.isGranted(mPermissions)) {
                 mView.initData();
             } else {
-                AndPermission.with(mContext)
-                        .runtime()
+                PermissionUtils
                         .permission(mPermissions)
-                        .onGranted(new Action<List<String>>() {
+                        .callback(new PermissionUtils.FullCallback() {
                             @Override
-                            public void onAction(List<String> data) {
+                            public void onGranted(@NonNull List<String> granted) {
                                 mView.initData();
                             }
-                        })
-                        .onDenied(new Action<List<String>>() {
+
                             @Override
-                            public void onAction(List<String> data) {
+                            public void onDenied(@NonNull List<String> deniedForever, @NonNull List<String> denied) {
                                 mView.showTips(IConfigs.MESSAGE_ERROR, "权限请求被拒绝将无法正常使用！");
                             }
-                        })
-                        .start();
+                        }).request();
             }
         } else {
-            throw new RuntimeException("权限列表为空");
+            mView.showTips(IConfigs.MESSAGE_ERROR, "权限列表为空");
         }
     }
 
@@ -555,7 +552,6 @@ public class PresenterPhp implements IPresenter {
 
     public void checkPhpRegister(RegisterListener listener) {
     }
-
 
 
     public void checkJavaRegister(String pubKey, RegisterListener listener) {

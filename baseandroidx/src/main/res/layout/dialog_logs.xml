@@ -15,14 +15,14 @@
             android:id="@+id/btnBgTans"
             style="@style/baseBtn"
             android:layout_width="100dp"
-            android:layout_marginTop="@dimen/permission_dp_10"
+            android:layout_marginTop="10dp"
             android:text="白背景" />
 
         <Button
             android:id="@+id/btnClose"
             style="@style/baseBtn"
             android:layout_width="100dp"
-            android:layout_marginTop="@dimen/permission_dp_10"
+            android:layout_marginTop="10dp"
             android:text="关闭" />
     </LinearLayout>
 
@@ -40,13 +40,13 @@
             android:id="@+id/tvLogs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/permission_dp_10"
+            android:layout_margin="10dp"
             android:layout_marginTop="8dp"
             android:fadeScrollbars="false"
             android:maxHeight="200dp"
             android:overScrollMode="always"
             android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:scrollbarSize="@dimen/permission_dp_10"
+            android:scrollbarSize="10dp"
             android:scrollbarThumbVertical="@color/red"
             android:scrollbarTrackVertical="@color/white"
             android:scrollbars="vertical"
