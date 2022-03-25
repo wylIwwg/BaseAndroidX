@@ -868,7 +868,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             }
                             break;
                         default://需要将未处理的信息抛出去
-                            mView.moreMessage(mType, mObject.getString("data"));
+                            //很多类型的的type都没有data 需要将整条消息抛出
+                            mView.moreMessage(mType, obj);
                             break;
                     }
                 } catch (Exception ex) {
