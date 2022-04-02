@@ -582,7 +582,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 intentapk.setDataAndType(Uri.fromFile(apk),
                         "application/vnd.android.package-archive");
                 intentapk.putExtra("IMPLUS_INSTALL", "SILENT_INSTALL");
-                Utils.getApp().startActivity(intentapk);
+                if (mContext != null)
+                    mContext.startActivity(intentapk);
 
             } else {
                 String SHELL = "am start -a android.intent.action.VIEW -d %1$s " +
@@ -603,8 +604,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                     intentapk.setDataAndType(Uri.fromFile(apk),
                             "application/vnd.android.package-archive");
                     intentapk.putExtra("IMPLUS_INSTALL", "SILENT_INSTALL");
-                    Utils.getApp().startActivity(intentapk);
-
+                    if (mContext != null)
+                        mContext.startActivity(intentapk);
                 } else {
                     String SHELL = "am start -a android.intent.action.VIEW -d %1$s " +
                             "-t application/vnd.android.package-archive -e IMPLUS_INSTALL SILENT_INSTALL";
@@ -631,7 +632,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 intent.setDataAndType(Uri.fromFile(apk), "application/vnd.android.package-archive");
                 ToolLog.efile("【普通7.0以下系统升级】" + Build.USER);
             }
-            Utils.getApp().startActivity(intent);
+            if (mContext != null)
+                mContext.startActivity(intent);
         }
 
     }
