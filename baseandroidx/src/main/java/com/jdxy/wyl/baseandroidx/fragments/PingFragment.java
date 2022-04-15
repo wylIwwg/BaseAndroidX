@@ -131,8 +131,8 @@ public class PingFragment extends Fragment {
             mApi = getArguments().getString(IConfigs.SP_API);
             if (mEtApi != null) {
                 if (mApi != null && !mApi.contains("http")) {
-                    mApi = "http://" + mEtHttpIP.getText().toString() + ":" + mEtHttpPort
-                            .getText().toString() + mApi;
+                    mApi = "http://" + mEtHttpIP.getText().toString() + ":" + mEtHttpPort.getText().toString()
+                            + ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME) + mApi;
                 }
                 mEtApi.setText(mApi);
             }

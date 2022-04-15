@@ -13,7 +13,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +36,6 @@ import com.jdxy.wyl.baseandroidx.bean.BHosSetting;
 import com.jdxy.wyl.baseandroidx.bean.ConfigSetting;
 import com.jdxy.wyl.baseandroidx.thread.JsonCallBack;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
-import com.jdxy.wyl.baseandroidx.tools.ToolDisplay;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.view.WrapLinearLayout;
@@ -236,14 +234,9 @@ public class SettingFragment extends Fragment {
                 mBaseAppTypes.addAll(mAppTypes);
         }
         for (BAppType app : mBaseAppTypes) {
-            RadioButton rb = new RadioButton(getActivity());
-            RadioGroup.LayoutParams mParams = new RadioGroup.LayoutParams(-2, ToolDisplay.dip2px(getActivity(), 25));
-            mParams.setMargins(20, 0, 0, 0);
-            rb.setLayoutParams(mParams);
+            RadioButton rb = (RadioButton) LayoutInflater.from(getActivity()).inflate(R.layout.base_radiobutton, null);
             rb.setText(app.getAppTypeName());
             rb.setTag(app.getAppType());
-            rb.setButtonDrawable(getResources().getDrawable(R.drawable.base_cb));
-            rb.setTextColor(getResources().getColor(R.color.txt));
             if (type == app.getAppType()) {
                 rblast = rb;
                 rb.setChecked(true);

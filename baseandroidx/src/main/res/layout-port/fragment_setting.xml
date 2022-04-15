@@ -240,7 +240,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="2dp"
-            android:text="请选择区域：" />
+            android:text="选择软件类型：" />
 
         <LinearLayout
             android:id="@+id/llArea"
