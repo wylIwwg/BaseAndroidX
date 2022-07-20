@@ -53,12 +53,17 @@ public class PingView extends ScrollView implements NetDiagnoListener {
                 , versionName, time, host, this);
         _netDiagnoService.execute();
     }
+
     public void pingHost(String host) {
-        showInfo = "";
-        setText(showInfo);
-        _netDiagnoService = new NetDiagnoService(getContext(), getContext().getPackageName()
-                , versionName, 4, host, this);
-        _netDiagnoService.execute();
+        try {
+            showInfo = "";
+            setText(showInfo);
+            _netDiagnoService = new NetDiagnoService(getContext(), getContext().getPackageName()
+                    , versionName, 4, host, this);
+            _netDiagnoService.execute();
+        } catch (Exception ex) {
+        }
+
     }
 
     public void setUserId(String userId) {
@@ -74,7 +79,7 @@ public class PingView extends ScrollView implements NetDiagnoListener {
     }
 
     public void cancelPing() {
-        if (_netDiagnoService!=null){
+        if (_netDiagnoService != null) {
             _netDiagnoService.cancel(true);
             _netDiagnoService = null;
         }
@@ -94,7 +99,8 @@ public class PingView extends ScrollView implements NetDiagnoListener {
 
     /**
      * 诊断结束，输出全部日志记录
-     * @param log                       log日志输出
+     *
+     * @param log log日志输出
      */
     @Override
     public void OnNetDiagnoFinished(String log) {
@@ -115,7 +121,8 @@ public class PingView extends ScrollView implements NetDiagnoListener {
 
     /**
      * 监控网络诊断过程中的日志输出
-     * @param log                       log日志输出
+     *
+     * @param log log日志输出
      */
     @Override
     public void OnNetDiagnoUpdated(String log) {

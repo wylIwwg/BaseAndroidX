@@ -28,7 +28,7 @@
             android:initOrder="101" />
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.com.jdxy.updatefileprovider"
+            android:authorities="${applicationId}.updatefileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

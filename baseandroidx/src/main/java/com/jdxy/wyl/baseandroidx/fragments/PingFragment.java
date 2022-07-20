@@ -1,5 +1,7 @@
 package com.jdxy.wyl.baseandroidx.fragments;
 
+import static com.jdxy.wyl.baseandroidx.base.BaseSettingActivity.JSON_INDENT;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -34,8 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
-
-import static com.jdxy.wyl.baseandroidx.base.BaseSettingActivity.JSON_INDENT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -130,9 +130,11 @@ public class PingFragment extends Fragment {
         if (getArguments() != null) {
             mApi = getArguments().getString(IConfigs.SP_API);
             if (mEtApi != null) {
+                String pr = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
+                ToolLog.e(TAG, "项目名：" + pr);
                 if (mApi != null && !mApi.contains("http")) {
-                    mApi = "http://" + mEtHttpIP.getText().toString() + ":" + mEtHttpPort.getText().toString()
-                            + ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME) + mApi;
+                    mApi = String.format(IConfigs.HOST, mEtHttpIP.getText().toString(), mEtHttpPort.getText().toString())
+                            + pr + mApi;
                 }
                 mEtApi.setText(mApi);
             }
@@ -199,7 +201,12 @@ public class PingFragment extends Fragment {
     }
 
     private void pingSocket(String str1, String str2) {
-        mPingResult.pingHost(str1 + ":" + str2);
+        try {
+            mPingResult.pingHost(str1 + ":" + str2);
+        } catch (Exception ex) {
+
+        }
+
     }
 
 

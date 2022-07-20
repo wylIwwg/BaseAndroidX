@@ -310,14 +310,12 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         ToolLog.efile(TAG, "operationProgram:节目压缩包路径：  " + mFile.getAbsolutePath());
         //通知更新
         //读取默认配置信息
-        String host = ToolSP.getDIYString(IConfigs.SP_HOST);
         //通知后台更新
-        ToolLog.efile(TAG, "operationProgram:通知更新后台： " + host);
         HttpParams hp = new HttpParams();
         hp.put("pushTem", ToolSP.getDIYString(IConfigs.SP_PROGRAM_ID));
         hp.put("pushMac", ToolDevice.getMac());
         hp.put("pushState", "1");
-        OkGo.<String>post(host + IConfigs.URL_ADD_PUSH)
+        OkGo.<String>post(mHost + IConfigs.URL_ADD_PUSH)
                 .params(hp)
                 .tag(this)
                 .execute(new StringCallback() {
@@ -621,10 +619,10 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
             Intent intent = new Intent();
             //执行动作
             intent.setAction(Intent.ACTION_VIEW);
-            //判读版本是否在7.0以上
+            //判断版本是否在7.0以上
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 ToolLog.efile("【普通7.0以上系统升级】" + Build.USER);
-                Uri apkUri = FileProvider.getUriForFile(Utils.getApp(), "com.jdxy.update.fileprovider", apk);
+                Uri apkUri = FileProvider.getUriForFile(Utils.getApp(), Utils.getApp().getPackageName() + ".updatefileprovider", apk);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
             } else {
@@ -679,7 +677,14 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                     int endmin = Integer.parseInt(ends[1]);
                     int starthour = Integer.parseInt(starts[0]);
                     int startmin = Integer.parseInt(starts[1]);
-                    if (starthour >= endhour) {//当天
+                    //开机    关机
+                    //9.30   9.35   第二天
+                    //9.30   10.00/10.45  第二天
+
+                    //9.30   8.30   当天（关机时间小于 开机时间）
+                    //9.30   9.28
+                    if (starthour == endhour && endmin <= startmin || starthour > endhour) {
+                        //说明是当天
                         mins = (starthour - endhour) * 60 + (startmin - endmin);
                     } else {//
                         mins = (starthour + 24 - endhour) * 60 + (startmin - endmin);

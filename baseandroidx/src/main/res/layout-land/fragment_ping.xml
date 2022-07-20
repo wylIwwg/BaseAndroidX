@@ -168,7 +168,7 @@
                     style="@style/DetailTitle"
                     android:layout_marginTop="0dp"
                     android:layout_marginBottom="0dp"
-                    android:text="General" />
+                    android:text="基本信息" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -188,7 +188,7 @@
 
             <TextView
                 style="@style/DetailTitle"
-                android:text="Request Headers" />
+                android:text="请求头" />
 
             <TextView
                 android:id="@+id/tv_request_headers"
@@ -198,7 +198,7 @@
 
             <TextView
                 style="@style/DetailTitle"
-                android:text="Response Headers" />
+                android:text="响应头" />
 
             <TextView
                 android:id="@+id/tv_response_headers"
@@ -208,7 +208,7 @@
 
             <TextView
                 style="@style/DetailTitle"
-                android:text="Response" />
+                android:text="响应结果" />
 
             <TextView
                 android:id="@+id/tv_body"

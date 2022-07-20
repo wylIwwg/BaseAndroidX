@@ -290,6 +290,13 @@ public class SettingFragment extends Fragment {
 
                 api = mHost + mApi;
 
+                String pn = mHolder.mEtProjectName.getText().toString();
+                if (!TextUtils.isEmpty(pn)) {
+                    ToolSP.putDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME, pn);
+                    if (!pn.startsWith("/"))
+                        pn = "/" + pn;
+                    ToolSP.putDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME, pn);
+                }
                 //onClick: /baseConsultaioninfo/departAlls
                 ToolLog.efile("SETTING", "onClick: " + api);
 

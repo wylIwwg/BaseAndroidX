@@ -309,36 +309,33 @@ public class ToolVoiceXF {
                     format = format.split(",")[0];//取前半
                     ToolLog.efile("预叫号 没有下一位了 " + format);
                 }
-                {
-                    txt = format
-                            .replaceFirst(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
-                            .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
-                            .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
-                            .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
-                            .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
-                            .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
-                            .replaceFirst(ToolRegex.regPatientType, mNext.getType())
-                            .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getNextName() : ToolCommon.SplitStarName(mNext.getNextName(), "*", 1, 2))
-                            .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
+                txt = format
+                        .replaceFirst(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getPatientName() : ToolCommon.SplitStarName(mNext.getPatientName(), "*", 1, 2))
+                        .replaceFirst(ToolRegex.regPatientNum, mNext.getPatientNum() + "")
+                        .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
+                        .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
+                        .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
+                        .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
+                        .replaceFirst(ToolRegex.regPatientType, mNext.getType())
+                        .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getNextName() : ToolCommon.SplitStarName(mNext.getNextName(), "*", 1, 2))
+                        .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
 
-                            .replace(ToolRegex.regLeftParentheses, "")
-                            .replace(ToolRegex.regRightParentheses, "");
-                    voice = format
-                            .replaceFirst(ToolRegex.regPatientName, mNext.getPatientName())
-                            .replaceFirst(ToolRegex.regPatientNum, isOrderPlay ? mNext.getPatientNum().replaceAll(".{1}(?!$)", "$0 ") : mNext.getPatientNum())
-                            .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
-                            .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
-                            .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
-                            .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
-                            .replaceFirst(ToolRegex.regPatientType, mNext.getType())
+                        .replace(ToolRegex.regLeftParentheses, "")
+                        .replace(ToolRegex.regRightParentheses, "");
+                voice = format
+                        .replaceFirst(ToolRegex.regPatientName, mNext.getPatientName())
+                        .replaceFirst(ToolRegex.regPatientNum, isOrderPlay ? mNext.getPatientNum().replaceAll(".{1}(?!$)", "$0 ") : mNext.getPatientNum())
+                        .replaceFirst(ToolRegex.regDeptName, mNext.getDepartmentName())
+                        .replaceFirst(ToolRegex.regClinicName, mNext.getClinicName())
+                        .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
+                        .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
+                        .replaceFirst(ToolRegex.regPatientType, mNext.getType())
 
-                            .replace(ToolRegex.regPatientName, mNext.getNextName())
-                            .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
-                            .replaceFirst(ToolRegex.regLeftParentheses, "")
-                            .replaceFirst(ToolRegex.regRightParentheses, "")
-
-                            .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
-                }
+                        .replace(ToolRegex.regPatientName, mNext.getNextName())
+                        .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
+                        .replace(ToolRegex.regLeftParentheses, "")
+                        .replace(ToolRegex.regRightParentheses, "")
+                        .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
 
             } else {
                 txt = format
