@@ -71,11 +71,9 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
         mRlvBanner = findViewById(R.id.rlvBanner);
         mTvCover = findViewById(R.id.tvCover);
         mSuperBanner = findViewById(R.id.banner);
-
-        mPresenter = new Presenter(mContext, this);
-
+        //不再默认初始化
+        // mPresenter = Presenter.getInstance().init(mContext, this);
         mMac = ToolDevice.getMac();
-
 
     }
 

@@ -109,7 +109,17 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     public String voiceFormat = "请(line)号(name)到(department)(room)(doctor)处(type)";
 
 
-    public Presenter(Context context, IView mView) {
+    private static Presenter instance = new Presenter();
+
+    public Presenter() {
+
+    }
+
+    public static Presenter getInstance() {
+        return instance;
+    }
+
+    public Presenter init(Context context, IView mView) {
         this.mView = mView;
         mContext = context;
         mHandler = new BaseDataHandler();
@@ -120,11 +130,33 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         mWeekFormat = new SimpleDateFormat("EEEE", Locale.CHINA);
 
         mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        return instance;
+    }
 
-        //initSetting();
+    public void setView(IView view) {
+        mView = view;
+    }
+
+    /**
+     * 设置Handler
+     *
+     * @param handler
+     */
+    public void setHandler(BaseDataHandler handler) {
+        mHandler = handler;
+        ToolSocket.getInstance().setDataHandler(mHandler);
+
     }
 
     IToolDevice mToolDevice;
+
+    /**
+     * 启动socket
+     */
+    public void startSocket() {
+        //连接socket
+        ToolSocket.getInstance().setDataHandler(mHandler).initSocket();
+    }
 
     /**
      * 基本设置
@@ -210,9 +242,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
             URL_UPLOAD_LOGS = mHost + IConfigs.URL_UPLOAD_LOGS;
 
             ToolSP.putDIYString(IConfigs.SP_HOST, mHost);
-
-            //连接socket
-            ToolSocket.getInstance().setDataHandler(mHandler).initSocket();
 
         } catch (Exception error) {
 
