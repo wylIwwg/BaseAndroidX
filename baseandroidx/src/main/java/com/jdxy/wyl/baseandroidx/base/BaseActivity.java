@@ -104,7 +104,7 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         mContext = this;
         mBaseRlRoot = findViewById(R.id.baseRlRoot);
 
-        mPresenter = new Presenter(mContext, this);
+        //mPresenter = new Presenter(mContext, this);
         mDataHandler=new BaseDataHandler();
         mDataHandler.setMessageListener(this);
 
