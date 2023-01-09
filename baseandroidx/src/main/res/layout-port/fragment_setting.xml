@@ -33,13 +33,15 @@
                 android:id="@+id/btnShowLog"
                 style="@style/baseBtn"
                 android:layout_marginLeft="20dp"
-                android:text="查看日志" />
+                android:text="查看日志"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnShowSetting"
                 style="@style/baseBtn"
                 android:layout_marginLeft="20dp"
-                android:text="查看设置" />
+                android:text="查看设置"
+                android:visibility="gone" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

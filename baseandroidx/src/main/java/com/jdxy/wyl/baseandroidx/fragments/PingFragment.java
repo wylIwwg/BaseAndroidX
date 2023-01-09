@@ -1,9 +1,9 @@
 package com.jdxy.wyl.baseandroidx.fragments;
 
-import static com.jdxy.wyl.baseandroidx.base.BaseSettingActivity.JSON_INDENT;
-
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +36,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
+
+import static com.jdxy.wyl.baseandroidx.base.BaseSettingActivity.JSON_INDENT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -132,13 +134,55 @@ public class PingFragment extends Fragment {
             if (mEtApi != null) {
                 String pr = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
                 ToolLog.e(TAG, "项目名：" + pr);
+                String api = mApi;
                 if (mApi != null && !mApi.contains("http")) {
-                    mApi = String.format(IConfigs.HOST, mEtHttpIP.getText().toString(), mEtHttpPort.getText().toString())
+                    api = String.format(IConfigs.HOST, mEtHttpIP.getText().toString(), mEtHttpPort.getText().toString())
                             + pr + mApi;
                 }
-                mEtApi.setText(mApi);
+                mEtApi.setText(api);
             }
         }
+        mEtHttpPort.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String pr = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
+                ToolLog.e(TAG, "项目名：" + pr);
+                String api = String.format(IConfigs.HOST, mEtHttpIP.getText().toString(), mEtHttpPort.getText().toString())
+                        + pr + mApi;
+                mEtApi.setText(api);
+            }
+        });
+        mEtHttpIP.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String pr = ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME);
+                ToolLog.e(TAG, "项目名：" + pr);
+                String api = String.format(IConfigs.HOST, mEtHttpIP.getText().toString(), mEtHttpPort.getText().toString())
+                        + pr + mApi;
+                mEtApi.setText(api);
+            }
+        });
+
 
         mPingResult.setLDNetDiagnoListener(new NetDiagnoListener() {
             @Override

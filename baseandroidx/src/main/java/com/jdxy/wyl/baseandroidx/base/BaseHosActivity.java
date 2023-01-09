@@ -105,16 +105,27 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
     @Override
     public void showBanner(List<BBanner> banners) {
         if (banners != null && mBanners != null) {
-            //banners不为空 说明已经获取到数据了 已经进行过初始化
-            mBanners.clear();
-            mBanners.addAll(banners);
-            if (mBanners.size() > 1) {
-                mBannerAdapter.setLoop(true);
-                mSuperBanner.start();
-            } else {
-                mBannerAdapter.setLoop(false);
-                mSuperBanner.stop();
-            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(mRlvBanner.getVisibility()==View.VISIBLE)
+                        return;
+                    //banners不为空 说明已经获取到数据了 已经进行过初始化
+                    ToolLog.efile(TAG, "显示节目数据");
+                    mViewContent.setVisibility(View.GONE);
+                    mRlvBanner.setVisibility(View.VISIBLE);
+                    mBanners.clear();
+                    mBanners.addAll(banners);
+                    if (mBanners.size() > 1) {
+                        mBannerAdapter.setLoop(true);
+                        mSuperBanner.start();
+                    } else {
+                        mBannerAdapter.setLoop(false);
+                        mSuperBanner.stop();
+                    }
+                }
+            });
+
             return;
         }
         mBanners = new ArrayList<>();
@@ -137,7 +148,10 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
             @Override
             protected void convert(ViewHolder holder, BBanner banner, int position) {
                 SimpleJZPlayer mPlayer = holder.getView(R.id.videoplayer);
-
+                if (mPlayer == null) {
+                    ToolLog.efile(TAG, "mPlayer=null");
+                    return;
+                }
                 if ("0".equals(banner.getType())) {
                     Glide.with(mContext).load(banner.getUrl()).into(mPlayer.thumbImageView);
 

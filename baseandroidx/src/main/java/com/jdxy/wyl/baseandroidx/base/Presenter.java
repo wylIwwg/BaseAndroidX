@@ -53,7 +53,6 @@ import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -971,7 +970,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 mHandler.sendEmptyMessage(IConfigs.MSG_REBOOT_LISTENER);
             }
         }
-        try {
+      /*  try {
             mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
             mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);
             //开始时间和结束时间不为空才进入
@@ -990,7 +989,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             return;
                         }
                         //若是没有显示banner
-                        if (isContent) {
+                        if (!isContent) {
                             //展示信息 当天  展示
                             ToolLog.efile(TAG, "showTime: 当天  展示");
                             mView.showBanner(null);
@@ -1032,7 +1031,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         } catch (ParseException e) {
             ToolLog.e(TAG, e.toString());
             // e.printStackTrace();
-        }
+        }*/
 
     }
 
@@ -1051,6 +1050,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                     @Override
                     public boolean accept(File pathname) {
                         String mPath = pathname.getAbsolutePath().toLowerCase();
+                        ToolLog.efile(TAG, "" + mPath);
                         if (mPath.endsWith("jpg") || mPath.endsWith("jpeg") || mPath.endsWith("png")) {
                             BBanner mBanner = new BBanner();
                             mBanner.setUrl(pathname.getAbsolutePath());
