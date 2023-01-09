@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ToolVoiceXF {
 
-    public static final String TAG = "ToolVoice";
+    public static final String TAG = "ToolVoiceXF";
 
 
     static ToolVoiceXF mToolVoice;
@@ -62,7 +62,7 @@ public class ToolVoiceXF {
     public int speakTimes = 0;
     public int voiceCount = 1;//语音播报次数 默认1次
 
-    public BVoiceSetting mVoiceSetting;//语音设置
+    private BVoiceSetting mVoiceSetting;//语音设置
 
     public Map<String, BVoice> mapVoice = new HashMap<>();
     public BVoice mNext;
@@ -80,13 +80,18 @@ public class ToolVoiceXF {
         return this;
     }
 
+    //获取语音格式对象 可以重复设置
+    public BVoiceSetting getVoiceSetting() {
+        return mVoiceSetting;
+    }
+
     public ToolVoiceXF setVoiceSetting(BVoiceSetting voiceSetting) {
         mVoiceSetting = voiceSetting;
         if (voiceSetting != null && mVoiceSetting.getVoNumber().length() > 0) {
             voiceCount = Integer.parseInt(mVoiceSetting.getVoNumber());
             voiceCount = voiceCount > 0 ? voiceCount : 1;
-
         }
+        mVoiceSetting.setCanSpeak("1".equals(ToolSP.getDIYString(IConfigs.SP_VOICE_SWITCH)));
         return this;
     }
 
@@ -158,8 +163,7 @@ public class ToolVoiceXF {
                     if (speakTimes >= voiceCount) {//播放次数达标
                         // 呼叫成功 通知后台改状态
                         if (mapVoice != null && mapVoice.size() > 0 && mNext != null) {
-
-                            //如果设置了
+                            //如果设置了 需要单独处理
                             if (mSpeechEndListener != null) {
                                 boolean mEnd = mSpeechEndListener.speechEnd(mNext);
                                 if (mEnd) {
@@ -173,6 +177,7 @@ public class ToolVoiceXF {
                                     ttsSpeak();
                                 }
                             } else if (!TextUtils.isEmpty(urlFinishVoice)) {
+                                //如果设置了语音播放完成回传链接 需要更新后台
                                 HttpParams hp = new HttpParams();
                                 hp.put("pid", mNext.getPatientId());
                                 hp.put("queNum", mNext.getPatientNum());
@@ -186,7 +191,7 @@ public class ToolVoiceXF {
                                     public void onSuccess(Response<String> response) {
                                         isSpeeking = false;
                                         ToolLog.efile(TAG, "onSuccess:语音播报结束： " + response.body());
-                                        if (response != null && response.body().contains("1")) {
+                                        if (response.body().contains("1")) {
                                             //修改状态成功后再移除
                                             mapVoice.remove(mNext.getDocid());
                                             //继续播报下一个
@@ -208,6 +213,7 @@ public class ToolVoiceXF {
                                     }
                                 });
                             } else {
+                                //都没有设置 则播放完成直接移除 播放下一条
                                 //修改状态成功后再移除
                                 mapVoice.remove(mNext.getDocid());
                                 //继续播报下一个
@@ -269,14 +275,26 @@ public class ToolVoiceXF {
                 speakTimes = 0;//归0
                 //开始语音播报
                 ttsSpeak();
-
             }
         }
     }
 
+    /**
+     * 添加语音对象到呼叫集合 需要判断docid 一般情况指哪个医生呼叫的，
+     * 若是没有，则不会播放该条语音
+     *
+     * @param voice
+     */
     public void addVoice(BVoice voice) {
+        if (mVoiceSetting == null || !mVoiceSetting.isCanSpeak()) {
+            ToolLog.efile(TAG, "【请先设置语音格式 或后台开启语音功能】");
+            return;
+        }
         if (!TextUtils.isEmpty(voice.getDocid()))
             mapVoice.put(voice.getDocid(), voice);
+        else {
+            ToolLog.efile(TAG, "【声音对象docid为空，则不会播放该条语音】");
+        }
 
         hasVoiceSpeak();
     }
@@ -371,10 +389,7 @@ public class ToolVoiceXF {
                 });
 
             }
-
             ToolTtsXF.Instance().TtsSpeak(voice);
-            ToolLog.efile(TAG, "ttsSpeak txt: " + txt);
-            ToolLog.efile(TAG, "ttsSpeak voice: " + voice);
 
         }
 

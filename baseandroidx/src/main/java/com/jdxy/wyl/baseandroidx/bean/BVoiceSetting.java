@@ -12,6 +12,15 @@ public class BVoiceSetting {
     private String voPitch;//音调 值范围：[0，100]，默认：50
     private String voVolume;//音量 值范围：[0，100]，默认：50
     private boolean needSave;//
+    private boolean canSpeak = true;//默认可以播放
+
+    public boolean isCanSpeak() {
+        return canSpeak;
+    }
+
+    public void setCanSpeak(boolean canSpeak) {
+        this.canSpeak = canSpeak;
+    }
 
     public boolean isNeedSave() {
         return needSave;

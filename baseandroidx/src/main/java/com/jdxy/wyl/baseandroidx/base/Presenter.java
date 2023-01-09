@@ -80,9 +80,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     public String mBaseHost = "";//host http://192.168.2.188:8080
     public String mHost = "";//host http://192.168.2.188:8080/项目名
 
-    public String mVoiceSwitch = "1";//语音播报开关
     public boolean isContent = false;//内容切换开关
-    public BVoiceSetting mVoiceSetting;//语音设置
 
     public String URL_UPLOAD_SCREEN;//上传截图链接http
     public String URL_UPLOAD_LOGS;//上传截图链接http
@@ -166,26 +164,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
             ToolLog.efile("【打印本地配置信息】：");
             for (String str : mAll.keySet()) {
                 ToolLog.efile("【key= " + str + " value= " + mAll.get(str) + "】");
-            }
-
-            mVoiceSwitch = ToolSP.getDIYString(IConfigs.SP_VOICE_SWITCH);
-            if (mVoiceSwitch.length() < 1) {
-                mVoiceSwitch = "1";
-            }
-            //获取语音配置
-            String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
-            if (mVoice != null && mVoice.length() > 0) {
-                mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
-            } else {
-                //设置默认
-                mVoiceSetting = new BVoiceSetting();
-                mVoiceSetting.setVoFormat(voiceFormat);
-                mVoiceSetting.setVoNumber("1");
-                mVoiceSetting.setVoSex("0");
-                mVoiceSetting.setVoSpeed("45");
-                mVoiceSetting.setVoPitch("50");
-                mVoiceSetting.setVoVolume("100");
-                mVoiceSetting.setNeedSave(false);
             }
 
             //读取到开关机设置
@@ -746,7 +724,11 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                     if (!"pong".equals(mType)) {
                         ToolLog.efile(TAG, obj);
                     }
-                    ToolLog.e(TAG, "handleMessage: socket  " + obj);
+                    // 如果该集合不为空，则socket推送的类型 如果出现在该集合中，则会抛出由mSocketInterceptListener处理
+                    if (socketTypes != null && mSocketInterceptListener != null && socketTypes.contains(mType)) {
+                        mSocketInterceptListener.intercept(mType, obj);
+                        return;
+                    }
                     switch (mType) {
                         case "change"://节目 数据切换
                             //记录切换操作的时间
@@ -813,7 +795,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                 } else {
                                     mDate = new Date(System.currentTimeMillis());
                                 }
-
                             } else {
                                 //如果后台没有推送时间  采用本地的
                                 mDate = new Date(System.currentTimeMillis());
@@ -827,8 +808,10 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             showTime(dateStr, timeStr, week);
                             break;
                         case "voiceSwitch"://flag
-                            mVoiceSwitch = mObject.getString("flag");
+                            String mVoiceSwitch = mObject.getString("flag");
                             ToolSP.putDIYString(IConfigs.SP_VOICE_SWITCH, mVoiceSwitch);
+                            if (ToolVoiceXF.Instance().getVoiceSetting() != null)
+                                ToolVoiceXF.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
 
                             break;
                         case "logs":
@@ -894,12 +877,60 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             mView.addDevice(clientId); //添加设备
                             break;
 
-                        case "voiceFormat"://语音格式
-                            mVoiceSetting = JSON.parseObject(mObject.get("data").toString(), BVoiceSetting.class);
+                        case "voiceFormat"://语音格式-修改为可支持不同场景下的呼叫要求
+                            BVoiceSetting mVoiceSetting = JSON.parseObject(mObject.get("data").toString(), BVoiceSetting.class);
                             if (mVoiceSetting != null) {
-                                ToolSP.putDIYString(IConfigs.SP_VOICE_TEMP, JSON.toJSONString(mVoiceSetting));
+                                String mVoFormat = mVoiceSetting.getVoFormat();
+                                //通过下划线来处理状态 不同情况的语音格式
+                                if (mVoFormat.contains("_")) {
+                                    String[] mSplit = mVoFormat.split("_");
+                                    if (mSplit.length == 2) {
+                                        ToolLog.e(TAG, "语音格式 " + mVoFormat);
+                                        //保存不同类型的语音格式
+                                        switch (mSplit[1]) {
+                                            case IConfigs.STATE0://0默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT0, mSplit[0]);
+                                                break;
+                                            case IConfigs.STATE1://1默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT1, mSplit[0]);
+                                                break;
+                                            case IConfigs.STATE2://2默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT2, mSplit[0]);
+                                                break;
+                                            case IConfigs.STATE3://3默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT3, mSplit[0]);
+                                                break;
+                                            case IConfigs.STATE4://4默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT4, mSplit[0]);
+                                                break;
+                                            case IConfigs.STATE5://5默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT5, mSplit[0]);
+                                                break;
+                                            case IConfigs.STATE6://6默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT6, mSplit[0]);
+                                                break;
+                                            case IConfigs.STATE7://7默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT7, mSplit[0]);
+                                                break;
+                                            case IConfigs.STATE8://8默认格式
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT8, mSplit[0]);
+                                                break;
+                                            default:
+                                                ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT0, mSplit[0]);
+                                                break;
+                                        }
+                                    } else {
+                                        //默认格式
+                                        ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT0, mVoFormat);
+                                    }
+                                } else {
+                                    //默认格式
+                                    ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT0, mVoFormat);
+                                }
                                 ToolTtsXF.Instance().InitTtsSetting(mVoiceSetting);
                                 ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
+                                ToolSP.putDIYString(IConfigs.SP_VOICE_TEMP, JSON.toJSONString(mVoiceSetting));
+                                ToolLog.e(TAG, " voiceFormat voiceFormat ");
                             }
                             break;
                         default://需要将未处理的信息抛出去
@@ -908,12 +939,32 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             break;
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
                     ToolLog.efile(TAG, "userHandler: " + ex.toString());
                     showTips(IConfigs.MESSAGE_ERROR, ex.getMessage());
                 }
                 break;
         }
+    }
+
+    List<String> socketTypes;//默认处理了的type数据 有时候需要单独特殊处理
+
+    /**
+     * 设置type，如果该集合不为空，则socket推送的类型 如果出现在该集合中，则会抛出由mSocketInterceptListener处理
+     *
+     * @param socketTypes
+     */
+    public void setSocketTypes(List<String> socketTypes) {
+        this.socketTypes = socketTypes;
+    }
+
+    public interface SocketInterceptListener {
+        void intercept(String type, String data);
+    }
+
+    SocketInterceptListener mSocketInterceptListener;
+
+    public void setSocketInterceptListener(SocketInterceptListener socketInterceptListener) {
+        mSocketInterceptListener = socketInterceptListener;
     }
 
     //获取Handler
@@ -922,7 +973,22 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     }
 
     public void InitTtsSetting() {
-
+        //获取语音配置
+        String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
+        BVoiceSetting mVoiceSetting;//语音设置
+        if (mVoice != null && mVoice.length() > 0) {
+            mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
+        } else {
+            //设置默认
+            mVoiceSetting = new BVoiceSetting();
+            mVoiceSetting.setVoFormat(voiceFormat);
+            mVoiceSetting.setVoNumber("1");
+            mVoiceSetting.setVoSex("0");
+            mVoiceSetting.setVoSpeed("45");
+            mVoiceSetting.setVoPitch("50");
+            mVoiceSetting.setVoVolume("100");
+            mVoiceSetting.setNeedSave(false);
+        }
         //初始化语音sdk
         ToolTtsXF.Instance(mContext).InitTtsSetting(mVoiceSetting);
         //初始化语音控制

@@ -23,7 +23,7 @@ import es.dmoral.toasty.Toasty;
  * Created by wyl on 2019/2/25.
  */
 public class ToolTtsXF {
-    private static final String TAG = "ToolTts";
+    private static final String TAG = "ToolTtsXF";
     // 语音合成对象
     private SpeechSynthesizer mTTSPlayer;//呼叫播放
 
@@ -89,7 +89,7 @@ public class ToolTtsXF {
         mTTSPlayer.setParameter(SpeechConstant.VOICE_NAME, "0".equals(mVoiceSetting.getVoSex()) ? "xiaoyan" : "xiaofeng");
         //mTTSPlayer.setParameter(SpeechConstant.TTS_DATA_NOTIFY,"1");//支持实时音频流抛出，仅在synthesizeToUri条件下支持
         //设置合成语速
-        ToolLog.e(TAG, "setParam: " + JSON.toJSONString(mVoiceSetting));
+        ToolLog.efile(TAG, "初始化语音SDK: " + JSON.toJSONString(mVoiceSetting));
         //默认设置40
         mTTSPlayer.setParameter(SpeechConstant.SPEED, TextUtils.isEmpty(mVoiceSetting.getVoSpeed()) ? "40" : mVoiceSetting.getVoSpeed().length() == 1 ? (mVoiceSetting.getVoSpeed() + "0") : mVoiceSetting.getVoSpeed());
         //设置合成音调
@@ -171,10 +171,8 @@ public class ToolTtsXF {
 
         @Override
         public void onCompleted(SpeechError error) {
-
             if (error == null) {
                 ToolLog.e(TAG, "onCompleted: 播放完成 ");
-
             } else {
                 ToolLog.efile(TAG, "onCompleted: 播放完成 " + error.getPlainDescription(true));
             }
@@ -240,12 +238,11 @@ Log.e("MscSpeechLog", "buf is =" + buf);
 
     public void TtsSpeak(String txt) {
         if (mTTSPlayer != null) {
-            ToolLog.e(TAG, "TtsSpeak: mSynthesizerListener " + mSynthesizerListener);
-            ToolLog.e(TAG, "TtsSpeak: mDefaultTtsListener " + mDefaultTtsListener);
-            if (mSynthesizerListener != null)
+            ToolLog.efile(TAG, "TtsSpeakSDK 播放语音: " + txt);
+            if (mSynthesizerListener != null) {
+                //每次播放都要设置listener，讯飞sdk还是需要优化吧
                 mTTSPlayer.startSpeaking(txt, mSynthesizerListener);
-            else mTTSPlayer.startSpeaking(txt, mDefaultTtsListener);
-            ToolLog.efile(TAG, "TtsSpeak: " + txt);
+            } else mTTSPlayer.startSpeaking(txt, mDefaultTtsListener);
         }
     }
 

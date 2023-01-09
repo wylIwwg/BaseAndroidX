@@ -17,8 +17,27 @@ public class BVoice {
     private String nextName;//下一位
     private String nextNum;//下一位排队号
     private String roNum;//门牌号
+    private String state;//当前状态
+    private String nextState;//下一位状态
 
     private String type;//呼叫类型 就诊/复诊/
+
+
+    public String getState() {
+        return state == null ? "" : state;
+    }
+
+    public void setState(String state) {
+        this.state = state == null ? "" : state;
+    }
+
+    public String getNextState() {
+        return nextState == null ? "" : nextState;
+    }
+
+    public void setNextState(String nextState) {
+        this.nextState = nextState == null ? "" : nextState;
+    }
 
     public String getRoNum() {
         return roNum == null ? "" : roNum;
