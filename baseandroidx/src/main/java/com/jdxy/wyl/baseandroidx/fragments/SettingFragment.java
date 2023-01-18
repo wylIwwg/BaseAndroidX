@@ -1,7 +1,7 @@
 package com.jdxy.wyl.baseandroidx.fragments;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -16,7 +16,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -209,14 +208,7 @@ public class SettingFragment extends Fragment {
 
 
         //设置项目名  获取系统项目名称
-        if (!TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME))) {
-            mHolder.mTvModify.setText("* 项目名已修改 *");
-            mHolder.mTvModify.setTextColor(getResources().getColor(R.color.grey));
-            mHolder.mEtProjectName.setText(ToolSP.getDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME));
-            mHolder.mEtProjectName.setEnabled(false);
-        } else {
-            mHolder.mEtProjectName.setText(ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME));
-        }
+        mHolder.mEtProjectName.setText(ToolSP.getDIYString(IConfigs.SP_DEFAULT_PROJECT_NAME));
 
         int type = ToolSP.getDIYInt(IConfigs.SP_APP_TYPE);
         List<BAppType> mBaseAppTypes = new ArrayList<>();
@@ -357,6 +349,25 @@ public class SettingFragment extends Fragment {
             }
         });
 
+        mHolder.mBtnClearSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mHolder.mBtnClearSetting.getText().toString().equals("清除数据"))
+                    mHolder.mBtnClearSetting.setText("确定吗？");
+                else {
+                    //清楚数据 重启
+                    ToolSP.clearAll();
+                    Toasty.info(getActivity(), "数据已清除，即将重启").show();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            AppUtils.relaunchApp(true);
+                        }
+                    }, 1000);
+                }
+            }
+        });
+
         mHolder.mBtnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -385,7 +396,7 @@ public class SettingFragment extends Fragment {
                     ToolSP.putDIYString(IConfigs.SP_CLINIC_ID, clinic.getId() + "");
 
                 }
-                String pn = mHolder.mEtProjectName.getText().toString();
+                String pn = mHolder.mEtProjectName.getText().toString().trim();
                 if (!TextUtils.isEmpty(pn)) {
                     ToolSP.putDIYString(IConfigs.SP_MODIFIED_PROJECT_NAME, pn);
                     if (!pn.startsWith("/"))
@@ -394,7 +405,7 @@ public class SettingFragment extends Fragment {
                 }
                 //延迟启动
                 //验证位置位置数据 后再启动
-                if (TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_CLINIC_ID)) || TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_DEPART_ID))) {
+              /*  if (TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_CLINIC_ID)) || TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_DEPART_ID))) {
                     new AlertDialog.Builder(getActivity()).setMessage("位置信息未设置，是否重启？").setPositiveButton("确认", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -409,8 +420,13 @@ public class SettingFragment extends Fragment {
                         }
                     }).create().show();
 
-                } else
-                    AppUtils.relaunchApp(true);
+                } else*/
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppUtils.relaunchApp(true);
+                    }
+                }, 500);
 
             }
         });
@@ -475,8 +491,6 @@ public class SettingFragment extends Fragment {
 
 
     static class Holder {
-        @BindView(R2.id.tvModify)
-        TextView mTvModify;
         @BindView(R2.id.etIp)
         EditText mEtIp;
         @BindView(R2.id.etPort)
@@ -507,7 +521,8 @@ public class SettingFragment extends Fragment {
         LinearLayout mPopRoot;
         @BindView(R2.id.rgSynthesisType)
         WrapLinearLayout mRgSynthesisType;
-
+        @BindView(R2.id.btnClearSetting)
+        Button mBtnClearSetting;
 
         @BindView(R2.id.rlvSetting)
         RecyclerView mRlvSetting;

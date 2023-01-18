@@ -21,13 +21,18 @@
             android:background="@drawable/bg_purple_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="20dp">
+            android:padding="10dp">
 
             <Button
                 android:id="@+id/btnClose"
                 style="@style/baseBtn"
-                android:layout_marginLeft="20dp"
                 android:text="退出应用" />
+
+            <Button
+                android:id="@+id/btnClearSetting"
+                style="@style/baseClear"
+                android:layout_marginLeft="20dp"
+                android:text="清除数据" />
 
             <Button
                 android:id="@+id/btnShowLog"
@@ -69,17 +74,6 @@
             android:orientation="vertical"
             android:paddingBottom="20dp">
 
-            <TextView
-                android:id="@+id/tvModify"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"
-                android:text="*项目名称仅可修改一次 以 ‘/’开头*"
-                android:textColor="@color/red"
-                android:textSize="13sp" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,9 +93,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/base_et"
-                    android:hint="项目名称仅可修改一次"
+                    android:hint="输入项目名称"
                     android:padding="5dp"
-                    android:textColor="@color/txt"
+                    android:textColor="@color/red"
                     android:textColorHint="@color/red"
                     android:textCursorDrawable="@drawable/base_et_cursor"
                     android:textSize="13sp" />

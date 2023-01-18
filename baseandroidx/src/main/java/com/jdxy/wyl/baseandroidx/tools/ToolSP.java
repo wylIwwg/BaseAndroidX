@@ -3,8 +3,6 @@ package com.jdxy.wyl.baseandroidx.tools;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.blankj.utilcode.util.SPUtils;
-
 import java.util.Map;
 
 /**
@@ -77,5 +75,13 @@ public class ToolSP {
 
     public static int getDIYInt(String key) {
         return sp.getInt(key, -1);
+    }
+
+    public static void clearAll() {
+        if (sp != null) {
+            ToolLog.efile(TAG, "手动删除本地数据");
+            sp.edit().clear().apply();
+
+        }
     }
 }
