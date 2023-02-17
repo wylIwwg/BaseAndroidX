@@ -335,9 +335,14 @@ public class ToolVoiceXF {
                         .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
                         .replaceFirst(ToolRegex.regClinicNum, mNext.getRoNum())
                         .replaceFirst(ToolRegex.regPatientType, mNext.getType())
+
+                        .replace(ToolRegex.regDoctorName, mNext.getDoctorName())
+                        .replace(ToolRegex.regPatientType, mNext.getType())
+                        .replace(ToolRegex.regClinicNum, mNext.getRoNum())
+                        .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
+                        .replace(ToolRegex.regClinicName, mNext.getClinicName())
                         .replace(ToolRegex.regPatientName, ToolToggle.showPatientFullName ? mNext.getNextName() : ToolCommon.SplitStarName(mNext.getNextName(), "*", 1, 2))
                         .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
-
                         .replace(ToolRegex.regLeftParentheses, "")
                         .replace(ToolRegex.regRightParentheses, "");
                 voice = format
@@ -349,8 +354,13 @@ public class ToolVoiceXF {
                         .replaceFirst(ToolRegex.regDoctorName, mNext.getDoctorName())
                         .replaceFirst(ToolRegex.regPatientType, mNext.getType())
 
+                        .replace(ToolRegex.regDoctorName, mNext.getDoctorName())
+                        .replace(ToolRegex.regPatientType, mNext.getType())
+                        .replace(ToolRegex.regClinicNum, mNext.getRoNum())
+                        .replace(ToolRegex.regDeptName, mNext.getDepartmentName())
+                        .replace(ToolRegex.regClinicName, mNext.getClinicName())
                         .replace(ToolRegex.regPatientName, mNext.getNextName())
-                        .replace(ToolRegex.regPatientNum, mNext.getNextNum() + "")
+                        .replace(ToolRegex.regPatientNum, isOrderPlay ? mNext.getPatientNum().replaceAll(".{1}(?!$)", "$0 ") : mNext.getPatientNum())
                         .replace(ToolRegex.regLeftParentheses, "")
                         .replace(ToolRegex.regRightParentheses, "")
                         .replace(ToolRegex.regCN1, "衣");//防止一 读成四声

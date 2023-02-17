@@ -81,32 +81,33 @@ public class VerticalScrollTextView extends AppCompatTextView {
         }
 
 
-        String txt = getText().toString();
-        if (txt.length() == 0) {
+        String text = getText().toString();
+        if (text.length() == 0) {
 
             return;
         }
-
         txtSize = getTextSize();
-        //根据宽度和字体大小，来计算textview显示的行数。
+        //新增换行处理  换行加 \n 缩进加“\u3000\u3000”
+        String[] mSplit = text.split("\n");
         int textLineNum = (int) (width / txtSize);//6
-        ToolLog.e(TAG, "onMeasure: " + textLineNum + "  " + width + "  " + txt.length() + "  " + lineSpace);
         textList.clear();
-        StringBuilder builder = null;
-        for (int i = 0; i < txt.length(); i++) {
-            if (i % textLineNum == 0) {
-                builder = new StringBuilder();
+        for (String txt : mSplit) {
+            StringBuilder builder = null;
+            for (int i = 0; i < txt.length(); i++) {
+                if (i % textLineNum == 0) {
+                    builder = new StringBuilder();
+                }
+                if (i % textLineNum <= textLineNum - 1) {
+                    builder.append(txt.charAt(i));
+                }
+                if (i % textLineNum == textLineNum - 1) {
+                    textList.add(builder.toString());
+                } else if (i == txt.length() - 1) {
+                    textList.add(builder.toString());
+                }
             }
-            if (i % textLineNum <= textLineNum - 1) {
-                builder.append(txt.charAt(i));
-            }
-            if (i % textLineNum == textLineNum - 1) {
-                textList.add(builder.toString());
-            } else if (i == txt.length() - 1) {
-                textList.add(builder.toString());
-            }
-
         }
+
         ToolLog.e(TAG, "onMeasure: " + "textSize= " + txtSize + " 行数 = " + textList.size());
 
         step1 = 0;
