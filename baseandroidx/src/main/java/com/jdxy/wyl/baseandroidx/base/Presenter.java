@@ -761,6 +761,14 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                 if (pbd != null) {
                                     mRebootStarTime = pbd.getStarTime();
                                     mRebootEndTime = pbd.getEndTime();
+                                    if (mRebootEndTime.equals(mRebootStarTime)) {
+                                        ToolLog.efile(TAG, "开关机时间相同，将取消定时开关机");
+                                        ToolSP.putDIYString(IConfigs.SP_POWER, "");
+                                        if (mToolDevice != null)
+                                            mToolDevice.clearPowerOnOffTime();
+                                        return;
+                                    }
+
                                     ToolSP.putDIYString(IConfigs.SP_POWER, JSON.toJSONString(pbd));
                                     if (mToolDevice != null) {
                                         String[] ends = mRebootEndTime.split(":");
@@ -1023,8 +1031,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
      * @param week
      */
     public void showTime(String dateStr, String timeStr, String week) {
-        mView.showTime(dateStr, timeStr, week);
-
         if (timeStr.endsWith("00") && !timeStr.equals(lastPrintTime)) {
             lastPrintTime = timeStr;
             ToolLog.efile(TAG, "每隔整点打印一次时间：当前：" + timeStr + " 开机：" + mRebootStarTime + " 关机：" + mRebootEndTime);
@@ -1036,6 +1042,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 mHandler.sendEmptyMessage(IConfigs.MSG_REBOOT_LISTENER);
             }
         }
+        mView.showTime(dateStr, timeStr, week);
       /*  try {
             mProStarTime = ToolSP.getDIYString(IConfigs.SP_SETTING_START_TIME);
             mProEndTime = ToolSP.getDIYString(IConfigs.SP_SETTING_END_TIME);

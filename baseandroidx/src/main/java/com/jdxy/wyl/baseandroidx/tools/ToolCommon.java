@@ -17,8 +17,11 @@ import java.io.IOException;
  * Created by wyl on 2019/9/2.
  */
 public class ToolCommon {
+    private static final String TAG = " ToolCommon ";
+
     /**
      * 获取view 的base64字符串
+     *
      * @param view
      * @return
      */
@@ -47,6 +50,7 @@ public class ToolCommon {
 
     /**
      * 获取Bitmap base64字符串
+     *
      * @param bitmap
      * @return
      */
@@ -82,6 +86,7 @@ public class ToolCommon {
 
     /**
      * 保存view的视图到文件
+     *
      * @param view
      * @return
      */
@@ -106,6 +111,7 @@ public class ToolCommon {
 
     /**
      * 缩放Bitmap
+     *
      * @param bitmap
      * @param x
      * @param y
@@ -134,17 +140,23 @@ public class ToolCommon {
      */
     public static String SplitStarName(String name, String ch, int start, int end) {
 
-        if (TextUtils.isEmpty(name) || end > name.length() || start >= end||name.contains(ch))
+        try {
+            if (TextUtils.isEmpty(name) || end > name.length() || start >= end || name.contains(ch))
+                return name;
+            String result = "";
+            String c = "";
+            for (int i = 0; i < end - start; i++) {
+                c += ch;
+            }
+            if (name.length() > 1)
+                result = name.replaceFirst(name.substring(start, end), c);
+            else result = name;
+            return result;
+        } catch (Exception ex) {
+            ToolLog.efile(TAG, "[SplitStarName]" + ex.toString());
             return name;
-        String result = "";
-        String c = "";
-        for (int i = 0; i < end - start; i++) {
-            c += ch;
         }
-        if (name.length() > 1)
-            result = name.replaceFirst(name.substring(start, end), c);
-        else result = name;
-        return result;
+
     }
 
     /**
@@ -154,8 +166,9 @@ public class ToolCommon {
      * @return
      */
     public static String SplitStarName(String name) {
-        if (TextUtils.isEmpty(name) || name.length() < 2||name.contains("*"))
+        if (TextUtils.isEmpty(name) || name.length() < 2 || name.contains("*"))
             return name;
-        return name.replaceFirst(name.substring(1, 2), "*");
+        //return name.replaceFirst(name.substring(1, 2), "*");
+        return SplitStarName(name, "*", 1, 2);
     }
 }

@@ -405,6 +405,7 @@ public class SettingFragment extends Fragment {
                 }
                 //延迟启动
                 //验证位置位置数据 后再启动
+                //取消确认弹窗
               /*  if (TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_CLINIC_ID)) || TextUtils.isEmpty(ToolSP.getDIYString(IConfigs.SP_DEPART_ID))) {
                     new AlertDialog.Builder(getActivity()).setMessage("位置信息未设置，是否重启？").setPositiveButton("确认", new DialogInterface.OnClickListener() {
                         @Override

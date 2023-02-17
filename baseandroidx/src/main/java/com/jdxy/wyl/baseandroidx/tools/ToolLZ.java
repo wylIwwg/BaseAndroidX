@@ -78,6 +78,11 @@ public class ToolLZ implements IToolDevice {
         mLztek.setSystemTime(milliseconds1970);
     }
 
+    @Override
+    public void clearPowerOnOffTime() {
+
+    }
+
     /**
      * 设置安卓系统的实时时钟时间，参数为从 1970 年开始到设置点的总秒数。请在应用中申
      * 明权限并进行系统签名<uses-permission android:name="android.permission.SET_TIME" />。

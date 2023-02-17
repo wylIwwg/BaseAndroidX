@@ -38,6 +38,7 @@ public interface IToolDevice {
 
     /**
      * 获取开关机时间
+     *
      * @return
      */
     String getPowerOnOffTime();
@@ -48,5 +49,11 @@ public interface IToolDevice {
      * @param time 时间戳
      */
     void setSystemTime(long time);
+
+    /**
+     * 清除开关机
+     */
+    void clearPowerOnOffTime();
+
 
 }
