@@ -357,7 +357,7 @@ public class NetDiagnoService extends NetAsyncTaskEx<String, String, String>
      * 输出本地网络环境信息
      */
     private void recordLocalNetEnvironmentInfo() {
-        recordStepInfo("\n诊断域名 " + _dormain + "...");
+        recordStepInfo("\n诊断域名/IP " + _dormain + "...");
 
         // 网络状态
         if (PingNetUtils.isNetworkConnected(_context)) {

@@ -10,11 +10,6 @@ import android.content.pm.PackageManager;
 import android.net.DhcpInfo;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -23,10 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.NetworkUtils;
-import com.blankj.utilcode.util.RegexUtils;
 import com.jdxy.wyl.baseandroidx.R;
 import com.jdxy.wyl.baseandroidx.base.NetworkFeedBean;
 import com.jdxy.wyl.baseandroidx.network.NetDeviceUtils;
@@ -34,6 +32,7 @@ import com.jdxy.wyl.baseandroidx.network.NetworkTool;
 import com.jdxy.wyl.baseandroidx.ping.PingView;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
+import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 
 import org.jetbrains.annotations.NotNull;
@@ -126,14 +125,16 @@ public class DeviceFragment extends Fragment {
         sb.append("\nCPU的类型:").append(NetDeviceUtils.getCpuType());
         sb.append("\n系统的版本:").append(NetDeviceUtils.getSDKVersionName());
         sb.append("\n系统版本值:").append(NetDeviceUtils.getSDKVersionCode());
-        sb.append("\nSd卡剩余控件:").append(NetDeviceUtils.getSDCardSpace(application));
-        sb.append("\n系统剩余控件:").append(NetDeviceUtils.getRomSpace(application));
+        sb.append("\nSd卡剩余空间:").append(NetDeviceUtils.getSDCardSpace(application));
+        sb.append("\n系统剩余空间:").append(NetDeviceUtils.getRomSpace(application));
         sb.append("\n手机总内存:").append(NetDeviceUtils.getTotalMemory(application));
         sb.append("\n手机可用内存:").append(NetDeviceUtils.getAvailMemory(application));
         sb.append("\n手机分辨率:").append(NetDeviceUtils.getWidthPixels(application))
                 .append("x").append(NetDeviceUtils.getRealHeightPixels(application));
         sb.append("\n屏幕尺寸:").append(NetDeviceUtils.getScreenInch(activity));
         tvPhoneContent.setText(sb.toString());
+
+        ToolLog.efile("设备信息：", "" + sb.toString());
 
     }
 
@@ -169,7 +170,8 @@ public class DeviceFragment extends Fragment {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 sb.append("\nUUID:").append(applicationInfo.storageUuid);
             }
-            sb.append("\nAPK完整路径:").append(applicationInfo.sourceDir);
+            //不显示apk路径
+            //  sb.append("\nAPK完整路径:").append(applicationInfo.sourceDir);
         }
         mTvAppInfo.setText(sb.toString());
     }
@@ -196,7 +198,7 @@ public class DeviceFragment extends Fragment {
                 sb.append("\nDns2：").append(NetDeviceUtils.intToIp(dhcpInfo.dns2));
             }
             tvContentInfo.setText(sb.toString());
-        } else if (NetworkUtils.getNetworkType() == NetworkUtils.NetworkType.NETWORK_NO){
+        } else if (NetworkUtils.getNetworkType() == NetworkUtils.NetworkType.NETWORK_NO) {
             sb.append("无网络");
             sb.append("\nAndroidID:").append(NetDeviceUtils.getAndroidID(application));
             sb.append("\nMac地址:").append(ToolDevice.getMac());
@@ -210,7 +212,7 @@ public class DeviceFragment extends Fragment {
                 sb.append("\nDns2：").append(NetDeviceUtils.intToIp(dhcpInfo.dns2));
             }
             tvContentInfo.setText(sb.toString());
-        }else {
+        } else {
             sb.append("移动网络");
             sb.append("\nAndroidID:").append(NetDeviceUtils.getAndroidID(application));
             sb.append("\nMac地址:").append(ToolDevice.getMac());

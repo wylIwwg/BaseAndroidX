@@ -166,6 +166,7 @@ public class ToolCommon {
      * @return
      */
     public static String SplitStarName(String name) {
+
         if (TextUtils.isEmpty(name) || name.length() < 2 || name.contains("*"))
             return name;
         //return name.replaceFirst(name.substring(1, 2), "*");

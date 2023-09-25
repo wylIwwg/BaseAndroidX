@@ -52,6 +52,8 @@ public class PingNetUtils {
                 } else {
                     mNetWorkType = NETWORKTYPE_WAP;
                 }
+            } else {
+                return "_" + type;
             }
         } else {
             mNetWorkType = NETWORKTYPE_INVALID;
@@ -78,7 +80,7 @@ public class PingNetUtils {
     public static String getMobileOperator(Context context) {
         TelephonyManager telManager = (TelephonyManager) context.getApplicationContext()
                 .getSystemService(Context.TELEPHONY_SERVICE);
-        if (telManager == null){
+        if (telManager == null) {
             return "未知运营商";
         }
         String operator = telManager.getSimOperator();

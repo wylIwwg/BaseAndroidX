@@ -1,6 +1,7 @@
 package com.jdxy.wyl.baseandroidx.tools;
 
 import android.Manifest;
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -14,6 +15,9 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import androidx.core.app.ActivityCompat;
+
+import com.jdxy.wyl.baseandroidx.network.NetDeviceUtils;
+import com.jdxy.wyl.baseandroidx.network.NetworkTool;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -621,5 +625,30 @@ public class ToolDevice {
         }
         return null;
     }
+
+
+    private static void getPhoneInfo() {
+        Application application = NetworkTool.getInstance().getApplication();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("是否root:").append(NetDeviceUtils.isDeviceRooted());
+        sb.append("\n系统硬件商:").append(NetDeviceUtils.getManufacturer());
+        sb.append("\n设备的品牌:").append(NetDeviceUtils.getBrand());
+        sb.append("\n手机的型号:").append(NetDeviceUtils.getModel());
+        sb.append("\n设备版本号:").append(NetDeviceUtils.getId());
+        sb.append("\nCPU的类型:").append(NetDeviceUtils.getCpuType());
+        sb.append("\n系统的版本:").append(NetDeviceUtils.getSDKVersionName());
+        sb.append("\n系统版本值:").append(NetDeviceUtils.getSDKVersionCode());
+        sb.append("\nSd卡剩余空间:").append(NetDeviceUtils.getSDCardSpace(application));
+        sb.append("\n系统剩余空间:").append(NetDeviceUtils.getRomSpace(application));
+        sb.append("\n手机总内存:").append(NetDeviceUtils.getTotalMemory(application));
+        sb.append("\n手机可用内存:").append(NetDeviceUtils.getAvailMemory(application));
+        sb.append("\n手机分辨率:").append(NetDeviceUtils.getWidthPixels(application))
+                .append("x").append(NetDeviceUtils.getRealHeightPixels(application));
+       // sb.append("\n屏幕尺寸:").append(NetDeviceUtils.getScreenInch(context));
+
+        ToolLog.efile("设备信息：", "" + sb.toString());
+
+    }
+
 
 }
