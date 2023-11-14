@@ -698,8 +698,10 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 } else {
                     mins = 30;
                 }
-                showTips(IConfigs.MESSAGE_ERROR, "设备即将关机，将在" + mins + "分钟后重启");
-                hardReboot(60 * mins);
+                if (!rebootNotified) {
+                    showTips(IConfigs.MESSAGE_ERROR, "设备即将在一分钟内关机，将在" + mins + "分钟后重启");
+                    hardReboot(60 * mins);
+                }
                 break;
             case IConfigs.NET_TIME_CHANGED://本地时间变化
                 HashMap<String, String> times = (HashMap<String, String>) msg.obj;
@@ -1168,12 +1170,15 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     }
 
 
+    boolean rebootNotified = false;
+
     /**
      * 定时开关机
      *
      * @param seconds 单位秒
      */
     public void hardReboot(final int seconds) {
+        rebootNotified = true;
         if (ToolLZ.Instance().isLZDevice()) {
             mView.release();
             mHandler.postDelayed(new Runnable() {
@@ -1186,6 +1191,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                     }
                 }
             }, 2000);
+        } else if (mToolDevice != null) {
+            mToolDevice.rebootAfterTime(seconds);
         }
     }
 

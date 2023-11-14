@@ -56,4 +56,10 @@ public interface IToolDevice {
     void clearPowerOnOffTime();
 
 
+    /**
+     * 立即关机，并在second秒时间后开机
+     *
+     * @param second
+     */
+    void rebootAfterTime(int second);
 }
