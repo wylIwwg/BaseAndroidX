@@ -38,7 +38,9 @@ import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolSocket;
+import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolTtsXF;
+import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoiceXF;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -820,9 +822,15 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                         case "voiceSwitch"://flag
                             String mVoiceSwitch = mObject.getString("flag");
                             ToolSP.putDIYString(IConfigs.SP_VOICE_SWITCH, mVoiceSwitch);
-                            if (ToolVoiceXF.Instance().getVoiceSetting() != null)
-                                ToolVoiceXF.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
 
+                            if (ToolTtsXF.Instance().getTTSPlayer() != null) {
+                                ToolLog.e(TAG, "ToolTtsXF设置开关");
+                                ToolVoiceXF.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
+                            }
+                            if (ToolTts.Instance().getTTSPlayer() != null) {
+                                ToolLog.e(TAG, "ToolTts设置开关");
+                                ToolVoice.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
+                            }
                             break;
                         case "logs":
                             String sessionId2 = mObject.getString("sessionId");
@@ -937,8 +945,17 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                     //默认格式
                                     ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT0, mVoFormat);
                                 }
-                                ToolTtsXF.Instance().InitTtsSetting(mVoiceSetting);
-                                ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
+                                if (ToolTtsXF.Instance().getTTSPlayer() != null) {
+                                    ToolLog.e(TAG, "ToolTtsXF设置格式");
+                                    ToolTtsXF.Instance().InitTtsSetting(mVoiceSetting);
+                                    ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
+                                }
+                                if (ToolTts.Instance().getTTSPlayer() != null) {
+                                    ToolLog.e(TAG, "ToolTts设置格式");
+                                    ToolTts.Instance().InitTtsSetting(mVoiceSetting);
+                                    ToolVoice.Instance().setVoiceSetting(mVoiceSetting);
+                                }
+
                                 ToolSP.putDIYString(IConfigs.SP_VOICE_TEMP, JSON.toJSONString(mVoiceSetting));
                                 ToolLog.e(TAG, " voiceFormat voiceFormat ");
                             }
@@ -982,7 +999,38 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         return mHandler;
     }
 
+    /**
+     * 使用本地语音能力
+     * TextToSpeech
+     */
     public void InitTtsSetting() {
+        //获取语音配置
+        String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
+        BVoiceSetting mVoiceSetting;//语音设置
+        if (mVoice != null && mVoice.length() > 0) {
+            mVoiceSetting = JSON.parseObject(mVoice, BVoiceSetting.class);
+        } else {
+            //设置默认
+            mVoiceSetting = new BVoiceSetting();
+            mVoiceSetting.setVoFormat(voiceFormat);
+            mVoiceSetting.setVoNumber("1");
+            mVoiceSetting.setVoSex("0");
+            mVoiceSetting.setVoSpeed("45");
+            mVoiceSetting.setVoPitch("50");
+            mVoiceSetting.setVoVolume("100");
+            mVoiceSetting.setNeedSave(false);
+        }
+        //初始化语音sdk
+        ToolTts.Instance(mContext).InitTtsSetting(mVoiceSetting);
+        //初始化语音控制
+        ToolVoice.Instance(mHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
+
+    }
+
+    /**
+     * 使用讯飞语音SDK合成
+     */
+    public void InitTtsXFSetting() {
         //获取语音配置
         String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
         BVoiceSetting mVoiceSetting;//语音设置
@@ -1005,7 +1053,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         ToolVoiceXF.Instance(mHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
 
     }
-
 
     /**
      * 开启本地时间线程

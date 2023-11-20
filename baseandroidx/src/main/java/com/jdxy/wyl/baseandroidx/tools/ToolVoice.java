@@ -1,14 +1,11 @@
 package com.jdxy.wyl.baseandroidx.tools;
 
-import android.os.Bundle;
+import android.speech.tts.UtteranceProgressListener;
 import android.text.TextUtils;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.blankj.utilcode.util.ThreadUtils;
-import com.iflytek.cloud.SpeechError;
-import com.iflytek.cloud.SpeechEvent;
-import com.iflytek.cloud.SynthesizerListener;
 import com.jdxy.wyl.baseandroidx.base.BaseDataHandler;
 import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
@@ -22,32 +19,33 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+
 /**
- * 通过讯飞语音SDK文字转语音控制播放
+ * 调用系统安装引擎进行文字转语音播放
  */
-public class ToolVoiceXF {
+public class ToolVoice {
 
-    public static final String TAG = "ToolVoiceXF";
+    public static final String TAG = "ToolVoice";
 
 
-    static ToolVoiceXF mToolVoice;
+    static ToolVoice mToolVoice;
     static Object mObject = new Object();
 
-    public ToolVoiceXF(BaseDataHandler context) {
+    public ToolVoice(BaseDataHandler context) {
         mDataHandler = context;
     }
 
-    public static ToolVoiceXF Instance() {
+    public static ToolVoice Instance() {
 
         return mToolVoice;
     }
 
-    public static ToolVoiceXF Instance(BaseDataHandler handler) {
+    public static ToolVoice Instance(BaseDataHandler handler) {
 
         if (mToolVoice == null) {
             synchronized (mObject) {
                 if (mToolVoice == null) {
-                    mToolVoice = new ToolVoiceXF(handler);
+                    mToolVoice = new ToolVoice(handler);
                 }
             }
         }
@@ -78,7 +76,7 @@ public class ToolVoiceXF {
      *
      * @param orderPlay
      */
-    public ToolVoiceXF setOrderPlay(boolean orderPlay) {
+    public ToolVoice setOrderPlay(boolean orderPlay) {
         isOrderPlay = orderPlay;
         return this;
     }
@@ -88,7 +86,7 @@ public class ToolVoiceXF {
         return mVoiceSetting;
     }
 
-    public ToolVoiceXF setVoiceSetting(BVoiceSetting voiceSetting) {
+    public ToolVoice setVoiceSetting(BVoiceSetting voiceSetting) {
         mVoiceSetting = voiceSetting;
         if (voiceSetting != null && mVoiceSetting.getVoNumber().length() > 0) {
             voiceCount = Integer.parseInt(mVoiceSetting.getVoNumber());
@@ -103,7 +101,7 @@ public class ToolVoiceXF {
      *
      * @param urlFinishVoice
      */
-    public ToolVoiceXF setUrlFinishVoice(String urlFinishVoice) {
+    public ToolVoice setUrlFinishVoice(String urlFinishVoice) {
         this.urlFinishVoice = urlFinishVoice;
         return this;
     }
@@ -122,11 +120,9 @@ public class ToolVoiceXF {
         /**
          * 合成回调监听。
          */
-        SynthesizerListener mDefaultTtsListener = new SynthesizerListener() {
-
+        UtteranceProgressListener mUtteranceProgressListener = new UtteranceProgressListener() {
             @Override
-            public void onSpeakBegin() {
-                //showTip("开始播放");
+            public void onStart(String utteranceId) {
                 ToolLog.efile(TAG, "onSpeakBegin: 开始播放 ");
                 isSpeeking = true;
                 if (!isSpeakTest)
@@ -134,136 +130,107 @@ public class ToolVoiceXF {
             }
 
             @Override
-            public void onSpeakPaused() {
-            }
-
-            @Override
-            public void onSpeakResumed() {
-            }
-
-            @Override
-            public void onBufferProgress(int percent, int beginPos, int endPos,
-                                         String info) {
-                // 合成进度
-            }
-
-            @Override
-            public void onSpeakProgress(int percent, int beginPos, int endPos) {
-                // 播放进度
-            }
-
-            @Override
-            public void onCompleted(SpeechError error) {
-                if (error == null) {
-                    ToolLog.e(TAG, "onCompleted: 播放完成 ");
-                    isSpeeking = false;
-                    if (isSpeakTest) {
-                        isSpeakTest = false;
-                        ToolLog.efile(TAG, "【测试语音播报完成】");
-                        return;
-                    }
-                    ToolLog.efile(TAG, "播放次数 speakTimes=" + speakTimes + " voiceCount=" + voiceCount);
-                    if (speakTimes >= voiceCount) {//播放次数达标
-                        // 呼叫成功 通知后台改状态
-                        if (mapVoice != null && mapVoice.size() > 0 && mNext != null) {
-                            //如果设置了 需要单独处理
-                            if (mSpeechEndListener != null) {
-                                boolean mEnd = mSpeechEndListener.speechEnd(mNext);
-                                if (mEnd) {
-                                    //修改状态成功后再移除
-                                    mapVoice.remove(mNext.getDocid());
-                                    //继续播报下一个
-                                    hasVoiceSpeak();
-                                } else {
-                                    //重复呼叫
-                                    speakTimes = 0;
-                                    ttsSpeak();
-                                }
-                            } else if (!TextUtils.isEmpty(urlFinishVoice)) {
-                                //如果设置了语音播放完成回传链接 需要更新后台
-                                HttpParams hp = new HttpParams();
-                                hp.put("pid", mNext.getPatientId());
-                                hp.put("queNum", mNext.getPatientNum());
-                                ToolLog.efile(TAG, "【语音播报链接】: " + urlFinishVoice);
-                                ToolLog.efile(TAG, "【语音播报参数】: " + JSON.toJSONString(hp));
-
-                                OkGo.<String>post(urlFinishVoice)
-                                        .params(hp)
-                                        .tag(this).execute(new StringCallback() {
-                                    @Override
-                                    public void onSuccess(Response<String> response) {
-                                        isSpeeking = false;
-                                        ToolLog.efile(TAG, "onSuccess:语音播报结束： " + response.body());
-                                        if (response.body().contains("1")) {
-                                            //修改状态成功后再移除
-                                            mapVoice.remove(mNext.getDocid());
-                                            //继续播报下一个
-                                            hasVoiceSpeak();
-
-                                        } else {
-                                            //重复呼叫
-                                            speakTimes = 0;
-                                            ttsSpeak();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onError(Response<String> response) {
-                                        super.onError(response);
-                                        //网络请求出错 重复呼叫
-                                        isSpeeking = false;
-                                        ttsSpeak();
-                                    }
-                                });
-                            } else {
-                                //都没有设置 则播放完成直接移除 播放下一条
+            public void onDone(String utteranceId) {
+                ToolLog.e(TAG, "onCompleted: 播放完成 ");
+                isSpeeking = false;
+                if (isSpeakTest) {
+                    isSpeakTest = false;
+                    ToolLog.efile(TAG, "【测试语音播报完成】");
+                    return;
+                }
+                ToolLog.efile(TAG, "播放次数 speakTimes=" + speakTimes + " voiceCount=" + voiceCount);
+                if (speakTimes >= voiceCount) {//播放次数达标
+                    // 呼叫成功 通知后台改状态
+                    if (mapVoice != null && mapVoice.size() > 0 && mNext != null) {
+                        //如果设置了 需要单独处理
+                        if (mSpeechEndListener != null) {
+                            boolean mEnd = mSpeechEndListener.speechEnd(mNext);
+                            if (mEnd) {
                                 //修改状态成功后再移除
                                 mapVoice.remove(mNext.getDocid());
                                 //继续播报下一个
                                 hasVoiceSpeak();
-                            }
-
-                        }
-                    } else {
-                        //重复呼叫
-                        ThreadUtils.executeByCachedWithDelay(new ThreadUtils.SimpleTask<Object>() {
-                            @Override
-                            public Object doInBackground() throws Throwable {
+                            } else {
+                                //重复呼叫
+                                speakTimes = 0;
                                 ttsSpeak();
-                                return null;
                             }
+                        } else if (!TextUtils.isEmpty(urlFinishVoice)) {
+                            //如果设置了语音播放完成回传链接 需要更新后台
+                            HttpParams hp = new HttpParams();
+                            hp.put("pid", mNext.getPatientId());
+                            hp.put("queNum", mNext.getPatientNum());
+                            ToolLog.efile(TAG, "【语音播报链接】: " + urlFinishVoice);
+                            ToolLog.efile(TAG, "【语音播报参数】: " + JSON.toJSONString(hp));
 
-                            @Override
-                            public void onSuccess(Object result) {
-
-                            }
-                        }, 1, TimeUnit.SECONDS);
-                        if (mDataHandler != null)
-                            mDataHandler.postDelayed(new Runnable() {
+                            OkGo.<String>post(urlFinishVoice)
+                                    .params(hp)
+                                    .tag(this).execute(new StringCallback() {
                                 @Override
-                                public void run() {
+                                public void onSuccess(Response<String> response) {
+                                    isSpeeking = false;
+                                    ToolLog.efile(TAG, "onSuccess:语音播报结束： " + response.body());
+                                    if (response.body().contains("1")) {
+                                        //修改状态成功后再移除
+                                        mapVoice.remove(mNext.getDocid());
+                                        //继续播报下一个
+                                        hasVoiceSpeak();
 
+                                    } else {
+                                        //重复呼叫
+                                        speakTimes = 0;
+                                        ttsSpeak();
+                                    }
                                 }
-                            }, 1000);
+
+                                @Override
+                                public void onError(Response<String> response) {
+                                    super.onError(response);
+                                    //网络请求出错 重复呼叫
+                                    isSpeeking = false;
+                                    ttsSpeak();
+                                }
+                            });
+                        } else {
+                            //都没有设置 则播放完成直接移除 播放下一条
+                            //修改状态成功后再移除
+                            mapVoice.remove(mNext.getDocid());
+                            //继续播报下一个
+                            hasVoiceSpeak();
+                        }
+
                     }
                 } else {
-                    ToolLog.efile(TAG, "onCompleted: 播放完成 " + error.getPlainDescription(true));
+                    //重复呼叫
+                    ThreadUtils.executeByCachedWithDelay(new ThreadUtils.SimpleTask<Object>() {
+                        @Override
+                        public Object doInBackground() throws Throwable {
+                            ttsSpeak();
+                            return null;
+                        }
+
+                        @Override
+                        public void onSuccess(Object result) {
+
+                        }
+                    }, 1, TimeUnit.SECONDS);
+                    if (mDataHandler != null)
+                        mDataHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                            }
+                        }, 1000);
                 }
             }
 
             @Override
-            public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
-                // 以下代码用于获取与云端的会话id，当业务出错时将会话id提供给技术支持人员，可用于查询会话日志，定位出错原因
-                // 若使用本地能力，会话id为null
-                if (SpeechEvent.EVENT_SESSION_ID == eventType) {
-                    String sid = obj.getString(SpeechEvent.KEY_EVENT_AUDIO_URL);
-                    ToolLog.e(TAG, "onEvent: " + "session id =" + sid);
-                }
-                //实时音频流输出参考
+            public void onError(String utteranceId) {
+
             }
         };
 
-        ToolTtsXF.Instance().setSynthesizerListener(mDefaultTtsListener);
+        ToolTts.Instance().setSynthesizerListener(mUtteranceProgressListener);
     }
 
     //是否还有数据可以播报
@@ -305,14 +272,15 @@ public class ToolVoiceXF {
 
     public TextView mTextView;
 
-    public ToolVoiceXF setVoiceView(TextView textView) {
+    public ToolVoice setVoiceView(TextView textView) {
         mTextView = textView;
         return this;
     }
 
+
     public void TtsSpeakTest(String test) {
         isSpeakTest = true;
-        ToolTtsXF.Instance().TtsSpeak(test);
+        ToolTts.Instance().TtsSpeak(test);
         ToolLog.e(TAG, "TtsSpeakTest: " + test);
     }
 
@@ -323,6 +291,7 @@ public class ToolVoiceXF {
         if (mNext != null) {
             //"请(line)(name)到(department)(room)(doctor)就诊"
             String format = mVoiceSetting.getVoFormat();
+            ToolLog.e(TAG, "format " + format);
             //说明是预叫号
             if (format.contains(",")) {
                 //没有下一位了
@@ -392,7 +361,8 @@ public class ToolVoiceXF {
                         .replace(ToolRegex.regCN1, "衣");//防止一 读成四声
 
             }
-
+            ToolLog.e(TAG, "txt " + txt);
+            ToolLog.e(TAG, "voice " + voice);
             if (mTextView != null) {
                 ThreadUtils.runOnUiThread(new Runnable() {
                     @Override
@@ -402,7 +372,7 @@ public class ToolVoiceXF {
                 });
 
             }
-            ToolTtsXF.Instance().TtsSpeak(voice);
+            ToolTts.Instance().TtsSpeak(voice);
 
         }
 

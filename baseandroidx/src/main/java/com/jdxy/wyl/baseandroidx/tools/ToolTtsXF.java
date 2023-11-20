@@ -21,6 +21,7 @@ import es.dmoral.toasty.Toasty;
 
 /**
  * Created by wyl on 2019/2/25.
+ * 讯飞SDK发音 文字转语音
  */
 public class ToolTtsXF {
     private static final String TAG = "ToolTtsXF";
