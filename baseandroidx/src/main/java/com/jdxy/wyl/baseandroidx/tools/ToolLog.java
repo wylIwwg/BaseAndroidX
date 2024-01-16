@@ -73,6 +73,9 @@ public class ToolLog {
     public static void efile(String msg) {
 
         e(TAG, msg);
-        LogUtils.file(TAG, msg);
+        if (!mLogger.isLogging()) {
+            e(TAG, "写入日志：");
+            LogUtils.file(TAG, msg);
+        }
     }
 }

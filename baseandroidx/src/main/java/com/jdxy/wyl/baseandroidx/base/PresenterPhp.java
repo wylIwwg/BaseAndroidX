@@ -290,6 +290,7 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
                         });
                 return null;
             }
+
             @Override
             public void onSuccess(String result) {
 
@@ -462,7 +463,6 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
 
     /**
      * 上传日志
-     *
      */
     public void uploadLogs(String sessionId, String mac) {
         if (isLoging) return;
@@ -471,9 +471,11 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
         content.put("beaseStr", "");
         content.put("sessionId", sessionId);
         content.put("mac", mac);
+        ToolLog.mLogger.setLogging(true);
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {
+                ToolLog.mLogger.setLogging(true);
                 List<File> mFiles = FileUtils.listFilesInDir(IConfigs.PATH_LOG);
                 if (mFiles.size() > 0) {
                     OkGo.<String>post(mHost)
@@ -488,6 +490,7 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
                                 @Override
                                 public void onSuccess(Response<String> response) {
                                     isLoging = false;
+                                    ToolLog.mLogger.setLogging(false);
                                     ToolLog.efile("HTTP 日志上传结果" + response.body());
                                 }
 
@@ -495,15 +498,21 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
                                 public void onError(Response<String> response) {
                                     super.onError(response);
                                     isLoging = false;
+                                    ToolLog.mLogger.setLogging(false);
                                     mView.showTips(IConfigs.MESSAGE_ERROR, "日志上传失败" + response.getException().toString());
                                 }
                             });
+                } else {
+                    isLoging = false;
+                    ToolLog.mLogger.setLogging(false);
                 }
                 return null;
             }
 
             @Override
             public void onSuccess(String result) {
+                ToolLog.mLogger.setLogging(true);
+                isLoging = false;
 
             }
         });
@@ -691,7 +700,7 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
                 startLocalTime();//启动本地时间线程
             case IConfigs.MSG_CREATE_TCP_ERROR://socket连接失败
                 startLocalTime();//启动本地时间线程
-                showTips(IConfigs.MESSAGE_ERROR, msg.obj==null?"socket连接失败":msg.obj.toString());
+                showTips(IConfigs.MESSAGE_ERROR, msg.obj == null ? "socket连接失败" : msg.obj.toString());
                 break;
             case IConfigs.MSG_REBOOT_LISTENER://设备关机 重启
                 int mins;
@@ -829,10 +838,10 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
 
                             break;
                         case "errorLog":
-                            uploadLogs("",ToolDevice.getMac());
+                            uploadLogs("", ToolDevice.getMac());
                             break;
                         case "capture":
-                            mView.uploadScreen(URL_UPLOAD_SCREEN,"");
+                            mView.uploadScreen(URL_UPLOAD_SCREEN, "");
                             break;
                         case "voiceSize"://设置声音大小
                             BVolume volume = JSON.parseObject(msg.obj.toString(), BVolume.class);
@@ -854,15 +863,15 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
                             }, 2000);
                             break;
                         case "upgrade"://更新apk
-                            showTips(IConfigs.MESSAGE_INFO,"收到软件更新");
+                            showTips(IConfigs.MESSAGE_INFO, "收到软件更新");
                             String cloudVersionCode = mObject.get("version").toString();
                             String mApply = mObject.get("apply").toString();
                             if (TextUtils.isEmpty(cloudVersionCode) || TextUtils.isEmpty(mApply)) {
-                                showTips(IConfigs.MESSAGE_ERROR,"软件链接为空或版本号存在");
+                                showTips(IConfigs.MESSAGE_ERROR, "软件链接为空或版本号存在");
                                 return;
                             }
 
-                            if ( mApply.length() > 0  && mApply.toLowerCase().endsWith("apk")) {
+                            if (mApply.length() > 0 && mApply.toLowerCase().endsWith("apk")) {
                                 downloadApk(mApply);
                             }
                             break;
@@ -881,7 +890,7 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
                         case "init": //socket连接成功之后 做初始化操作
                             String clientId = mObject.getString("client_id");
                             String ping = "{\"type\":\"ping\",\"id\":\"" + clientId + "\"}";
-                           // ToolSocket.getInstance().setPing(ping);
+                            // ToolSocket.getInstance().setPing(ping);
                             //连接上服务器 关闭本地时间线程
                             if (mTimeThread != null) {
                                 mTimeThread.onDestroy();
