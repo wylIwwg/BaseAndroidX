@@ -630,7 +630,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
             //判断版本是否在7.0以上
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 ToolLog.efile("【普通7.0以上系统升级】" + Build.USER);
-                Uri apkUri = FileProvider.getUriForFile(Utils.getApp(), Utils.getApp().getPackageName() + ".updatefileprovider", apk);
+                Uri apkUri = FileProvider.getUriForFile(Utils.getApp(),
+                        Utils.getApp().getPackageName() + ".updatefileprovider", apk);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
             } else {

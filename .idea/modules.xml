@@ -2,14 +2,16 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseAndroidX.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseAndroidX.iml" group="BaseAndroidX" />
-      <module fileurl="file://$PROJECT_DIR$/baseandroidx/baseandroidx.iml" filepath="$PROJECT_DIR$/baseandroidx/baseandroidx.iml" group="BaseAndroidX/baseandroidx" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docscheduling/docscheduling.iml" filepath="$PROJECT_DIR$/.idea/modules/docscheduling/docscheduling.iml" group="BaseAndroidX/docscheduling" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/doctordesc/doctordesc.iml" filepath="$PROJECT_DIR$/.idea/modules/doctordesc/doctordesc.iml" group="BaseAndroidX/doctordesc" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/doorplate/doorplate.iml" filepath="$PROJECT_DIR$/.idea/modules/doorplate/doorplate.iml" group="BaseAndroidX/doorplate" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/expertdesc/expertdesc.iml" filepath="$PROJECT_DIR$/.idea/modules/expertdesc/expertdesc.iml" group="BaseAndroidX/expertdesc" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/inforelease/inforelease.iml" filepath="$PROJECT_DIR$/.idea/modules/inforelease/inforelease.iml" group="BaseAndroidX/inforelease" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/synthesis/synthesis.iml" filepath="$PROJECT_DIR$/.idea/modules/synthesis/synthesis.iml" group="BaseAndroidX/synthesis" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/BaseAndroidX.iml" filepath="$PROJECT_DIR$/.idea/BaseAndroidX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/BaseAndroidX.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/BaseAndroidX.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/backstageserver/BaseAndroidX.backstageserver.iml" filepath="$PROJECT_DIR$/.idea/modules/backstageserver/BaseAndroidX.backstageserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/baseandroidx/BaseAndroidX.baseandroidx.iml" filepath="$PROJECT_DIR$/.idea/modules/baseandroidx/BaseAndroidX.baseandroidx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/doorplate/BaseAndroidX.doorplate.iml" filepath="$PROJECT_DIR$/.idea/modules/doorplate/BaseAndroidX.doorplate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/inforelease/BaseAndroidX.inforelease.iml" filepath="$PROJECT_DIR$/.idea/modules/inforelease/BaseAndroidX.inforelease.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/remote/BaseAndroidX.remote.iml" filepath="$PROJECT_DIR$/.idea/modules/remote/BaseAndroidX.remote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/synthesis/BaseAndroidX.synthesis.iml" filepath="$PROJECT_DIR$/.idea/modules/synthesis/BaseAndroidX.synthesis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tts/BaseAndroidX.tts.iml" filepath="$PROJECT_DIR$/.idea/modules/tts/BaseAndroidX.tts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/window/BaseAndroidX.window.iml" filepath="$PROJECT_DIR$/.idea/modules/window/BaseAndroidX.window.iml" />
     </modules>
   </component>
 </project>
