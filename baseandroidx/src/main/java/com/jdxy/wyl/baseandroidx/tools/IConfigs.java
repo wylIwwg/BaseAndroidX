@@ -7,6 +7,11 @@ import android.os.Environment;
  */
 public interface IConfigs {
 
+    //默认7天日志
+    public static long SEVEN_DAY_Millis = 604800000;
+
+    //日志保存天数
+    public static int LOG_DAY = 90;
 
     //内置十种语音格式
     //不同情景语音呼叫不同格式
@@ -22,7 +27,7 @@ public interface IConfigs {
     public static String SP_VOICE_FORMAT6 = "format7";//
     public static String SP_VOICE_FORMAT7 = "format6";//
     public static String SP_VOICE_FORMAT8 = "format8";//
-    public  static  String STATE0 = "0";//0当前就诊办理人呼叫格式
+    public static String STATE0 = "0";//0当前就诊办理人呼叫格式
     public static String STATE1 = "1";
     public static String STATE2 = "2";
     public static String STATE3 = "3";

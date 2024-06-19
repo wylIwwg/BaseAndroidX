@@ -442,16 +442,35 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
      * @param sessionId
      * @param mac
      */
-    public void uploadLogs(String url, String sessionId, String mac) {
+    public void uploadLogs(String url, String sessionId, String mac, String date) {
         if (isLoging) return;
         isLoging = true;
         ToolLog.mLogger.setLogging(true);
         ThreadUtils.executeByCachedWithDelay(new ThreadUtils.SimpleTask<String>() {
             @Override
             public String doInBackground() throws Throwable {
-                isLoging = true;
-                ToolLog.mLogger.setLogging(true);
-                List<File> mFiles = FileUtils.listFilesInDir(IConfigs.PATH_LOG);
+                ToolLog.mLogger.setLogging(isLoging);
+
+                List<File> mFiles = FileUtils.listFilesInDirWithFilter(IConfigs.PATH_LOG, new FileFilter() {
+                    @Override
+                    public boolean accept(File pathname) {
+                        long mL = pathname.lastModified();
+                        String dateLast = mDateFormat.format(new Date(mL));
+                        if (TextUtils.isEmpty(date)) {
+                            //日期为空 上传近七天
+                            long curTime = System.currentTimeMillis();
+                            //
+                            if (curTime - mL <= IConfigs.SEVEN_DAY_Millis) {
+                                return true;
+                            }
+                        } else {
+                            if (date.equals(dateLast)) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                });
                 if (mFiles.size() > 0) {
                     OkGo.<String>post(url)
                             .params("macId", mac)
@@ -463,22 +482,22 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                 public void onSuccess(Response<String> response) {
                                     ToolLog.efile("HTTP", "上传日志：" + response.body());
                                     isLoging = false;
-                                    ToolLog.mLogger.setLogging(false);
+                                    ToolLog.mLogger.setLogging(isLoging);
                                 }
 
                                 @Override
                                 public void onError(Response<String> response) {
                                     super.onError(response);
                                     isLoging = false;
-                                    ToolLog.mLogger.setLogging(false);
+                                    ToolLog.mLogger.setLogging(isLoging);
                                     if (response.getException() != null)
                                         mView.showTips(IConfigs.MESSAGE_ERROR, "日志上传失败" + response.getException().toString());
                                     ToolLog.efile(TAG, "【日志上传失败】" + response.message());
                                 }
                             });
                 } else {
-                    ToolLog.mLogger.setLogging(false);
                     isLoging = false;
+                    ToolLog.mLogger.setLogging(isLoging);
                 }
 
                 return null;
@@ -835,10 +854,12 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             break;
                         case "logs":
                             String sessionId2 = mObject.getString("sessionId");
-                            uploadLogs(URL_UPLOAD_LOGS, sessionId2, ToolDevice.getMac());
+                            String date = mObject.getString("data");
+                            uploadLogs(URL_UPLOAD_LOGS, sessionId2, ToolDevice.getMac(), date);
                             break;
                         case "screen"://截屏请求
                             String sessionId = mObject.getString("sessionId");
+
                             if (TextUtils.isEmpty(URL_UPLOAD_SCREEN)) {
                                 showTips(IConfigs.MESSAGE_ERROR, "截图链接无效！");
                                 return;
