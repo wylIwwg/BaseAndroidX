@@ -105,7 +105,7 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
         mBaseRlRoot = findViewById(R.id.baseRlRoot);
 
         //mPresenter = new Presenter(mContext, this);
-        mDataHandler=new BaseDataHandler();
+        mDataHandler = new BaseDataHandler();
         mDataHandler.setMessageListener(this);
 
         mMac = ToolDevice.getMac();
@@ -434,7 +434,9 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
                             break;
                         case "logs":
                             String sessionId2 = mObject.getString("sessionId");
-                            mPresenter.uploadLogs(mUrlUploadLogs, sessionId2, mMac);
+                            String date = mObject.getString("data");
+                            mPresenter.uploadLogs(mUrlUploadLogs, sessionId2, ToolDevice.getMac(), date);
+                            // mPresenter.uploadLogs(mUrlUploadLogs, sessionId2, mMac);
                             break;
                         case "screen"://截屏请求
                             String sessionId = mObject.getString("sessionId");
