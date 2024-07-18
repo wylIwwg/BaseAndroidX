@@ -123,6 +123,12 @@ public class ToolData {
             case "12":
                 txt = R.drawable.bg_state_green;
                 break;
+            case "13":
+                txt = R.drawable.bg_state_passed;
+                break;
+            case "14":
+                txt = R.drawable.bg_state_passed;
+                break;
             default:
                 txt = 0;
         }
@@ -177,6 +183,12 @@ public class ToolData {
                 break;
             case "12":
                 txt = "绿通";
+                break;
+            case "13":
+                txt = "挂起";
+                break;
+            case "14":
+                txt = "迟到";
                 break;
             default:
                 txt = "";
