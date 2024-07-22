@@ -212,6 +212,11 @@ public class ToolLZ implements IToolDevice {
         context.startActivity(intentapk);
     }
 
+    @Override
+    public String getDeviceManufacturer() {
+        return "亮钻";
+    }
+
     /**
      * 执行命令
      *

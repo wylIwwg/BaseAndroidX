@@ -558,7 +558,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                         @Override
                         public void onSuccess(Response<File> response) {
                             final File apk = response.body();
-                            ToolLog.e(TAG, "文件路径：" + apk.getAbsolutePath());
+                            ToolLog.efile(TAG, "文件路径：" + apk.getAbsolutePath());
                             if (FileUtils.isFileExists(apk)) {
                                 AppUtils.AppInfo mApkInfo = AppUtils.getApkInfo(apk.getAbsolutePath());
                                 if (mApkInfo == null) {
@@ -624,7 +624,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                 //boolean success = mToolDevice.installApk(apk.getAbsolutePath());
                 // ToolLog.efile("【非亮钻安装7.0以上系统自动安装升级】" + Build.USER, "onSuccess: " + success);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                    ToolLog.efile("【非亮钻7.0以下系统升级】" + Build.USER);
+                    ToolLog.efile(mToolDevice.getDeviceManufacturer() + "【7.0以下系统升级】" + Build.USER);
                     Intent intentapk = new Intent(Intent.ACTION_VIEW);
                     intentapk.setDataAndType(Uri.fromFile(apk),
                             "application/vnd.android.package-archive");
@@ -636,7 +636,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             "-t application/vnd.android.package-archive -e IMPLUS_INSTALL SILENT_INSTALL";
                     String apkPath = "file:///" + apk.getAbsolutePath();
 
-                    ToolLog.efile("【非亮钻安装7.0以上系统自动安装升级】" + Build.USER, "onSuccess: " + String.format(SHELL, apkPath));
+                    ToolLog.efile(mToolDevice.getDeviceManufacturer() + "【安装7.0以上系统自动安装升级】" + Build.USER, "onSuccess: " + String.format(SHELL, apkPath));
                     mToolDevice.suExec(String.format(SHELL, apkPath));
                 }
                 return;
@@ -844,11 +844,11 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             ToolSP.putDIYString(IConfigs.SP_VOICE_SWITCH, mVoiceSwitch);
 
                             if (ToolTtsXF.Instance().getTTSPlayer() != null) {
-                                ToolLog.e(TAG, "ToolTtsXF设置开关");
+                                ToolLog.efile(TAG, "ToolTtsXF设置开关");
                                 ToolVoiceXF.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
                             }
                             if (ToolTts.Instance().getTTSPlayer() != null) {
-                                ToolLog.e(TAG, "ToolTts设置开关");
+                                ToolLog.efile(TAG, "ToolTts设置开关");
                                 ToolVoice.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
                             }
                             break;
@@ -925,7 +925,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                 if (mVoFormat.contains("_")) {
                                     String[] mSplit = mVoFormat.split("_");
                                     if (mSplit.length == 2) {
-                                        ToolLog.e(TAG, "语音格式 " + mVoFormat);
+                                        ToolLog.efile(TAG, "语音格式 " + mVoFormat);
                                         //保存不同类型的语音格式
                                         switch (mSplit[1]) {
                                             case IConfigs.STATE0://0默认格式
@@ -968,18 +968,18 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                     ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT0, mVoFormat);
                                 }
                                 if (ToolTtsXF.Instance().getTTSPlayer() != null) {
-                                    ToolLog.e(TAG, "ToolTtsXF设置格式");
+                                    ToolLog.efile(TAG, "ToolTtsXF设置格式");
                                     ToolTtsXF.Instance().InitTtsSetting(mVoiceSetting);
                                     ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
                                 }
                                 if (ToolTts.Instance().getTTSPlayer() != null) {
-                                    ToolLog.e(TAG, "ToolTts设置格式");
+                                    ToolLog.efile(TAG, "ToolTts设置格式");
                                     ToolTts.Instance().InitTtsSetting(mVoiceSetting);
                                     ToolVoice.Instance().setVoiceSetting(mVoiceSetting);
                                 }
 
                                 ToolSP.putDIYString(IConfigs.SP_VOICE_TEMP, JSON.toJSONString(mVoiceSetting));
-                                ToolLog.e(TAG, " voiceFormat voiceFormat ");
+                                ToolLog.efile(TAG, " voiceFormat voiceFormat ");
                             }
                             break;
                         default://需要将未处理的信息抛出去

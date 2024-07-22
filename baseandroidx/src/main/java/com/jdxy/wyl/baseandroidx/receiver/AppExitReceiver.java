@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 
 public class AppExitReceiver extends BroadcastReceiver {
     /*
@@ -19,7 +20,9 @@ public class AppExitReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         if (intent.getAction() != null) {
-            if (intent.getAction().equals(context.getPackageName()) || intent.getAction().equals("com.jdxy.mediaplayer.close"))
+            String exReceiver = context.getPackageName() + ".close";
+            ToolLog.efile(TAG, "收到广播：" + intent.getAction());
+            if (intent.getAction().equals(exReceiver))
                 AppUtils.exitApp();
         }
     }

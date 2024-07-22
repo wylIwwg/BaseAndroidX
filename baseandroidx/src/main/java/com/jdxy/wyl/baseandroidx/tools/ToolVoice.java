@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ToolVoice {
 
-    public static final String TAG = "ToolVoice";
+    public static final String TAG = "ToolVoice系统语音";
 
 
     static ToolVoice mToolVoice;

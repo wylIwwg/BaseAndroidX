@@ -1,6 +1,15 @@
 package com.jdxy.wyl.baseandroidx.tools;
 
 public interface IToolDevice {
+
+    /**
+     * 获取设备厂商
+     *
+     * @return
+     */
+    String getDeviceManufacturer();
+
+
     /**
      * 执行su命令
      *

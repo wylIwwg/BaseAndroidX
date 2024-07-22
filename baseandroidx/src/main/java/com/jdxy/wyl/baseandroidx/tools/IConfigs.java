@@ -68,6 +68,9 @@ public interface IConfigs {
     String PATH_ZIP = PATH_ROOT + "zip/";//项目节目
 
 
+    //记录程序打印时间 用于助手程序判断目标程序运行在线
+    String FILE_DATETIME = PATH_ROOT + "datetime";//
+
     String FILE_REGISTER = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sjjd/register";
     String FILE_TTS_RESULT = PATH_TTS + "/tts.wav";
 

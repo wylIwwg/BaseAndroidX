@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ToolVoiceXF {
 
-    public static final String TAG = "ToolVoiceXF";
+    public static final String TAG = "ToolVoiceXF语音";
 
 
     static ToolVoiceXF mToolVoice;
@@ -291,6 +291,8 @@ public class ToolVoiceXF {
     public void addVoice(BVoice voice) {
         if (mVoiceSetting == null || !mVoiceSetting.isCanSpeak()) {
             ToolLog.efile(TAG, "【请先设置语音格式 或后台开启语音功能】");
+            ToolLog.efile(TAG, " mVoiceSetting " + mVoiceSetting);
+            ToolLog.efile(TAG, " mVoiceSetting isCanSpeak " + mVoiceSetting.isCanSpeak());
             return;
         }
         if (!TextUtils.isEmpty(voice.getDocid()))
