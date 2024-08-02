@@ -3,7 +3,7 @@ package com.jdxy.wyl.baseandroidx.bean;
 /**
  * Created by wyl on 2019/8/29.
  */
-public class Doctor {
+public class BDoctor {
     private String doctorName;
     private String doctorLevel;
     private String doctorProfil;
@@ -13,6 +13,24 @@ public class Doctor {
     private String id;
     private String introImg;
     private String docId;
+    private String doctorAvatar;
+    private int doctorPriority;
+
+    public String getDoctorAvatar() {
+        return doctorAvatar == null ? "" : doctorAvatar;
+    }
+
+    public void setDoctorAvatar(String doctorAvatar) {
+        this.doctorAvatar = doctorAvatar == null ? "" : doctorAvatar;
+    }
+
+    public int getDoctorPriority() {
+        return doctorPriority;
+    }
+
+    public void setDoctorPriority(int doctorPriority) {
+        this.doctorPriority = doctorPriority;
+    }
 
     public String getDocId() {
         return docId == null ? "" : docId;

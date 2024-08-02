@@ -3,57 +3,10 @@ package com.jdxy.wyl.baseandroidx.tools;
 import android.text.TextUtils;
 
 import com.jdxy.wyl.baseandroidx.R;
-import com.jdxy.wyl.baseandroidx.bean.BPushData;
-import com.jdxy.wyl.baseandroidx.bean.Dept;
-import com.jdxy.wyl.baseandroidx.bean.Patient;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ToolData {
 
 
-    /**
-     * 综合屏测试数据
-     *
-     * @return
-     */
-    public static Map<String, BPushData> testSynthesisData() {
-
-        Map<String, BPushData> mapData = new HashMap<>();
-
-        List<Patient> mPatients = new ArrayList<>();
-        Dept mDepart = new Dept();
-        mDepart.setDepartName("测试科室");
-        mDepart.setClinicName("这是诊室");
-
-        for (int j = 0; j < 15; j++) {
-            Patient p = new Patient();
-            p.setPatientNum("" + j);
-            p.setPatientName("测试测");
-            p.setState("" + j);
-            mPatients.add(p);
-        }
-        for (int j = 1; j <= 6; j++) {
-            BPushData pd = new BPushData();
-            pd.setPassedList(mPatients);
-            pd.setWaitingList(mPatients);
-            pd.setCurrents(mPatients);
-            pd.setClinicName("彩超室一" + j);
-            pd.setPatientNum("" + j);
-            pd.setPatientName("测试测");
-            pd.setDoctorName("李明亮");
-            pd.setDepartmentName("消化内科");
-            pd.setCount("" + j);
-            pd.setState("" + j);
-            pd.setDocid(j + "");
-            mapData.put(pd.getDocid(), pd);
-
-        }
-        return mapData;
-    }
 
     /**
      * 显示患者姓名 是否隐私处理

@@ -38,6 +38,11 @@ public interface IConfigs {
     public static String STATE8 = "8";
 
 
+    public static String SP_SiteCode = "siteCode";//站点信息
+
+    public static String SP_Privacy = "privacy";//隐私处理
+
+
     String URL_UPLOAD_IMAGE = "/baseConsultaioninfo/screenShot";
     String URL_UPLOAD_LOGS = "/upload/logs";
 
@@ -139,6 +144,7 @@ public interface IConfigs {
     String SP_API = "api";
     String SP_HOST = "host";
     String SP_TIPS = "tips";//终端提示
+    String SP_TIPS2 = "tips2";
     String SP_PHONE = "phone";///联系号码
     String SP_POWER = "power";//开关机
     String SP_SHOWLOG = "showlog";//是否显示日志
@@ -158,7 +164,7 @@ public interface IConfigs {
     int APP_TYPE_MenZhen = 3;//门诊
 
 
-    String SP_PATH_REGISER = "pathRegister";
+    String SP_PATH_REGISTER = "pathRegister";
     String SP_PATH_MAX = "pathMac";
     String SP_PATH_LOG = "pathLog";
     String SP_DEV_UPTIME = "devUpTime";

@@ -1,6 +1,6 @@
 package com.jdxy.wyl.baseandroidx.bean;
 
-public class Patient {
+public class BPatient {
     private String patientName;
     private String patientNum;
     private String clinicName;//诊室

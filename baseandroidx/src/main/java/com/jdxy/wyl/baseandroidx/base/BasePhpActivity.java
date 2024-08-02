@@ -227,6 +227,21 @@ public class BasePhpActivity extends AppCompatActivity implements IView {
 
     }
 
+    @Override
+    public void refreshUI() {
+
+    }
+
+    @Override
+    public void restartApp() {
+        mPresenter.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                AppUtils.relaunchApp(true);
+            }
+        }, 2000);
+    }
+
 
     @Override
     public void onBackPressed() {

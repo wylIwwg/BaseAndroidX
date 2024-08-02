@@ -538,6 +538,21 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
 
     }
 
+    @Override
+    public void refreshUI() {
+
+    }
+
+    @Override
+    public void restartApp() {
+        mPresenter.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                AppUtils.relaunchApp(true);
+            }
+        }, 2000);
+    }
+
     public void addDevice(String clientId) {
 
     }

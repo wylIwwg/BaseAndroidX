@@ -21,6 +21,7 @@ import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.Utils;
 import com.jdxy.wyl.baseandroidx.bean.BAppType;
 import com.jdxy.wyl.baseandroidx.bean.BBanner;
+import com.jdxy.wyl.baseandroidx.bean.BDept;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
 import com.jdxy.wyl.baseandroidx.bean.BRegister;
@@ -38,6 +39,7 @@ import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolRegister;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
 import com.jdxy.wyl.baseandroidx.tools.ToolSocket;
+import com.jdxy.wyl.baseandroidx.tools.ToolToggle;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolTtsXF;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
@@ -219,6 +221,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
 
             URL_UPLOAD_SCREEN = mHost + IConfigs.URL_UPLOAD_IMAGE;
             URL_UPLOAD_LOGS = mHost + IConfigs.URL_UPLOAD_LOGS;
+
+            ToolToggle.showPatientFullName = ToolSP.getDIYBoolean(IConfigs.SP_Privacy);
 
             ToolSP.putDIYString(IConfigs.SP_HOST, mHost);
 
@@ -753,11 +757,27 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                         mSocketInterceptListener.intercept(mType, obj);
                         return;
                     }
+                    String data = null;
+                    if (obj.contains("data")) {
+                        data = mObject.getString("data");
+                    }
                     switch (mType) {
+                        case "customvoice":
+                            if (!TextUtils.isEmpty(data)) {
+                                if (!ToolVoiceXF.Instance().isSpeeking)
+                                    ToolVoiceXF.Instance().TtsSpeakTest(data);
+                            }
+                            break;
+                        case "tmState"://脱敏
+                            ToolSP.putDIYBoolean(IConfigs.SP_Privacy, !"1".equals(data));
+                            ToolToggle.showPatientFullName = !"1".equals(data); //true 显示姓名
+                            mView.refreshUI();//刷新UI 不建议重启
+                            break;
+
                         case "change"://节目 数据切换
                             //记录切换操作的时间
                             changeTime = currentTime;
-                            boolean change = "1".equals(mObject.getString("data"));
+                            boolean change = "1".equals(data);
                             //0:显示节目；1 显示数据
                             ToolSP.putDIYBoolean(IConfigs.SP_CONTENT_SWITCH, change);
                             if (!change) {
@@ -768,7 +788,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             break;
 
                         case "voiceFile"://下载声音文件
-                            List<String> urls = JSON.parseArray(mObject.getString("data"), String.class);
+                            List<String> urls = JSON.parseArray(data, String.class);
                             downloadVoiceFiles(urls);
 
                             break;
@@ -807,12 +827,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             }
                             break;
                         case "reconnection"://重连 就重启
-                            mHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    AppUtils.relaunchApp(true);
-                                }
-                            }, 1000);
+                            mView.restartApp();//重启
                             break;
                         case "pong"://心跳处理
                             Date mDate;
@@ -854,8 +869,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             break;
                         case "logs":
                             String sessionId2 = mObject.getString("sessionId");
-                            String date = mObject.getString("data");
-                            uploadLogs(URL_UPLOAD_LOGS, sessionId2, ToolDevice.getMac(), date);
+                            uploadLogs(URL_UPLOAD_LOGS, sessionId2, ToolDevice.getMac(), data);
                             break;
                         case "screen"://截屏请求
                             String sessionId = mObject.getString("sessionId");
@@ -877,13 +891,10 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             break;
                         case "restart":
                         case "restartApp"://重启软件
+
                             showTips(IConfigs.MESSAGE_INFO, "软件即将重启");
-                            mHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    AppUtils.relaunchApp(true);
-                                }
-                            }, 2000);
+
+                            mView.restartApp();//重启
                             break;
                         case "upgrade"://更新apk
                             showTips(IConfigs.MESSAGE_INFO, "收到软件更新");
@@ -895,14 +906,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                         case "register"://在线注册
                             String mRegister_code = mObject.getString("register_code");
                             ToolRegister.Instance(mContext).registerDevice(mRegister_code);
-                            showTips(IConfigs.MESSAGE_INFO, "注册信息已更改，软件即将重启");
-                            if (mHandler != null)
-                                mHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        AppUtils.relaunchApp(true);
-                                    }
-                                }, 2000);
+                            mView.restartApp();//重启
 
                             break;
                         case "init": //socket连接成功之后 做初始化操作
@@ -916,9 +920,13 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             }
                             mView.addDevice(clientId); //添加设备
                             break;
+                        case "siteCode"://站点信息
+                            ToolSP.putDIYString(IConfigs.SP_SiteCode, data);
+                            mView.restartApp();//重启 需要添加设备
 
+                            break;
                         case "voiceFormat"://语音格式-修改为可支持不同场景下的呼叫要求
-                            BVoiceSetting mVoiceSetting = JSON.parseObject(mObject.get("data").toString(), BVoiceSetting.class);
+                            BVoiceSetting mVoiceSetting = JSON.parseObject(data, BVoiceSetting.class);
                             if (mVoiceSetting != null) {
                                 String mVoFormat = mVoiceSetting.getVoFormat();
                                 //通过下划线来处理状态 不同情况的语音格式
@@ -982,6 +990,20 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                 ToolLog.efile(TAG, " voiceFormat voiceFormat ");
                             }
                             break;
+
+                        case "address":
+                            if (TextUtils.isEmpty(data))
+                                return;
+                            BDept mDepart = JSON.parseObject(data, BDept.class);
+                            ToolSP.putDIYString(IConfigs.SP_DEPART_NAME, mDepart.getDeptName());
+                            ToolSP.putDIYString(IConfigs.SP_CLINIC_NAME, mDepart.getClinicName());
+                            ToolSP.putDIYString(IConfigs.SP_DEPART_ID, mDepart.getDeptId());
+                            ToolSP.putDIYString(IConfigs.SP_CLINIC_ID, mDepart.getClinicId());
+
+                            mView.restartApp();//重启
+
+                            break;
+
                         default://需要将未处理的信息抛出去
                             //很多类型的的type都没有data 需要将整条消息抛出
                             mView.moreMessage(mType, obj);
@@ -1025,7 +1047,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
      * 使用本地语音能力
      * TextToSpeech
      */
-    public void InitTtsSetting() {
+    public void initTtsSetting() {
         //获取语音配置
         String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
         BVoiceSetting mVoiceSetting;//语音设置
@@ -1052,7 +1074,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
     /**
      * 使用讯飞语音SDK合成
      */
-    public void InitTtsXFSetting() {
+    public void initTtsXFSetting() {
         //获取语音配置
         String mVoice = ToolSP.getDIYString(IConfigs.SP_VOICE_TEMP);
         BVoiceSetting mVoiceSetting;//语音设置

@@ -33,16 +33,16 @@ public class BaseDataHandler extends Handler {
             switch (msg.what) {
                 case IConfigs.NET_CONNECT_ERROR:
                     mMessageListener.showTips(IConfigs.MESSAGE_ERROR, msg.obj == null ? "网络连接异常" : (String) msg.obj);
-                    break;
+                    return;
                 case IConfigs.NET_SERVER_ERROR:
                     mMessageListener.showTips(IConfigs.MESSAGE_ERROR,msg.obj == null ? "服务器异常" : (String) msg.obj);
-                    break;
+                    return;
                 case IConfigs.NET_UNKNOWN_ERROR:
                     mMessageListener.showTips(IConfigs.MESSAGE_ERROR,msg.obj == null ? "未知错误" : (String) msg.obj);
-                    break;
+                    return;
                 case IConfigs.NET_TIMEOUT:
                     mMessageListener.showTips(IConfigs.MESSAGE_ERROR,msg.obj == null ? "网络连接超时" : (String) msg.obj);
-                    break;
+                    return;
 
             }
         //自定义消息处理

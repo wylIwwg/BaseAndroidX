@@ -51,4 +51,15 @@ public interface IView {
      * @param data
      */
     void moreMessage(String type, String data);
+
+    /**
+     * 刷新UI
+     */
+    void refreshUI();
+
+
+    /**
+     * 重启APP
+     */
+    void restartApp();
 }

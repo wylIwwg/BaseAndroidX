@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.bumptech.glide.Glide;
@@ -71,8 +72,8 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
         mRlvBanner = findViewById(R.id.rlvBanner);
         mTvCover = findViewById(R.id.tvCover);
         mSuperBanner = findViewById(R.id.banner);
-        //不再默认初始化
-        // mPresenter = Presenter.getInstance().init(mContext, this);
+        mPresenter = Presenter.getInstance().init(mContext, this);
+        //默认初始化
         mMac = ToolDevice.getMac();
 
     }
@@ -108,7 +109,7 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(mRlvBanner.getVisibility()==View.VISIBLE)
+                    if (mRlvBanner.getVisibility() == View.VISIBLE)
                         return;
                     //banners不为空 说明已经获取到数据了 已经进行过初始化
                     ToolLog.efile(TAG, "显示节目数据");
@@ -266,6 +267,21 @@ public class BaseHosActivity extends AppCompatActivity implements IView {
     @Override
     public void moreMessage(String type, String data) {
 
+    }
+
+    @Override
+    public void refreshUI() {
+
+    }
+
+    @Override
+    public void restartApp() {
+        mPresenter.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                AppUtils.relaunchApp(true);
+            }
+        }, 2000);
     }
 
 
