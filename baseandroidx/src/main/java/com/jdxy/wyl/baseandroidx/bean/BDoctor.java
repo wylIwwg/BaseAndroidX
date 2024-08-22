@@ -16,6 +16,7 @@ public class BDoctor {
     private String doctorAvatar;
     private int doctorPriority;
 
+
     public String getDoctorAvatar() {
         return doctorAvatar == null ? "" : doctorAvatar;
     }

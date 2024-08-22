@@ -207,7 +207,7 @@ public interface IConfigs {
     int DEVICE_REGISTERED = 1;//已注册
     int DEVICE_OUTTIME = 2;//已过期
 
-    String URL_ADD_PUSH = "/Push/addPush";
+    //String URL_ADD_PUSH = "/Push/addPush";
 
     String METHOD_BIND = "Bind.machineRegister";
     String METHOD_ADD_DEVICE = "Bind.machineRegister";

@@ -3,10 +3,46 @@ package com.jdxy.wyl.baseandroidx.tools;
 import android.text.TextUtils;
 
 import com.jdxy.wyl.baseandroidx.R;
+import com.jdxy.wyl.baseandroidx.bean.BDept;
+import com.jdxy.wyl.baseandroidx.bean.BDoctor;
+import com.jdxy.wyl.baseandroidx.bean.BPatient;
+import com.jdxy.wyl.baseandroidx.bean.BPushData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ToolData {
 
+    public static BPushData testData(int index, int num) {
+        List<BPatient> mPatients = new ArrayList<>();
+        for (int j = 0; j < num; j++) {
+            BPatient p = new BPatient();
+            p.setPatientNum("" + j);
+            p.setPatientName("测试测");
+            p.setState("" + j);
+            mPatients.add(p);
 
+        }
+        BPushData pd = new BPushData();
+        pd.setCurrentList(mPatients);
+        pd.setWaitingList(mPatients);
+
+        BDept mDeptInfo = new BDept();
+        mDeptInfo.setClinicName("彩超室一" + index);
+        mDeptInfo.setDeptName("消化内科");
+        mDeptInfo.setClinicId(index + "");
+        mDeptInfo.setDeptId(index + "");
+
+        pd.setDeptInfo(mDeptInfo);
+
+        BDoctor mDoctor = new BDoctor();
+        mDoctor.setId(index + "");
+        mDoctor.setDoctorName("测试医生" + index);
+        pd.setDoctorInfo(mDoctor);
+
+        return pd;
+
+    }
 
     /**
      * 显示患者姓名 是否隐私处理

@@ -47,7 +47,6 @@ import com.jdxy.wyl.baseandroidx.tools.ToolVoiceXF;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
-import com.lzy.okgo.model.HttpParams;
 import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.OkDownload;
@@ -323,7 +322,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         //通知更新
         //读取默认配置信息
         //通知后台更新
-        HttpParams hp = new HttpParams();
+      /*  HttpParams hp = new HttpParams();
         hp.put("pushTem", ToolSP.getDIYString(IConfigs.SP_PROGRAM_ID));
         hp.put("pushMac", ToolDevice.getMac());
         hp.put("pushState", "1");
@@ -335,7 +334,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                     public void onSuccess(Response<String> response) {
 
                     }
-                });
+                });*/
 
         ThreadUtils.executeByCached(new ThreadUtils.SimpleTask<Object>() {
             @Override
