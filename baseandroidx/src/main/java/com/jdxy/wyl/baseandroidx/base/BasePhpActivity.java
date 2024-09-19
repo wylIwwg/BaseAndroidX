@@ -260,14 +260,6 @@ public class BasePhpActivity extends AppCompatActivity implements IView {
         this.finish();
     }
 
-    public void InitTtsSetting() {
-
-        //初始化语音sdk
-        // ToolTts.Instance(mContext).InitTtsSetting(Integer.parseInt(mVoiceSetting.getVoSpeed()));
-        //初始化语音控制
-        // ToolVoice.Instance(mDataHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
-
-    }
 
 
 }
