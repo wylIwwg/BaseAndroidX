@@ -83,8 +83,6 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
     public boolean isContent = false;//内容切换开关
     public BVoiceSetting mVoiceSetting;//语音设置
 
-    public String URL_UPLOAD_SCREEN;//上传截图链接http
-    public String URL_UPLOAD_LOGS;//上传截图链接http
 
     public String URL_FINISH_VOICE;//语音播报结束
     public String ProjectName = "";
@@ -236,8 +234,6 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
             mBaseHost = mHost;
             mHost = mBaseHost + ProjectName;
 
-            URL_UPLOAD_SCREEN = mHost + IConfigs.URL_UPLOAD_IMAGE;
-            URL_UPLOAD_LOGS = mHost + IConfigs.URL_UPLOAD_LOGS;
 
             ToolSP.putDIYString(IConfigs.SP_HOST, mHost);
 
@@ -840,7 +836,7 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
                             uploadLogs("", ToolDevice.getMac());
                             break;
                         case "capture":
-                            mView.uploadScreen(URL_UPLOAD_SCREEN, "");
+                            mView.uploadScreen(mHost, "");
                             break;
                         case "voiceSize"://设置声音大小
                             BVolume volume = JSON.parseObject(msg.obj.toString(), BVolume.class);
@@ -1168,7 +1164,7 @@ public class PresenterPhp implements IPresenter, BaseDataHandler.MessageListener
     public void showSetting(String api, List<BAppType> appTypes, boolean clear) {
         Intent mIntent = new Intent(mContext, BaseSettingActivity.class);
         mIntent.putExtra(IConfigs.SP_API, api);
-        mIntent.putExtra(IConfigs.INTENT_APP_TYPE, JSON.toJSONString(appTypes));
+        mIntent.putExtra(IConfigs.INTENT_APP_TYPE, "-99");
         mIntent.putExtra(IConfigs.INTENT_CLEAR_APP_TYPE, clear);
         mContext.startActivity(mIntent);
 

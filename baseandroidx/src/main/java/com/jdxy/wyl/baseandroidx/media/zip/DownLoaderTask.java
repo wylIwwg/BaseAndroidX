@@ -5,12 +5,8 @@ import android.os.AsyncTask;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
-import com.jdxy.wyl.baseandroidx.tools.ToolDevice;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
 import com.jdxy.wyl.baseandroidx.tools.ToolSP;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
-import com.lzy.okgo.model.Response;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -203,25 +199,6 @@ public class DownLoaderTask extends AsyncTask<Void, Integer, Long> {
             ToolLog.e(TAG, "write: 下载进度  " + mProgress + "   " + mToatalLength);
 
             if (mProgress >= mToatalLength) {//下载完成 开始解压
-                //通知更新
-                String port = ToolSP.getDIYString(IConfigs.SP_PORT_HTTP);
-                String ip = ToolSP.getDIYString(IConfigs.SP_IP);
-                //读取默认配置信息
-                String host = String.format(IConfigs.HOST, ip, port);
-                String id = ToolSP.getDIYString(IConfigs.SP_PROGRAM_ID);
-
-                OkGo.<String>post(host + IConfigs.URL_ADD_PUSH)
-                        .params("pushTem", id)
-                        .params("pushMac", ToolDevice.getMac())
-                        .params("pushState", "1")
-                        .tag(this)
-                        .execute(new StringCallback() {
-                            @Override
-                            public void onSuccess(Response<String> response) {
-
-                            }
-                        });
-
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.CHINA);
                 String now = sdf.format(new Date(System.currentTimeMillis()));

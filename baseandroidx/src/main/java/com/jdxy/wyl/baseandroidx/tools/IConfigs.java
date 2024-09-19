@@ -7,6 +7,7 @@ import android.os.Environment;
  */
 public interface IConfigs {
 
+
     //默认7天日志
     public static long SEVEN_DAY_Millis = 604800000;
 
@@ -215,5 +216,20 @@ public interface IConfigs {
     String METHOD_UPLOAD_LOG = "Other.machineLogFile";//上传日志
     String METHOD_UPLOAD_CAPTURE = "Other.uploadCapture";//上传截图
     String METHOD_VOICE_FINISH = "Call.finishVoice";
+
+
+    String METHOD_AREA = "Bind.collocation";
+    String METHOD_NEXT = "Call.nextCall";
+    String METHOD_PASS = "Call.setpassed";
+    String METHOD_REPEAT = "Call.reCall";
+    String METHOD_PAUSE = "Call.setPause";
+    String METHOD_CAUSE = "Call.getPauseReason";
+    String METHOD_EVALUATE = "Call.setComment";
+    String METHOD_LOGOUT = "Call.logout";
+    String METHOD_LOGIN = "Call.login";
+
+    String METHOD_COMPLETE = "Call.callEnd";//完成
+    String METHOD_TRANSFER = "Call.callDivert";//转移
+    String METHOD_TRANSFER_ITEMS = "Call.getMoveItem";//获取转移事项
 
 }

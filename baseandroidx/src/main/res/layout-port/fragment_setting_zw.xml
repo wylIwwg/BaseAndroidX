@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/bg_purple_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/btnClose"
+                style="@style/baseBtn"
+                android:text="退出应用" />
+
+            <Button
+                android:id="@+id/btnClearSetting"
+                style="@style/baseClear"
+                android:layout_marginLeft="20dp"
+                android:text="清除数据" />
+
+            <Button
+                android:id="@+id/btnShowLog"
+                style="@style/baseBtn"
+                android:layout_marginLeft="20dp"
+                android:text="查看日志"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnShowSetting"
+                style="@style/baseBtn"
+                android:layout_marginLeft="20dp"
+                android:text="查看设置"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rlvSetting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:visibility="gone" />
+
+        <TextView
+
+            style="@style/DetailTitle"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="2dp"
+            android:text="服务器设置：" />
+
+        <LinearLayout
+            android:id="@+id/popRoot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/bg_settting"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/DetailTitle"
+                    android:layout_width="140dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="end"
+                    android:text="项目名称：" />
+
+                <EditText
+                    android:id="@+id/etProjectName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/base_et"
+                    android:hint="输入项目名称"
+                    android:padding="5dp"
+                    android:textColor="@color/red"
+                    android:textColorHint="@color/red"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/DetailTitle"
+                    android:layout_width="140dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="end"
+                    android:text="输入ip地址：" />
+
+                <EditText
+                    android:id="@+id/etIp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/base_et"
+                    android:hint="输入正确的ip地址"
+                    android:inputType="number|textUri"
+                    android:padding="5dp"
+                    android:textColor="@color/txt"
+                    android:textColorHint="@color/txt"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/DetailTitle"
+                    android:layout_width="140dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="end"
+                    android:text="输入http端口：" />
+
+                <EditText
+                    android:id="@+id/etPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/base_et"
+                    android:hint="输入正确的端口号"
+                    android:inputType="number"
+                    android:padding="5dp"
+                    android:textColor="@color/txt"
+                    android:textColorHint="@color/txt"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/DetailTitle"
+                    android:layout_width="140dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="end"
+                    android:text="输入socket端口：" />
+
+                <EditText
+                    android:id="@+id/etSocketPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/base_et"
+                    android:hint="输入正确的端口号"
+                    android:inputType="number"
+                    android:padding="5dp"
+                    android:textColor="@color/txt"
+                    android:textColorHint="@color/txt"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="2dp"
+                android:text="*若填写域名，优先使用域名，ip仅用于socket连接*"
+                android:textColor="@color/red"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/DetailTitle"
+                    android:layout_width="140dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="end"
+                    android:text="输入正确域名：" />
+
+                <EditText
+                    android:id="@+id/etDomainName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/base_et"
+                    android:hint="域名(如https://mobile.chumo028.com/)"
+                    android:inputType="textUri"
+                    android:padding="5dp"
+                    android:textColor="@color/txt"
+                    android:textColorHint="@color/txt"
+                    android:textCursorDrawable="@drawable/base_et_cursor"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <TextView
+            style="@style/DetailTitle"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="2dp"
+            android:text="选择软件类型：" />
+
+        <LinearLayout
+            android:id="@+id/llArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/shape_response"
+            android:orientation="vertical"
+            android:padding="25dp">
+
+
+            <com.jdxy.wyl.baseandroidx.view.WrapLinearLayout
+                android:id="@+id/rgSynthesisType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:grivate="left"
+                app:horizontal_Space="10dp"
+                app:vertical_Space="5dp">
+
+
+            </com.jdxy.wyl.baseandroidx.view.WrapLinearLayout>
+
+
+            <Button
+                android:id="@+id/btnGetArea"
+                style="@style/baseBtn"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"
+                android:text="获取位置" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="单位" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="楼层" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="区域" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="窗口" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rlvUnit"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rlvFloor"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rlvArea"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rlvWindow"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnConfirm"
+                style="@style/baseBtn"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"
+                android:text="保存确认" />
+        </LinearLayout>
+
+        <TextView
+
+            style="@style/DetailTitle"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="2dp"
+            android:text="请确认操作："
+            android:visibility="gone" />
+
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -26,6 +26,7 @@ import com.jdxy.wyl.baseandroidx.fragments.DeviceFragment;
 import com.jdxy.wyl.baseandroidx.fragments.LzFragment;
 import com.jdxy.wyl.baseandroidx.fragments.PingFragment;
 import com.jdxy.wyl.baseandroidx.fragments.SettingFragment;
+import com.jdxy.wyl.baseandroidx.fragments.SettingZWFragment;
 import com.jdxy.wyl.baseandroidx.tools.IConfigs;
 import com.jdxy.wyl.baseandroidx.tools.ToolLZ;
 import com.jdxy.wyl.baseandroidx.tools.ToolLog;
@@ -37,7 +38,7 @@ import me.jessyan.autosize.AutoSizeCompat;
 import me.jessyan.autosize.AutoSizeConfig;
 
 
-public class BaseSettingActivity extends AppCompatActivity  {
+public class BaseSettingActivity extends AppCompatActivity {
     ImageView mImgBack;
     TextView mTvBack;
     TextView mTvTitleLeft;
@@ -140,8 +141,11 @@ public class BaseSettingActivity extends AppCompatActivity  {
             ToolLog.e(TAG, "initTabLayout: " + mApi);
             ToolLog.e(TAG, "initTabLayout: " + apps);
         }
-
-        mFragments.add(SettingFragment.newInstance(mApi, apps, clear));
+        if ("-99".equals(apps)) {
+            mFragments.add(SettingZWFragment.newInstance(mApi, apps, clear));
+        } else {
+            mFragments.add(SettingFragment.newInstance(mApi, apps, clear));
+        }
         mFragments.add(PingFragment.newInstance(mApi));
         mFragments.add(new DeviceFragment());
        /* mTitleList.add("亮钻设备");
