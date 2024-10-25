@@ -80,4 +80,9 @@
         <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:padding">10dp</item>
     </style>
+
+    <style name="bastRb">
+        <item name="android:button">@drawable/base_cb</item>
+    </style>
+
 </resources>

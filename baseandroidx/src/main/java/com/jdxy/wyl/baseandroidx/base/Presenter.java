@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
 import android.text.TextUtils;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -25,6 +26,7 @@ import com.jdxy.wyl.baseandroidx.bean.BDept;
 import com.jdxy.wyl.baseandroidx.bean.BPower;
 import com.jdxy.wyl.baseandroidx.bean.BProgram;
 import com.jdxy.wyl.baseandroidx.bean.BRegister;
+import com.jdxy.wyl.baseandroidx.bean.BVoice;
 import com.jdxy.wyl.baseandroidx.bean.BVoiceSetting;
 import com.jdxy.wyl.baseandroidx.bean.BVolume;
 import com.jdxy.wyl.baseandroidx.listeners.RegisterListener;
@@ -43,6 +45,7 @@ import com.jdxy.wyl.baseandroidx.tools.ToolToggle;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolTtsXF;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
+import com.jdxy.wyl.baseandroidx.tools.ToolVoiceSystem;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoiceXF;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -1035,6 +1038,34 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
 
     public void setSocketInterceptListener(SocketInterceptListener socketInterceptListener) {
         mSocketInterceptListener = socketInterceptListener;
+    }
+
+
+    public void initVoice(TextView textView) {
+        //设置声源
+        if (ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == IConfigs.VoiceType_SYSTEM
+                || ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == -1) {
+            initTtsSetting();
+            if (textView != null)
+                ToolVoiceSystem.Instance().setVoiceView(textView).setSpeechEndListener(new ToolVoiceSystem.SpeechEndListener() {
+                    @Override
+                    public boolean speechEnd(BVoice patient) {
+                        //处理播放完成的语音
+                        return true;
+                    }
+                });
+        }
+        if (ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == IConfigs.VoiceType_XF) {
+            initTtsXFSetting();
+            if (textView != null)
+                ToolVoiceXF.Instance().setVoiceView(textView).setSpeechEndListener(new ToolVoiceXF.SpeechEndListener() {
+                    @Override
+                    public boolean speechEnd(BVoice patient) {
+                        //处理播放完成的语音
+                        return true;
+                    }
+                });
+        }
     }
 
     //获取Handler

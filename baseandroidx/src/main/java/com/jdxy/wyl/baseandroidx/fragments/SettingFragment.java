@@ -247,7 +247,29 @@ public class SettingFragment extends Fragment {
             });
             mHolder.mRgSynthesisType.addView(rb);
         }
-
+        //设置声源
+        if (ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == IConfigs.VoiceType_SYSTEM || ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == -1) {
+            mHolder.rbVoiceSystem.setChecked(true);
+        }
+        if (ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == IConfigs.VoiceType_XF) {
+            mHolder.rbVoiceXF.setChecked(true);
+        }
+        mHolder.rbVoiceSystem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ToolSP.putDIYInt(IConfigs.SP_VOICE_SOURCE, IConfigs.VoiceType_SYSTEM);
+                }
+            }
+        });
+        mHolder.rbVoiceXF.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    ToolSP.putDIYInt(IConfigs.SP_VOICE_SOURCE, IConfigs.VoiceType_XF);
+                }
+            }
+        });
 
         mHolder.mBtnGetArea.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -492,6 +514,11 @@ public class SettingFragment extends Fragment {
 
 
     static class Holder {
+        @BindView(R2.id.rbVoiceSystem)
+        RadioButton rbVoiceSystem;
+        @BindView(R2.id.rbVoiceXF)
+        RadioButton rbVoiceXF;
+
         @BindView(R2.id.etIp)
         EditText mEtIp;
         @BindView(R2.id.etPort)

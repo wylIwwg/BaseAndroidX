@@ -39,6 +39,10 @@ public interface IConfigs {
     public static String STATE8 = "8";
 
 
+    public static String SP_VOICE_SOURCE = "voiceSource";//省源
+    public static int VoiceType_SYSTEM = 0;//指定系统声源语音
+    public static int VoiceType_XF = 1;//讯飞合成语音
+
     public static String SP_SiteCode = "siteCode";//站点信息
 
     public static String SP_Privacy = "privacy";//隐私处理

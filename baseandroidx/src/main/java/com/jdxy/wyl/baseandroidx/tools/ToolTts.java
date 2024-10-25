@@ -63,7 +63,7 @@ public class ToolTts {
      * 参数设置
      */
     public void setParam() {
-        mTTSPlayer.setOnUtteranceProgressListener(mDefaultTtsListener);
+        //mTTSPlayer.setOnUtteranceProgressListener(mDefaultTtsListener);
 
         //float pitch = TextUtils.isEmpty(mVoiceSetting.getVoPitch()) ? 50 : Float.parseFloat(mVoiceSetting.getVoPitch());
         //ToolLog.e(TAG, "设置音高 " + pitch / 100f);
@@ -106,7 +106,7 @@ public class ToolTts {
     private UtteranceProgressListener mDefaultTtsListener = new UtteranceProgressListener() {
         @Override
         public void onStart(String utteranceId) {
-            ToolLog.efile(TAG, "onSpeakBegin: 开始播放 ");
+            ToolLog.efile(TAG, "onSpeakBegin: 开始播放11 ");
         }
 
         @Override
@@ -161,6 +161,7 @@ public class ToolTts {
 
     public void setSynthesizerListener(UtteranceProgressListener synthesizerListener) {
         mSynthesizerListener = synthesizerListener;
+        ToolLog.e(TAG, "设置语音监听");
         if (mTTSPlayer != null) {
             mTTSPlayer.setOnUtteranceProgressListener(mSynthesizerListener);
         }

@@ -230,6 +230,47 @@
 
         </LinearLayout>
 
+        <TextView
+            style="@style/DetailTitle"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="2dp"
+            android:text="指定声源发声：" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/shape_response"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+
+            <RadioGroup
+                android:id="@+id/rgVoiceType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbVoiceSystem"
+                    style="@style/bastRb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="系统发声" />
+
+                <RadioButton
+                    android:id="@+id/rbVoiceXF"
+                    style="@style/bastRb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="讯飞发声" />
+            </RadioGroup>
+
+        </LinearLayout>
 
         <TextView
             style="@style/DetailTitle"
