@@ -21,10 +21,11 @@ public interface IToolDevice {
     /**
      * 安装apk（静默安装）
      *
-     * @param apk apk绝对路径
+     * @param apkPath     apk绝对路径
+     * @param packageName 包名
      * @return
      */
-    boolean installApk(String apk);
+    boolean installApk(String apkPath, String packageName);
 
     /**
      * 卸载apk
@@ -71,4 +72,13 @@ public interface IToolDevice {
      * @param second
      */
     void rebootAfterTime(int second);
+
+
+    /**
+     * 开启ABD
+     */
+    void enableAdb();
+
+
+    void setDaemon(String packageName);
 }

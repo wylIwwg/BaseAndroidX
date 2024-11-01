@@ -44,7 +44,6 @@ import com.jdxy.wyl.baseandroidx.tools.ToolSocket;
 import com.jdxy.wyl.baseandroidx.tools.ToolToggle;
 import com.jdxy.wyl.baseandroidx.tools.ToolTts;
 import com.jdxy.wyl.baseandroidx.tools.ToolTtsXF;
-import com.jdxy.wyl.baseandroidx.tools.ToolVoice;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoiceSystem;
 import com.jdxy.wyl.baseandroidx.tools.ToolVoiceXF;
 import com.lzy.okgo.OkGo;
@@ -629,7 +628,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
             if (mToolDevice != null) {
                 //boolean success = mToolDevice.installApk(apk.getAbsolutePath());
                 // ToolLog.efile("【非亮钻安装7.0以上系统自动安装升级】" + Build.USER, "onSuccess: " + success);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                mToolDevice.installApk(apk.getAbsolutePath(), mPackageName);
+                /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     ToolLog.efile(mToolDevice.getDeviceManufacturer() + "【7.0以下系统升级】" + Build.USER);
                     Intent intentapk = new Intent(Intent.ACTION_VIEW);
                     intentapk.setDataAndType(Uri.fromFile(apk),
@@ -644,7 +644,8 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
 
                     ToolLog.efile(mToolDevice.getDeviceManufacturer() + "【安装7.0以上系统自动安装升级】" + Build.USER, "onSuccess: " + String.format(SHELL, apkPath));
                     mToolDevice.suExec(String.format(SHELL, apkPath));
-                }
+
+                }*/
                 return;
             }
 
@@ -829,7 +830,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             }
                             break;
                         case "reconnection"://重连 就重启
-                            mView.restartApp();//重启
+                            mView.restartApp(data);//重启
                             break;
                         case "pong"://心跳处理
                             Date mDate;
@@ -860,13 +861,17 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             String mVoiceSwitch = mObject.getString("flag");
                             ToolSP.putDIYString(IConfigs.SP_VOICE_SWITCH, mVoiceSwitch);
 
-                            if (ToolTtsXF.Instance().getTTSPlayer() != null) {
-                                ToolLog.efile(TAG, "ToolTtsXF设置开关");
-                                ToolVoiceXF.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
-                            }
-                            if (ToolTts.Instance().getTTSPlayer() != null) {
-                                ToolLog.efile(TAG, "ToolTts设置开关");
-                                ToolVoice.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
+                            if (ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == IConfigs.VoiceType_SYSTEM
+                                    || ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == -1) {
+                                if (ToolTts.Instance().getTTSPlayer() != null) {
+                                    ToolLog.efile(TAG, "ToolTts系统设置开关");
+                                    ToolVoiceSystem.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
+                                }
+                            } else {
+                                if (ToolTtsXF.Instance().getTTSPlayer() != null) {
+                                    ToolLog.efile(TAG, "ToolTtsXF设置开关");
+                                    ToolVoiceXF.Instance().getVoiceSetting().setCanSpeak("1".equals(mVoiceSwitch));
+                                }
                             }
                             break;
                         case "logs":
@@ -875,7 +880,6 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             break;
                         case "screen"://截屏请求
                             String sessionId = mObject.getString("sessionId");
-
                             if (TextUtils.isEmpty(URL_UPLOAD_SCREEN)) {
                                 showTips(IConfigs.MESSAGE_ERROR, "截图链接无效！");
                                 return;
@@ -892,11 +896,11 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             }
                             break;
                         case "restart":
+                            showTips(IConfigs.MESSAGE_INFO, "即将重启");
+                            mView.restartApp(data);//重启
                         case "restartApp"://重启软件
-
                             showTips(IConfigs.MESSAGE_INFO, "软件即将重启");
-
-                            mView.restartApp();//重启
+                            mView.restartApp(data);//重启
                             break;
                         case "upgrade"://更新apk
                             showTips(IConfigs.MESSAGE_INFO, "收到软件更新");
@@ -908,7 +912,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                         case "register"://在线注册
                             String mRegister_code = mObject.getString("register_code");
                             ToolRegister.Instance(mContext).registerDevice(mRegister_code);
-                            mView.restartApp();//重启
+                            mView.restartApp("");//重启
 
                             break;
                         case "init": //socket连接成功之后 做初始化操作
@@ -924,7 +928,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             break;
                         case "siteCode"://站点信息
                             ToolSP.putDIYString(IConfigs.SP_SiteCode, data);
-                            mView.restartApp();//重启 需要添加设备
+                            mView.restartApp("");//重启 需要添加设备
 
                             break;
                         case "voiceFormat"://语音格式-修改为可支持不同场景下的呼叫要求
@@ -977,17 +981,21 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                                     //默认格式
                                     ToolSP.putDIYString(IConfigs.SP_VOICE_FORMAT0, mVoFormat);
                                 }
-                                if (ToolTtsXF.Instance().getTTSPlayer() != null) {
-                                    ToolLog.efile(TAG, "ToolTtsXF设置格式");
-                                    ToolTtsXF.Instance().InitTtsSetting(mVoiceSetting);
-                                    ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
-                                }
-                                if (ToolTts.Instance().getTTSPlayer() != null) {
-                                    ToolLog.efile(TAG, "ToolTts设置格式");
-                                    ToolTts.Instance().InitTtsSetting(mVoiceSetting);
-                                    ToolVoice.Instance().setVoiceSetting(mVoiceSetting);
-                                }
 
+                                if (ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == IConfigs.VoiceType_SYSTEM
+                                        || ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == -1) {
+                                    if (ToolTts.Instance().getTTSPlayer() != null) {
+                                        ToolLog.efile(TAG, "ToolTts系统设置格式");
+                                        ToolTts.Instance().InitTtsSetting(mVoiceSetting);
+                                        ToolVoiceSystem.Instance().setVoiceSetting(mVoiceSetting);
+                                    }
+                                } else {
+                                    if (ToolTtsXF.Instance().getTTSPlayer() != null) {
+                                        ToolLog.efile(TAG, "ToolTtsXF设置格式");
+                                        ToolTtsXF.Instance().InitTtsSetting(mVoiceSetting);
+                                        ToolVoiceXF.Instance().setVoiceSetting(mVoiceSetting);
+                                    }
+                                }
                                 ToolSP.putDIYString(IConfigs.SP_VOICE_TEMP, JSON.toJSONString(mVoiceSetting));
                                 ToolLog.efile(TAG, " voiceFormat voiceFormat ");
                             }
@@ -1002,7 +1010,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
                             ToolSP.putDIYString(IConfigs.SP_DEPART_ID, mDepart.getDeptId());
                             ToolSP.putDIYString(IConfigs.SP_CLINIC_ID, mDepart.getClinicId());
 
-                            mView.restartApp();//重启
+                            mView.restartApp("");//重启
 
                             break;
 
@@ -1097,7 +1105,7 @@ public class Presenter implements IPresenter, BaseDataHandler.MessageListener {
         //初始化语音sdk
         ToolTts.Instance(mContext).InitTtsSetting(mVoiceSetting);
         //初始化语音控制
-        ToolVoice.Instance(mHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
+        ToolVoiceSystem.Instance(mHandler).setVoiceSetting(mVoiceSetting).setUrlFinishVoice(URL_FINISH_VOICE).InitTtsListener();
 
     }
 

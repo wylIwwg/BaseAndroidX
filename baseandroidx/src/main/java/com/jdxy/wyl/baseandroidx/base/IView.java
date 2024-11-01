@@ -60,6 +60,9 @@ public interface IView {
 
     /**
      * 重启APP
+     *
+     * @param type 0 空 重启软件 /  1 重启设备
      */
-    void restartApp();
+    void restartApp(String type);
+
 }
