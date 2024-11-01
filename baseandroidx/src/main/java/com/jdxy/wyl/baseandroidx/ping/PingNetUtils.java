@@ -228,7 +228,8 @@ public class PingNetUtils {
         if (telephonyManager == null) {
             return "TM==null";
         }
-        switch (telephonyManager.getNetworkType()) {
+        return "";
+      /*  switch (telephonyManager.getNetworkType()) {
             case TelephonyManager.NETWORK_TYPE_1xRTT:// ~ 50-100 kbps
                 return "2G";
             case TelephonyManager.NETWORK_TYPE_CDMA:// ~ 14-64 kbps
@@ -263,7 +264,7 @@ public class PingNetUtils {
                 return "UNKNOWN";
             default:
                 return "4G";
-        }
+        }*/
     }
 
     /**

@@ -6,7 +6,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
 
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -52,13 +52,15 @@ dependencies {
     implementation 'com.lzy.net:okgo:3.0.4'
     implementation 'com.lzy.net:okserver:2.0.5'
 
-   // implementation 'com.yanzhenjie:permission:2.0.3'
+    // implementation 'com.yanzhenjie:permission:2.0.3'
     implementation 'cn.jzvd:jiaozivideoplayer:7.0.5'
     implementation 'com.tonystark.android:socket:4.2.3'
-   // implementation files('libs/usc.jar')
-   // implementation files('libs/sdkapi.jar')
+    // implementation files('libs/usc.jar')
+    // implementation files('libs/sdkapi.jar')
     implementation 'me.weishu:free_reflection:1.2.0'
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
 
     implementation 'me.jessyan:autosize:1.2.1'
 }
+
+

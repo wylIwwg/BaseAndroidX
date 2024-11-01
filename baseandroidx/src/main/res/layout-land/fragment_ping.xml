@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".fragments.PingFragment">
+    tools:context=".fragments.PingFragment"
+    tools:ignore="MissingDefaultResource">
 
 
     <LinearLayout
@@ -28,17 +29,19 @@
             android:background="@drawable/base_et_none"
             android:inputType="number|textUri"
             android:textSize="13sp" />
+
         <EditText
 
-            android:gravity="center"
-            android:hint="ping的次数"
             android:id="@+id/etTimes"
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1"
             android:background="@drawable/base_et_none"
+            android:gravity="center"
+            android:hint="ping的次数"
             android:inputType="number"
             android:textSize="13sp" />
+
         <Button
             android:id="@+id/btnPingIp"
             style="@style/baseBtn"

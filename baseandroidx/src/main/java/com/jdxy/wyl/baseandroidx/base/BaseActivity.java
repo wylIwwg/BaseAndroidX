@@ -544,7 +544,7 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
     }
 
     @Override
-    public void restartApp() {
+    public void restartApp(String type) {
         mPresenter.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -552,6 +552,7 @@ public class BaseActivity extends AppCompatActivity implements BaseDataHandler.M
             }
         }, 2000);
     }
+
 
     public void addDevice(String clientId) {
 

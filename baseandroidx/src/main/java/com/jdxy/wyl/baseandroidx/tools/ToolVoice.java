@@ -17,6 +17,18 @@ public class ToolVoice {
         return mToolVoice;
     }
 
+    public boolean isSpeaking() {
+        if (ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == IConfigs.VoiceType_SYSTEM
+                || ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == -1) {
+            return ToolVoiceSystem.Instance().isSpeeking;
+        }
+        if (ToolSP.getDIYInt(IConfigs.SP_VOICE_SOURCE) == IConfigs.VoiceType_XF) {
+            return ToolVoiceXF.Instance().isSpeeking;
+        }
+
+        return false;
+    }
+
     /**
      * 自定义播放（只有在空闲时才能播放）
      *

@@ -233,7 +233,7 @@ public class BasePhpActivity extends AppCompatActivity implements IView {
     }
 
     @Override
-    public void restartApp() {
+    public void restartApp(String type) {
         mPresenter.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -241,6 +241,7 @@ public class BasePhpActivity extends AppCompatActivity implements IView {
             }
         }, 2000);
     }
+
 
 
     @Override
